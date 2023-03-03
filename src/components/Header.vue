@@ -20,7 +20,7 @@ const count = ref(0)
 
 <style scoped>
 .container {
-  background-image: url(../assets/9431677818833_.pic.jpg);
+  background-image: url(../assets/顶部背景@2x.png);
   background-repeat: no-repeat;
   background-size: auto;
 }
@@ -29,7 +29,5 @@ const count = ref(0)
   margin-top: 29px;
 }
 
-.logo-view {
-
-}
+.logo-view {}
 </style>

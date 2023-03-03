@@ -29,8 +29,8 @@ function searchAction() {
 
 <style scoped>
 .header-view {
-  height: 388px;
   width: 100%;
+  height: 388px;
 }
 
 .main-view {
