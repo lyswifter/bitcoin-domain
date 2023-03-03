@@ -1,0 +1,14 @@
+.continue-view {
+    margin: 0 auto;
+    width: 880px;
+    height: 48px;
+    background: #32D9FA;
+    border-radius: 4px;
+    border: 2px solid #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+    line-height: 48px;
+    text-align: center;
+    margin-top: 44px;
+}
