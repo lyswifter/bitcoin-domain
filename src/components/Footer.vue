@@ -13,51 +13,43 @@ onMounted(() => {
 
 <template>
     <div class="footer-container">
-        <div class="f-c-view">
-            <el-row>
-                <el-col :span="1">
+        <el-row justify="end">
+            <el-col :span="18">
+                <div class="email-view">
                     <img src="../assets/邮箱@2x.png" style="width: 40px;height: 40px;vertical-align: middle;" alt="">
-                </el-col>
-                <el-col :span="15">
-                    <div class="email-view">contact@dmaster.com</div>
-                </el-col>
-                <el-col :span="8">
-                    <div class="block-logo-view">
-                        btcdomain
-                    </div>
-                </el-col>
-            </el-row>
-        </div>
+                    contact@dmaster.com
+                </div>
+            </el-col>
+            <el-col :span="3">
+                <div class="block-logo-view">
+                    btcdomain
+                </div>
+            </el-col>
+        </el-row>
     </div>
 </template>
 
 <style scoped>
 .footer-container {
+    border-top: 1px solid lightgray;
     height: 100px;
     width: 100%;
     background: #FFFFFF;
 }
 
-.f-c-view {
-    height: 100px;
-    margin: 0 auto;
-    width: 1024px;
-    background: #FFFFFF;
-}
-
 .email-view {
-    height: 20px;
+    height: 100px;
     font-size: 14px;
     font-weight: 400;
     color: #222840;
-    line-height: 21px;
+    line-height: 100px;
 }
 
 .block-logo-view {
-    height: 23px;
+    height: 100px;
     font-size: 24px;
     font-family: CamarRegular;
     color: #2E2F3E;
-    line-height: 23px;
+    line-height: 100px;
 }
 </style>

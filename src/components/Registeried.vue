@@ -153,15 +153,6 @@ onMounted(() => {
     line-height: 40px;
     text-align: center;
 }
-.list-t-view {
-    /* height: 32px;
-    line-height: 32px; */
-}
-
-.owner-view {
-    /* height: 32px;
-    line-height: 32px; */
-}
 
 .line-view {
     margin-top: 25px;

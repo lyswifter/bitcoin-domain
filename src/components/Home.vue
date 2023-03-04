@@ -5,8 +5,9 @@ import HeaderView from "../components/Header.vue";
 import FooterView from "../components/Footer.vue";
 import HistView from "../components/History.vue";
 import RegisteriedView from "../components/Registeried.vue";
+import OrderView from "../components/Order.vue";
 
-let state = reactive({ step: 0, input: '', stage: 'registerited'}) // hist, start, order, pay, waitting, registerited
+let state = reactive({ step: 0, input: '', stage: 'order' }) // hist, start, order, pay, waitting, registerited
 
 function searchAction() {
   console.log(state.input)
@@ -20,7 +21,7 @@ function searchAction() {
     <HeaderView class="header-view" />
 
     <div class="search-view">
-      <input class="input-class" v-model="state.input" placeholder="Search name or address"/>
+      <input class="input-class" v-model="state.input" placeholder="Search name or address" />
       <a class="search-a" style="text-decoration: none;" href="javascript:void(0)" @click="searchAction"> Search </a>
     </div>
 
@@ -28,9 +29,11 @@ function searchAction() {
 
     <RegisteriedView v-else-if="state.stage == 'registerited'" class="registeried-view" />
 
+    <OrderView v-else-if="state.stage == 'order'" class="order-view" />
+
     <!-- <div class="qrcode-view">
-          <vue-qrcode value="Hello, World!" :options="{ width: 200 }"></vue-qrcode>
-        </div> -->
+            <vue-qrcode value="Hello, World!" :options="{ width: 200 }"></vue-qrcode>
+          </div> -->
   </div>
 
   <FooterView class="footer-view" />
@@ -63,7 +66,7 @@ function searchAction() {
   width: 100%;
   height: 80px;
   background: #FFFFFF;
-  box-shadow: 0px 10px 24px 0px rgba(16,38,92,1);
+  box-shadow: 0px 10px 24px 0px rgba(16, 38, 92, 1);
   border-radius: 12px;
   border: none;
   color: black;
