@@ -4,11 +4,12 @@ import { ref, reactive } from 'vue'
 import HeaderView from "../components/Header.vue";
 import FooterView from "../components/Footer.vue";
 import HistView from "../components/History.vue";
-import RegisteriedView from "../components/Registeried.vue";
+import RegisteriedView from "../components/Registered.vue";
 import OrderView from "../components/Order.vue";
 import PayView from "../components/Pay.vue";
+import RegisteringView from "../components/Registering.vue";
 
-let state = reactive({ step: 0, input: '', stage: 'pay' }) // hist, start, order, pay, waitting, registerited
+let state = reactive({ step: 0, input: '', stage: 'registering' }) // hist, start, order, pay, registered, registering
 
 function searchAction() {
   console.log(state.input)
@@ -28,11 +29,14 @@ function searchAction() {
 
     <HistView v-if="state.stage == 'hist'" class="hist-view" />
 
-    <RegisteriedView v-else-if="state.stage == 'registerited'" class="registeried-view" />
+    <RegisteriedView v-else-if="state.stage == 'registerited'" class="registered-view" />
 
     <OrderView v-else-if="state.stage == 'order'" class="order-view" />
 
     <PayView v-else-if="state.stage == 'pay'" class="pay-view" />
+
+    <RegisteringView v-else-if="state.stage == 'registering'" class="registering-view" />
+    
   </div>
 
   <FooterView class="footer-view" />
