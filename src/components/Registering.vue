@@ -2,34 +2,22 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
 
+import { DomainInfo } from "../router/type";
+
 import service from "../router/service";
 
-interface DomainInfo {
-    name: string;
-    owner: string;
-    create: string;
-    registration: string;
-    expire: string;
-    inscriptionId: string;
-    isAvailable: boolean;
-}
-
-let state = reactive({
-    info: {
-        name: 'BTCDomino.btc',
-        owner: '187mGMMjzhBNy4na3hm7AbovTWC9pmVV7c',
-        create: '2024.03.16 05:23',
-        registration: '2024.03.16 05:23',
-        expire: '2024.03.16 05:23',
-        inscriptionId: '333e66bad68a967bd98d16dbc03d1d055050fbb856f1d00ca19b2deObf9a96e90',
-        isAvailable: false,
-    } as DomainInfo
+const props = defineProps({
+    domainName: String,
+    isAvailable: Boolean,
 })
 
-function copyAction() {
-}
+let state = reactive({
+    info: {} as DomainInfo
+})
 
 onMounted(() => {
+    state.info.name = props.domainName!
+    state.info.isAvailable = props.isAvailable!
 })
 </script>
 

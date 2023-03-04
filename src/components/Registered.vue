@@ -2,28 +2,16 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
 
+import { DomainInfo } from "../router/type";
 import service from "../router/service";
 
-interface DomainInfo {
-    name: string;
-    owner: string;
-    create: string;
-    registration: string;
-    expire: string;
-    inscriptionId: string;
-    isAvailable: boolean;
-}
+const props = defineProps({
+    domainName: String,
+    isAvailable: Boolean,
+})
 
 let state = reactive({
-    info: {
-        name: 'BTCDomino.btc',
-        owner: '187mGMMjzhBNy4na3hm7AbovTWC9pmVV7c',
-        create: '2024.03.16 05:23',
-        registration: '2024.03.16 05:23',
-        expire: '2024.03.16 05:23',
-        inscriptionId: '333e66bad68a967bd98d16dbc03d1d055050fbb856f1d00ca19b2deObf9a96e90',
-        isAvailable: false,
-    } as DomainInfo
+    info: {} as DomainInfo
 })
 
 function copyAction() {
@@ -33,6 +21,15 @@ function copyAction() {
 }
 
 onMounted(() => {
+    state.info.name = props.domainName!
+    state.info.isAvailable = props.isAvailable!
+
+    service.queryDomain(state.info.name).then((val) => {
+        state.info.expire = val.data.expire_time
+        state.info.create = val.data.create_time
+        state.info.inscriptionId = val.data.inscribe_id
+        state.info.owner = val.data.wallet_id
+  })
 })
 </script>
 

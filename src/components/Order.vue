@@ -5,10 +5,6 @@ import { ElMessage } from "element-plus";
 import service from "../router/service";
 import { GasInfo } from "../router/type";
 
-// import math from 'mathjs'
-
-import { subtract } from "mathjs";
-
 import Decimal from 'decimal.js';
 
 const props = defineProps({
@@ -37,6 +33,11 @@ function handleChange(value: number) {
 }
 
 function continueAction() {
+    if (!state.info.addr) {
+        ElMessage.error("Receive address must not be empty")
+        return    
+    }
+
     emit('continueAction', state.info)
 }
 
@@ -50,7 +51,6 @@ onMounted(() => {
         state.info.total = val.data.total_fee
 
         service.queryWallet(state.info.name).then((val) => {
-            state.info.addr = val.data.receive_address;
 
             service.queryBalance(val.data.wallet_id).then((val) => {
                 state.info.balance = val.data.mine.trusted

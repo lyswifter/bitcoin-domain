@@ -21,6 +21,12 @@ function searchAction() {
     if (val.code == 310) { // able to register
       state.isAvailable = true
       state.stage = 'order'
+    } else if (val.code == 0) {
+      state.isAvailable = false
+      state.stage = 'registered'
+    } if (val.code == 311) {
+      state.isAvailable = false
+      state.stage = 'registering'
     }
   })
 }
@@ -45,7 +51,7 @@ onMounted(() => {
 <template>
   <div class="main-view">
 
-    <HeaderView class="header-view" :style="{ height:  state.headerHeight}" />
+    <HeaderView class="header-view" :style="{ height: state.headerHeight }" />
 
     <div class="search-view">
       <el-input class="input-class" v-model="state.input" placeholder="Search name or address" />
@@ -54,13 +60,15 @@ onMounted(() => {
 
     <HistView v-if="state.stage == 'hist'" class="hist-view" />
 
-    <OrderView v-else-if="state.stage == 'order'" class="order-view" :domain-name="state.input" :is-available="state.isAvailable" @continue-action="orderToPayAction" />
+    <OrderView v-else-if="state.stage == 'order'" class="order-view" :domain-name="state.input"
+      :is-available="state.isAvailable" @continue-action="orderToPayAction" />
 
     <PayView v-else-if="state.stage == 'pay'" class="pay-view" :gas-info="state.gasInfo" @back-action="backAction" />
 
-    <RegisteriedView v-else-if="state.stage == 'registered'" class="registered-view" :domain-name="state.input" :is-available="state.isAvailable" />
+    <RegisteriedView v-else-if="state.stage == 'registered'" class="registered-view" :domain-name="state.input"
+      :is-available="state.isAvailable" />
 
-    <RegisteringView v-else-if="state.stage == 'registering'" class="registering-view" />
+    <RegisteringView v-else-if="state.stage == 'registering'" class="registering-view" :domain-name="state.input" :is-available="state.isAvailable"/>
 
   </div>
 

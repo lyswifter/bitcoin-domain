@@ -70,7 +70,7 @@ onMounted(() => {
 
             <el-row justify="space-between">
                 <el-col :span="2">支付金额</el-col>
-                <el-col :span="4">{{ state.info.total }}</el-col>
+                <el-col :span="4">{{ state.info.total + ' BTC' }}</el-col>
             </el-row>
 
             <div class="qrcode-view">
