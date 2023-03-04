@@ -41,7 +41,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="registeried-container">
+    <div class="order-container">
         <div class="state-view">
             <el-row justify="space-between">
                 <el-col :span="2">NAME</el-col>
@@ -72,7 +72,7 @@ onMounted(() => {
             <div class="step-title-view">STEP 1: Receive address</div>
             <div style="width: 1120px;margin: 0 auto;">
                 <div class="step-desc-view">Type your address to receive the nft here:</div>
-                <el-input class="addr-input-view" v-model="state.inputAddr" placeholder="Please input" />
+                <el-input class="addr-input-view" v-model="state.inputAddr" placeholder="Please input" clearable="true" size="large" />
             </div>
 
             <!-- STEP 2 -->
@@ -135,7 +135,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.registeried-container {
+.order-container {
     width: 1200px;
     margin: 0 auto;
     margin-top: 40px;

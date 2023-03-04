@@ -6,8 +6,9 @@ import FooterView from "../components/Footer.vue";
 import HistView from "../components/History.vue";
 import RegisteriedView from "../components/Registeried.vue";
 import OrderView from "../components/Order.vue";
+import PayView from "../components/Pay.vue";
 
-let state = reactive({ step: 0, input: '', stage: 'order' }) // hist, start, order, pay, waitting, registerited
+let state = reactive({ step: 0, input: '', stage: 'pay' }) // hist, start, order, pay, waitting, registerited
 
 function searchAction() {
   console.log(state.input)
@@ -31,9 +32,7 @@ function searchAction() {
 
     <OrderView v-else-if="state.stage == 'order'" class="order-view" />
 
-    <!-- <div class="qrcode-view">
-            <vue-qrcode value="Hello, World!" :options="{ width: 200 }"></vue-qrcode>
-          </div> -->
+    <PayView v-else-if="state.stage == 'pay'" class="pay-view" />
   </div>
 
   <FooterView class="footer-view" />
