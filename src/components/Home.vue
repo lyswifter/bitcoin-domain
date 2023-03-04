@@ -2,8 +2,11 @@
 import { ref, reactive } from 'vue'
 
 import HeaderView from "../components/Header.vue";
+import FooterView from "../components/Footer.vue";
+import HistView from "../components/History.vue";
+import RegisteriedView from "../components/Registeried.vue";
 
-let state = reactive({ step: 0, input: '' })
+let state = reactive({ step: 0, input: '', stage: 'registerited'}) // hist, start, order, pay, waitting, registerited
 
 function searchAction() {
   console.log(state.input)
@@ -21,21 +24,27 @@ function searchAction() {
       <a class="search-a" style="text-decoration: none;" href="javascript:void(0)" @click="searchAction"> Search </a>
     </div>
 
+    <HistView v-if="state.stage == 'hist'" class="hist-view" />
+
+    <RegisteriedView v-else-if="state.stage == 'registerited'" class="registeried-view" />
+
     <!-- <div class="qrcode-view">
           <vue-qrcode value="Hello, World!" :options="{ width: 200 }"></vue-qrcode>
         </div> -->
   </div>
+
+  <FooterView class="footer-view" />
 </template>
 
 <style scoped>
-.header-view {
-  width: 100%;
-  height: 388px;
-}
-
 .main-view {
   min-height: 1000px;
   background-color: white;
+}
+
+.header-view {
+  width: 100%;
+  height: 388px;
 }
 
 .qrcode-view {
@@ -73,5 +82,10 @@ function searchAction() {
   text-align: center;
   line-height: 64px;
   color: white;
+}
+
+.hist-view {
+  width: 1200px;
+  margin: 0 auto;
 }
 </style>

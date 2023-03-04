@@ -15,6 +15,11 @@ const count = ref(0)
         <div>Doc</div>
       </el-col>
     </el-row>
+
+    <div class="slogon-view">
+      <div class="solgon-title-view">btcdomain</div>
+      <div class="solgon-content-view">Search domain name or Register your domain name</div>
+    </div>
   </div>
 </template>
 
@@ -22,7 +27,7 @@ const count = ref(0)
 .container {
   background-image: url(../assets/顶部背景@2x.png);
   background-repeat: no-repeat;
-  background-size: auto;
+  background-size: contain;
 }
 
 .container img {
@@ -30,4 +35,27 @@ const count = ref(0)
 }
 
 .logo-view {}
+
+.slogon-view {
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
+}
+
+.solgon-title-view {
+  margin-top: 80px;
+  height: 80px;
+  font-size: 84px;
+  font-family: CamarRegular;
+  color: #FFFFFF;
+  line-height: 80px;
+}
+
+.solgon-content-view {
+  height: 25px;
+  font-size: 18px;
+  font-weight: 400;
+  color: #FFFFFF;
+  line-height: 25px;
+}
 </style>
