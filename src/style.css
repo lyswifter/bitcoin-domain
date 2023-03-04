@@ -12,6 +12,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  --el-border-radius-base: 12px;
   /* --el-fill-color-blank: #161828; */
 }
 

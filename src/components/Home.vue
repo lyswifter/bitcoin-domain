@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 
 import service from "../router/service";
 import { GasInfo } from "../router/type";
@@ -12,8 +12,9 @@ import PayView from "../components/Pay.vue";
 
 import RegisteriedView from "../components/Registered.vue";
 import RegisteringView from "../components/Registering.vue";
+import { number } from 'mathjs';
 
-let state = reactive({ isAvailable: false, input: '', stage: 'start', gasInfo: {} as GasInfo }) // start, hist, order, pay, registered, registering
+let state = reactive({ isAvailable: false, input: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px' }) // start, hist, order, pay, registered, registering
 
 function searchAction() {
   service.queryDomain(state.input).then((val) => {
@@ -33,12 +34,18 @@ function backAction() {
   state.stage = 'order'
 }
 
+onMounted(() => {
+  let width = window.outerWidth
+  let hei = width * 776 / 3840;
+  state.headerHeight = hei + 'px'
+})
+
 </script>
 
 <template>
   <div class="main-view">
 
-    <HeaderView class="header-view" />
+    <HeaderView class="header-view" :style="{ height:  state.headerHeight}" />
 
     <div class="search-view">
       <el-input class="input-class" v-model="state.input" placeholder="Search name or address" />
@@ -68,12 +75,6 @@ function backAction() {
 
 .header-view {
   width: 100%;
-  height: 388px;
-}
-
-.qrcode-view {
-  width: 200px;
-  height: 200px;
 }
 
 .search-view {
@@ -86,9 +87,7 @@ function backAction() {
 .input-class {
   width: 100%;
   height: 80px;
-  background: #FFFFFF;
-  color: black;
-  font-size: 20px; 
+  font-size: 20px;
 }
 
 .search-a {
