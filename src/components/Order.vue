@@ -2,41 +2,68 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
 
-import data from "../router/data";
+import service from "../router/service";
+import { GasInfo } from "../router/type";
 
-interface GasInfo {
-    name: string;
-    isAvailable: boolean;
-    addr: string;
-    gasFee: string;
-    serviceFee: string;
-    balance: string;
-    total: string
-}
+// import math from 'mathjs'
+
+import { subtract } from "mathjs";
+
+import Decimal from 'decimal.js';
+
+const props = defineProps({
+    domainName: String,
+    isAvailable: Boolean,
+})
+
+const emit = defineEmits({
+    continueAction(info: GasInfo) { },
+})
 
 let state = reactive({
-    info: {
-        name: "BTCDomino.btc",
-        isAvailable: true,
-        addr: "tb1p2rvyyezqnxfktlm773rzxglask07j730jar90ql99fpstwwl4uqt88888",
-        gasFee: "0.00050400 BTC",
-        serviceFee: "0.00050400 BTC",
-        balance: "- 0.01467324 BTC",
-        total: "0.00050400 BTC",
-    } as GasInfo,
-    inputAddr: '',
+    info: {} as GasInfo,
     inputYears: 1,
 })
 
 function handleChange(value: number) {
-    console.log(value)
+    state.inputYears = value
+
+    service.queryDomainFee(state.info.name, state.inputYears).then((val) => {
+        console.log(val)
+        state.info.gasFee = val.data.gas_fee
+        state.info.serviceFee = val.data.service_fee
+        state.info.total = val.data.total_fee
+    })
 }
 
 function continueAction() {
-    console.log("continue action")
+    emit('continueAction', state.info)
 }
 
 onMounted(() => {
+    state.info.name = props.domainName!
+    state.info.isAvailable = props.isAvailable!
+
+    service.queryDomainFee(state.info.name, state.inputYears).then((val) => {
+        state.info.gasFee = val.data.gas_fee
+        state.info.serviceFee = val.data.service_fee
+        state.info.total = val.data.total_fee
+
+        service.queryWallet(state.info.name).then((val) => {
+            state.info.addr = val.data.receive_address;
+
+            service.queryBalance(val.data.wallet_id).then((val) => {
+                state.info.balance = val.data.mine.trusted
+
+                let x = new Decimal(state.info.total ? state.info.total : 0)
+                let y = new Decimal(state.info.balance ? state.info.balance : 0)
+                let z = Decimal.sub(x, y);
+
+                state.info.total = z.toString();
+                console.log(state.info)
+            })
+        })
+    })
 })
 </script>
 
@@ -72,7 +99,8 @@ onMounted(() => {
             <div class="step-title-view">STEP 1: Receive address</div>
             <div style="width: 1120px;margin: 0 auto;">
                 <div class="step-desc-view">Type your address to receive the nft here:</div>
-                <el-input class="addr-input-view" v-model="state.inputAddr" placeholder="Please input" clearable="true" size="large" />
+                <el-input class="addr-input-view" v-model="state.info.addr" placeholder="Please input" clearable="true"
+                    size="large" />
             </div>
 
             <!-- STEP 2 -->
@@ -89,7 +117,7 @@ onMounted(() => {
                             <div class="list-t-view">Gas Fee</div>
                         </el-col>
                         <el-col :span="4">
-                            <div class="owner-view">{{ state.info.gasFee }}</div>
+                            <div class="owner-view">{{ state.info.gasFee + " BTC" }}</div>
                         </el-col>
                     </el-row>
 
@@ -98,7 +126,7 @@ onMounted(() => {
                             <div class="list-t-view">Service Fee</div>
                         </el-col>
                         <el-col :span="4">
-                            <div class="owner-view">{{ state.info.serviceFee }}</div>
+                            <div class="owner-view">{{ state.info.serviceFee + " BTC" }}</div>
                         </el-col>
                     </el-row>
 
@@ -107,7 +135,7 @@ onMounted(() => {
                             <div class="list-t-view">Current Balance</div>
                         </el-col>
                         <el-col :span="4">
-                            <div class="owner-view">{{ state.info.balance }}</div>
+                            <div class="owner-view">{{ state.info.balance + " BTC" }}</div>
                         </el-col>
                     </el-row>
 
@@ -126,7 +154,7 @@ onMounted(() => {
                 </div>
             </div>
 
-            <div style="margin: 0 auto;margin-top: 40px;width: 100%;margin-bottom: 50px;">
+            <div style="margin: 0 auto;margin-top: 40px;width: 100%;margin-bottom: 50px;cursor: pointer;">
                 <div class="continue-view" @click="continueAction">Continue</div>
             </div>
 

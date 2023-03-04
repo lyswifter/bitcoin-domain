@@ -2,7 +2,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
 
-import data from "../router/data";
+import service from "../router/service";
 
 let state = reactive({ records: ['BTCDomino.btc', 'BTCDomino.btc', 'BTCDomino.btc', 'BTCDomino.btc'] })
 

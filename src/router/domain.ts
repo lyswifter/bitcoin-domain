@@ -3,19 +3,8 @@ export let domain = {
 }
 
 export let Apis = {
-    upload: domain.domainUrl + 'upload',
-
-    createWallet: domain.domainUrl + 'createWallet',
-
-    getBal: domain.domainUrl + 'getBalance',
-
-    receivedAddr: domain.domainUrl + 'getWalletReceiveAddress',
-
-    recommandFee: domain.domainUrl + 'getRecommendedFee',
-
-    queryFee: domain.domainUrl + 'createWalletAndQueryFee',
-    
-    mint: domain.domainUrl + 'mint',
-
-    mintStatus: domain.domainUrl + 'queryTransferStatus',
+    queryDomainUrl: domain.domainUrl + 'queryDomain',
+    queryFee: domain.domainUrl + 'queryDomFee',
+    queryWallet: domain.domainUrl + 'queryWallet',
+    queryBalance: domain.domainUrl + 'queryBalance',
 }

@@ -1,18 +1,36 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 
+import service from "../router/service";
+import { GasInfo } from "../router/type";
+
 import HeaderView from "../components/Header.vue";
 import FooterView from "../components/Footer.vue";
 import HistView from "../components/History.vue";
-import RegisteriedView from "../components/Registered.vue";
 import OrderView from "../components/Order.vue";
 import PayView from "../components/Pay.vue";
+
+import RegisteriedView from "../components/Registered.vue";
 import RegisteringView from "../components/Registering.vue";
 
-let state = reactive({ step: 0, input: '', stage: 'registering' }) // hist, start, order, pay, registered, registering
+let state = reactive({ isAvailable: false, input: '', stage: 'start', gasInfo: {} as GasInfo }) // start, hist, order, pay, registered, registering
 
 function searchAction() {
-  console.log(state.input)
+  service.queryDomain(state.input).then((val) => {
+    if (val.code == 310) { // able to register
+      state.isAvailable = true
+      state.stage = 'order'
+    }
+  })
+}
+
+function orderToPayAction(gasInfo: GasInfo) {
+  state.stage = 'pay'
+  state.gasInfo = gasInfo
+}
+
+function backAction() {
+  state.stage = 'order'
 }
 
 </script>
@@ -23,20 +41,20 @@ function searchAction() {
     <HeaderView class="header-view" />
 
     <div class="search-view">
-      <input class="input-class" v-model="state.input" placeholder="Search name or address" />
+      <el-input class="input-class" v-model="state.input" placeholder="Search name or address" />
       <a class="search-a" style="text-decoration: none;" href="javascript:void(0)" @click="searchAction"> Search </a>
     </div>
 
     <HistView v-if="state.stage == 'hist'" class="hist-view" />
 
-    <RegisteriedView v-else-if="state.stage == 'registerited'" class="registered-view" />
+    <OrderView v-else-if="state.stage == 'order'" class="order-view" :domain-name="state.input" :is-available="state.isAvailable" @continue-action="orderToPayAction" />
 
-    <OrderView v-else-if="state.stage == 'order'" class="order-view" />
+    <PayView v-else-if="state.stage == 'pay'" class="pay-view" :gas-info="state.gasInfo" @back-action="backAction" />
 
-    <PayView v-else-if="state.stage == 'pay'" class="pay-view" />
+    <RegisteriedView v-else-if="state.stage == 'registered'" class="registered-view" :domain-name="state.input" :is-available="state.isAvailable" />
 
     <RegisteringView v-else-if="state.stage == 'registering'" class="registering-view" />
-    
+
   </div>
 
   <FooterView class="footer-view" />
@@ -69,11 +87,8 @@ function searchAction() {
   width: 100%;
   height: 80px;
   background: #FFFFFF;
-  box-shadow: 0px 10px 24px 0px rgba(16, 38, 92, 1);
-  border-radius: 12px;
-  border: none;
   color: black;
-  font-size: 20px;
+  font-size: 20px; 
 }
 
 .search-a {

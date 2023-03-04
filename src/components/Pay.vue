@@ -2,36 +2,26 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
 
-import data from "../router/data";
-import { fa } from 'element-plus/es/locale';
+import service from "../router/service";
+import { GasInfo } from "../router/type";
 
-interface GasInfo {
-    name: string;
-    isAvailable: boolean;
-    addr: string;
-    gasFee: string;
-    serviceFee: string;
-    balance: string;
-    total: string
-}
+const props = defineProps({
+  domainName: String,
+  isAvailable: Boolean,
+  gasInfo: {},
+})
+
+const emit = defineEmits({
+    backAction(){},
+})
 
 let state = reactive({
-    info: {
-        name: "BTCDomino.btc",
-        isAvailable: true,
-        addr: "tb1p2rvyyezqnxfktlm773rzxglask07j730jar90ql99fpstwwl4uqt88888",
-        gasFee: "0.00050400 BTC",
-        serviceFee: "0.00050400 BTC",
-        balance: "- 0.01467324 BTC",
-        total: "0.00050400 BTC",
-    } as GasInfo,
-    inputAddr: '',
-    inputYears: 1,
+    info: {} as GasInfo,
     isPaymentVisiable: false,
 })
 
 function backAction() {
-    console.log("backAction action")
+    emit('backAction')
 }
 
 function copyAction() {
@@ -47,7 +37,9 @@ function dismissAction() {
 }
 
 onMounted(() => {
+    state.info = props.gasInfo as GasInfo
 })
+
 </script>
 
 <template>
@@ -82,7 +74,7 @@ onMounted(() => {
             </el-row>
 
             <div class="qrcode-view">
-                <vue-qrcode value="Hello, World!" :options="{ width: 200 }"></vue-qrcode>
+                <vue-qrcode :value="state.info.addr" :options="{ width: 200 }"></vue-qrcode>
 
                 <el-row justify="center">
                     <el-col :span="6">
@@ -110,9 +102,11 @@ onMounted(() => {
     <el-dialog v-model="state.isPaymentVisiable" :show-close="true" align-center="true" :width="440">
         <div style="text-align: center;">
             <img src="../assets/icon_oops@2x.png" style="width: 220px;height: 220px;" alt="">
-            <div style="font-size: 18px;font-weight: 600;color: #A7A9BE;line-height: 25px;text-align: center;">No payment detected</div>
+            <div style="font-size: 18px;font-weight: 600;color: #A7A9BE;line-height: 25px;text-align: center;">No payment
+                detected</div>
             <br>
-            <div style="width: 400px;height: 50px;background: #2E2F3E;border-radius: 8px;font-size: 16px;font-weight: 600;color: white;line-height: 50px;text-align: center;cursor: pointer;" @click="dismissAction">OK</div>
+            <div style="width: 400px;height: 50px;background: #2E2F3E;border-radius: 8px;font-size: 16px;font-weight: 600;color: white;line-height: 50px;text-align: center;cursor: pointer;"
+                @click="dismissAction">OK</div>
         </div>
     </el-dialog>
 </template>
@@ -137,6 +131,7 @@ onMounted(() => {
     font-weight: 600;
     color: #2E2F3E;
     line-height: 28px;
+    cursor: pointer;
 }
 
 .qrcode-view {
