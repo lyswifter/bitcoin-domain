@@ -65,6 +65,8 @@ onMounted(() => {
         state.info.total = val1.data.total_fee.toPrecision(4);
 
         service.queryWallet(state.info.name).then((val2) => {
+            state.info.midAddr = val2.data.receive_address;
+
             service.queryBalance(val2.data.wallet_id).then((val3) => {
                 state.info.balance = val3.data.mine.trusted > 0 ? val3.data.mine.trusted : "0"
 

@@ -2,6 +2,7 @@ export interface GasInfo {
     name: string;
     isAvailable: boolean;
     addr: string;
+    midAddr: string;
     gasFee: string;
     serviceFee: string;
     balance: string;

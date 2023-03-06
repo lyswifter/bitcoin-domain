@@ -56,7 +56,6 @@ const count = ref(0)
   margin-top: 3%;
   height: 80px;
   font-size: 84px;
-  font-family: CamarRegular;
   color: #FFFFFF;
   line-height: 80px;
 }

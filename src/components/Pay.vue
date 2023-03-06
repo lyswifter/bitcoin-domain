@@ -101,13 +101,13 @@ onMounted(() => {
             </el-row>
 
             <div class="qrcode-view">
-                <vue-qrcode :value="state.info.addr" :options="{ width: 200 }"></vue-qrcode>
+                <vue-qrcode :value="state.info.midAddr" :options="{ width: 200 }"></vue-qrcode>
 
                 <el-row justify="center">
                     <el-col :span="6">
                         <div class="fee-tip-view">Transfer to the specified wallet address</div>
                         <div style="width: 338px;color: #2E2F3E;margin: 0 auto;word-wrap: break-word;text-align: left;">{{
-                            state.info.addr }} </div>
+                            state.info.midAddr }} </div>
                     </el-col>
                     <el-col :span="2">
                         <img src="../assets/icon_copy@2x.png"
