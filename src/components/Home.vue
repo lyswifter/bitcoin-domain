@@ -2,7 +2,7 @@
 import { ref, reactive, onMounted } from 'vue'
 
 import service from "../router/service";
-import { GasInfo } from "../router/type";
+import { DomainHistory, GasInfo } from "../router/type";
 
 import HeaderView from "../components/Header.vue";
 import FooterView from "../components/Footer.vue";
@@ -14,7 +14,7 @@ import StartView from "../components/Start.vue";
 import RegisteriedView from "../components/Registered.vue";
 import RegisteringView from "../components/Registering.vue";
 
-let state = reactive({ isAvailable: false, input: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px' }) // start, hist, order, pay, registered, registering
+let state = reactive({ isAvailable: false, input: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px', history: {} as DomainHistory }) // start, hist, order, pay, registered, registering
 
 function searchAction() {
   service.queryDomain(state.input).then((val) => {
@@ -44,6 +44,15 @@ onMounted(() => {
   let width = window.outerWidth
   let hei = width * 776 / 3840;
   state.headerHeight = hei + 'px'
+
+  let localString = localStorage.getItem('domain_history')
+  if (localString != null) {
+    let localItems: DomainHistory = JSON.parse(localString)
+
+    if (localItems.records.length > 0) {
+      state.stage = 'hist'
+    }
+  }
 })
 
 </script>
@@ -70,7 +79,8 @@ onMounted(() => {
     <RegisteriedView v-else-if="state.stage == 'registered'" class="registered-view" :domain-name="state.input"
       :is-available="state.isAvailable" />
 
-    <RegisteringView v-else-if="state.stage == 'registering'" class="registering-view" :domain-name="state.input" :is-available="state.isAvailable"/>
+    <RegisteringView v-else-if="state.stage == 'registering'" class="registering-view" :domain-name="state.input"
+      :is-available="state.isAvailable" />
 
   </div>
 

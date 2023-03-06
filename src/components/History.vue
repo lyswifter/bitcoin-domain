@@ -2,11 +2,19 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
 
-import service from "../router/service";
+import { DomainHistory } from "../router/type";
 
-let state = reactive({ records: ['BTCDomino.btc', 'BTCDomino.btc', 'BTCDomino.btc', 'BTCDomino.btc'] })
+let state = reactive({ records: [] as string[] })
 
 onMounted(() => {
+    let localString = localStorage.getItem('domain_history')
+    if (localString != null) {
+        let localItems: DomainHistory = JSON.parse(localString)
+
+        if (localItems.records.length > 0) {
+            state.records = localItems.records
+        }
+    }
 })
 </script>
 
@@ -21,7 +29,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
 .history-container {
     padding-top: 40px;
 }

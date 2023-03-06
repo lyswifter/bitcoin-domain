@@ -112,7 +112,7 @@ onMounted(() => {
             <div class="step-title-view">STEP 1: Receive address</div>
             <div style="width: 1120px;margin: 0 auto;">
                 <div class="step-desc-view">Type your address to receive the nft here:</div>
-                <el-input class="addr-input-view" v-model="state.info.addr" placeholder="Please input" clearable="true"
+                <el-input class="addr-input-view" v-model="state.info.addr" placeholder="Type your address to receive the nft here" clearable="true"
                     size="large" />
             </div>
 

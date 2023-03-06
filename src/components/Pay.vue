@@ -3,7 +3,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
 
 import service from "../router/service";
-import { GasInfo } from "../router/type";
+import { GasInfo, DomainHistory } from "../router/type";
 
 import useClipboard from "vue-clipboard3";
 
@@ -39,6 +39,22 @@ function conformAction() {
         console.log(val)
         if (val.code == 0) {
             ElMessage.info("I have transfered!");
+
+            let localHistory = localStorage.getItem("domain_history");
+            if (!localHistory) {
+                return
+            }
+
+            let localItems: DomainHistory = JSON.parse(localHistory)
+            localItems.records.push(state.info.name)
+
+            localStorage.setItem("domain_history", JSON.stringify(localItems))
+
+            // update local storage finished
+            //
+            //
+        } else if (val.code == 314) {
+            state.isPaymentVisiable = true
         }
     })
 }

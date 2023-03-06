@@ -18,3 +18,8 @@ export interface DomainInfo {
     inscriptionId: string;
     isAvailable: boolean;
 }
+
+export interface DomainHistory {
+    date: string;
+    records: string[];
+}
