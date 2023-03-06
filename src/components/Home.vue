@@ -13,6 +13,7 @@ import StartView from "../components/Start.vue";
 
 import RegisteriedView from "../components/Registered.vue";
 import RegisteringView from "../components/Registering.vue";
+import { ElMessage } from 'element-plus';
 
 let state = reactive({ isAvailable: false, input: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px', history: {} as DomainHistory }) // start, hist, order, pay, registered, registering
 
@@ -27,6 +28,9 @@ function searchAction() {
     } if (val.code == 311) {
       state.isAvailable = false
       state.stage = 'registering'
+    } else {
+      ElMessage.error(val.data)
+      return
     }
   })
 }
