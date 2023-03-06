@@ -29,13 +29,26 @@ function searchAction() {
 
   if (state.input.indexOf('.') != -1) {
     ElMessage.warning(state.input + ' is not correct')
+    loadingInstance.close()
+    return
+  }
+
+  if (state.input.length < 4) {
+    ElMessage.warning('Domain name is too short')
+    loadingInstance.close()
+    return
+  }
+
+  if (state.input.length > 32) {
+    ElMessage.warning('Domain name is too long')
+    loadingInstance.close()
     return
   }
 
   var re = /^[0-9a-zA-Z]*$/;
-
   if (!re.test(state.input)) {
     ElMessage.warning(state.input + ' is not format')
+    loadingInstance.close()
     return
   }
 
@@ -104,8 +117,7 @@ onMounted(() => {
     <HeaderView class="header-view" :style="{ height: state.headerHeight }" />
 
     <div class="search-view">
-      <el-input class="input-class" v-model="state.input" placeholder="Search name or address">
-      </el-input>
+      <el-input class="input-class" v-model="state.input" placeholder="Search name or address" maxlength="32" minlength="4" @keyup.enter.native="searchAction" />
       <a class="search-a" style="text-decoration: none;" href="javascript:void(0)" @click="searchAction"> Search </a>
     </div>
 

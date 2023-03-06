@@ -17,7 +17,17 @@ const emit = defineEmits({
 })
 
 let state = reactive({
-    info: {} as GasInfo,
+    info: {
+        name: '',
+        isAvailable: false,
+        addr: '',
+        midAddr: '',
+        gasFee: '',
+        serviceFee: '',
+        balance: '',
+        total: '',
+        years: 1,
+    } as GasInfo,
     inputYears: 1,
 })
 
@@ -47,7 +57,7 @@ function handleChange(value: number) {
 function continueAction() {
     if (!state.info.addr) {
         ElMessage.error("Receive address must not be empty")
-        return    
+        return
     }
 
     state.info.years = state.inputYears
@@ -92,7 +102,8 @@ onMounted(() => {
 
             <el-row justify="space-between">
                 <el-col :span="3"><span class="t-name">{{ state.info.name }}</span></el-col>
-                <el-col :span="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Unavailable' }}</span></el-col>
+                <el-col :span="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Unavailable'
+                }}</span></el-col>
             </el-row>
         </div>
 
@@ -114,8 +125,8 @@ onMounted(() => {
             <div class="step-title-view">STEP 1: Receive address</div>
             <div style="width: 1120px;margin: 0 auto;">
                 <div class="step-desc-view">Type your address to receive the nft here:</div>
-                <el-input class="addr-input-view" v-model="state.info.addr" placeholder="Type your address to receive the nft here" clearable="true"
-                    size="large" />
+                <el-input class="addr-input-view" v-model="state.info.addr"
+                    placeholder="Type your address to receive the nft here" clearable="true" size="large" />
             </div>
 
             <!-- STEP 2 -->
