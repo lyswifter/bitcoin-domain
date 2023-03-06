@@ -6,6 +6,14 @@ import { DomainHistory } from "../router/type";
 
 let state = reactive({ records: [] as string[] })
 
+const emit = defineEmits({
+    clickHistory(name: string) {}
+})
+
+function clickHistory(name: string) {
+    emit('clickHistory', name)
+}
+
 onMounted(() => {
     let localString = localStorage.getItem('domain_history')
     if (localString != null) {
@@ -24,7 +32,7 @@ onMounted(() => {
 
         <div class="name-view">NAME</div>
 
-        <div class="records-view" v-for="(item, index) in state.records" :key="index">{{ item }}</div>
+        <div class="records-view" v-for="(item, index) in state.records" :key="index" @click="clickHistory(item)">{{ item }}</div>
     </div>
 </template>
 

@@ -96,7 +96,7 @@ onMounted(() => {
             <br>
 
             <el-row justify="space-between">
-                <el-col :span="2">支付金额</el-col>
+                <el-col :span="2">Cash amount</el-col>
                 <el-col :span="4">{{ state.info.total + ' BTC' }}</el-col>
             </el-row>
 

@@ -40,6 +40,12 @@ function backAction() {
   state.stage = 'order'
 }
 
+function clickHistory(name: string) {
+  state.input = name
+  state.isAvailable = false
+  state.stage = 'registered'
+}
+
 onMounted(() => {
   let width = window.outerWidth
   let hei = width * 776 / 3840;
@@ -69,7 +75,7 @@ onMounted(() => {
 
     <StartView v-if="state.stage == 'start'" />
 
-    <HistView v-else-if="state.stage == 'hist'" class="hist-view" />
+    <HistView v-else-if="state.stage == 'hist'" class="hist-view" @click-history="clickHistory" />
 
     <OrderView v-else-if="state.stage == 'order'" class="order-view" :domain-name="state.input"
       :is-available="state.isAvailable" @continue-action="orderToPayAction" />
