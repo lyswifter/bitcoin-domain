@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-const count = ref(0)
+function reloadPage() {
+  location.reload();
+}
 </script>
 
 <template>
   <div class="container">
     <el-row justify="space-between">
       <el-col :span="2">
-        <img class="logo-view" src="../assets/logo_nav@2x.png" style="width: 158px;height: 30px;" alt="">
+        <img class="logo-view" src="../assets/logo_nav@2x.png" style="width: 158px;height: 30px;cursor: pointer;" alt="" @click="reloadPage">
       </el-col>
 
       <el-col :span="2">
