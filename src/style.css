@@ -62,6 +62,7 @@ button:focus-visible {
 
 #app {
   width: 100%;
+  background-color: white;
 }
 
 @media (prefers-color-scheme: light) {
@@ -81,4 +82,8 @@ button:focus-visible {
 
 .s-name {
   color: #A7A9BE;
+}
+
+.t-name {
+  color: #2E2F3E;
 }

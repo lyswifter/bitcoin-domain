@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, toRefs, onUnmounted } from 'vue'
 
 import service from "../router/service";
 import { DomainHistory, GasInfo } from "../router/type";
@@ -10,16 +10,23 @@ import HistView from "../components/History.vue";
 import OrderView from "../components/Order.vue";
 import PayView from "../components/Pay.vue";
 import StartView from "../components/Start.vue";
+import EmptyView from "../components/Empty.vue";
 
 import RegisteriedView from "../components/Registered.vue";
 import RegisteringView from "../components/Registering.vue";
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElLoading } from 'element-plus';
 
 let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px', history: {} as DomainHistory }) 
 
-// start, hist, order, pay, registered, registering
+// '', start, hist, order, pay, registered, registering
 
 function searchAction() {
+  let loadingInstance = ElLoading.service({ fullscreen: true });
+
+  if (state.inputAppend != '') {
+    state.stage = '' 
+  }
+
   if (state.input.indexOf('.') != -1) {
     ElMessage.warning(state.input + ' is not correct')
     return
@@ -35,6 +42,8 @@ function searchAction() {
   state.inputAppend = state.input + ".btc"
 
   service.queryDomain(state.inputAppend).then((val) => {
+    loadingInstance.close()
+
     if (val.code == 310) { // able to register
       state.isAvailable = true
       state.stage = 'order'
@@ -100,19 +109,21 @@ onMounted(() => {
       <a class="search-a" style="text-decoration: none;" href="javascript:void(0)" @click="searchAction"> Search </a>
     </div>
 
-    <StartView v-if="state.stage == 'start'" />
+    <EmptyView v-if="state.stage == ''" />
 
-    <HistView v-else-if="state.stage == 'hist'" class="hist-view" @click-history="clickHistory" />
+    <StartView v-else-if="state.stage == 'start'" :ref="state.stage"/>
 
-    <OrderView v-else-if="state.stage == 'order'" class="order-view" :domain-name="state.inputAppend"
+    <HistView v-else-if="state.stage == 'hist'" :ref="state.stage" class="hist-view" @click-history="clickHistory" />
+
+    <OrderView v-else-if="state.stage == 'order'" :ref="state.stage" class="order-view" :domain-name="state.inputAppend"
       :is-available="state.isAvailable" @continue-action="orderToPayAction" />
 
-    <PayView v-else-if="state.stage == 'pay'" class="pay-view" :gas-info="state.gasInfo" @back-action="backAction" @to-processing="toProcessing"/>
+    <PayView v-else-if="state.stage == 'pay'" :ref="state.stage" class="pay-view" :gas-info="state.gasInfo" @back-action="backAction" @to-processing="toProcessing"/>
 
-    <RegisteriedView v-else-if="state.stage == 'registered'" class="registered-view" :domain-name="state.inputAppend"
+    <RegisteriedView v-else-if="state.stage == 'registered'" :ref="state.stage" class="registered-view" :domain-name="state.inputAppend"
       :is-available="state.isAvailable" />
 
-    <RegisteringView v-else-if="state.stage == 'registering'" class="registering-view" :domain-name="state.inputAppend"
+    <RegisteringView v-else-if="state.stage == 'registering'" :ref="state.stage" class="registering-view" :domain-name="state.inputAppend"
       :is-available="state.isAvailable" />
 
   </div>

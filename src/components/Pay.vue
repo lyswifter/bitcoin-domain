@@ -79,8 +79,8 @@ onMounted(() => {
             </el-row>
 
             <el-row justify="space-between">
-                <el-col :span="3">{{ state.info.name }}</el-col>
-                <el-col :span="2"> {{ state.info.isAvailable ? 'Available' : 'Unavailable' }} </el-col>
+                <el-col :span="3"><span class="t-name">{{ state.info.name }}</span></el-col>
+                <el-col :span="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Unavailable' }}</span></el-col>
             </el-row>
         </div>
 
@@ -151,8 +151,6 @@ onMounted(() => {
     padding-bottom: 5px;
 }
 
-.pay-content-view {}
-
 .back-view {
     height: 28px;
     font-size: 20px;
@@ -168,7 +166,6 @@ onMounted(() => {
 }
 
 .fee-tip-view {
-    width: 223px;
     height: 17px;
     font-size: 12px;
     font-weight: 400;

@@ -49,8 +49,8 @@ onMounted(() => {
             </el-row>
 
             <el-row justify="space-between">
-                <el-col :span="3">{{ state.info.name }}</el-col>
-                <el-col :span="2"> {{ state.info.isAvailable ? 'Available' : 'Unavailable' }} </el-col>
+                <el-col :span="3"><span class="t-name">{{ state.info.name }}</span></el-col>
+                <el-col :span="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Unavailable' }}</span></el-col>
             </el-row>
         </div>
 

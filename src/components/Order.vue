@@ -91,8 +91,8 @@ onMounted(() => {
             </el-row>
 
             <el-row justify="space-between">
-                <el-col :span="3">{{ state.info.name }}</el-col>
-                <el-col :span="2"> {{ state.info.isAvailable ? 'Available' : 'Unavailable' }} </el-col>
+                <el-col :span="3"><span class="t-name">{{ state.info.name }}</span></el-col>
+                <el-col :span="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Unavailable' }}</span></el-col>
             </el-row>
         </div>
 
@@ -203,7 +203,6 @@ onMounted(() => {
     border-radius: 20px;
     font-size: 16px;
     font-weight: 600;
-    /* color: #FFFFFF; */
     line-height: 40px;
     text-align: center;
 }
@@ -258,6 +257,10 @@ onMounted(() => {
 
 .list-t-view {
     padding: 20px;
+    color: #2E2F3E;
+}
+
+.total-list-t-view {
     color: #2E2F3E;
 }
 
