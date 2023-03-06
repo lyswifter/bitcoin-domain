@@ -29,7 +29,7 @@ onMounted(() => {
 
         <div class="name-view">NAME</div>
 
-        <div class="records-view" v-for="(item, index) in state.records" :key="index" @click="clickHistory(item)">{{ item }}
+        <div class="records-view" v-for="(item, index) in state.records" :key="index" @click="clickHistory(item)">{{ item + '.btc' }}
         </div>
     </div>
 </template>
