@@ -7,8 +7,8 @@ onMounted(() => {
 
 <template>
     <div class="start-container">
-        <el-row justify="space-evenly">
-            <el-col :span="4" style="text-align: center;">
+        <el-row justify="space-between">
+            <el-col :span="12" style="text-align: center;">
                 <div>
                     <img src="../assets/icon_search@2x.png" style="width: 278px;height: 240px;" alt="">
                 </div>
@@ -16,7 +16,7 @@ onMounted(() => {
                 <div class="text-view">Search</div>
             </el-col>
 
-            <el-col :span="4" style="text-align: center;">
+            <el-col :span="12" style="text-align: center;">
                 <div>
                     <img src="../assets/icon_register@2x.png" style="width: 278px;height: 240px;" alt="">
                 </div>
@@ -28,6 +28,10 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.start-container {
+    width: 918px;
+    margin: 0 auto;
+}
 .search-text-view {
     width: 89px;
     height: 40px;
