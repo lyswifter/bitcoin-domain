@@ -25,8 +25,8 @@ onMounted(() => {
     <div class="registering-container">
         <div class="state-view">
             <el-row justify="space-between">
-                <el-col :span="2">NAME</el-col>
-                <el-col :span="2">STATE</el-col>
+                <el-col :span="2"><span class="s-name">NAME</span></el-col>
+                <el-col :span="2"><span class="s-name">STATE</span></el-col>
             </el-row>
 
             <el-row justify="space-between">

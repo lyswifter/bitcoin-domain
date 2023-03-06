@@ -25,10 +25,22 @@ function handleChange(value: number) {
     state.inputYears = value
 
     service.queryDomainFee(state.info.name, state.inputYears).then((val) => {
-        console.log(val)
-        state.info.gasFee = val.data.gas_fee
-        state.info.serviceFee = val.data.service_fee
-        state.info.total = val.data.total_fee
+        state.info.gasFee = val.data.gas_fee.toPrecision(4)
+        state.info.serviceFee = val.data.service_fee.toPrecision(4)
+        state.info.total = val.data.total_fee.toPrecision(4)
+
+        service.queryWallet(state.info.name).then((val) => {
+            service.queryBalance(val.data.wallet_id).then((val) => {
+                state.info.balance = val.data.mine.trusted > 0 ? val.data.mine.trusted : "0"
+
+                let x = new Decimal(state.info.total ? state.info.total : 0)
+                let y = new Decimal(state.info.balance ? state.info.balance : 0)
+                let z = Decimal.sub(x, y);
+
+                state.info.total = z.toString();
+                console.log(state.info)
+            })
+        })
     })
 }
 
@@ -38,6 +50,8 @@ function continueAction() {
         return    
     }
 
+    state.info.years = state.inputYears
+
     emit('continueAction', state.info)
 }
 
@@ -46,14 +60,13 @@ onMounted(() => {
     state.info.isAvailable = props.isAvailable!
 
     service.queryDomainFee(state.info.name, state.inputYears).then((val) => {
-        state.info.gasFee = val.data.gas_fee
-        state.info.serviceFee = val.data.service_fee
-        state.info.total = val.data.total_fee
+        state.info.gasFee = val.data.gas_fee.toPrecision(4);
+        state.info.serviceFee = val.data.service_fee.toPrecision(4);
+        state.info.total = val.data.total_fee.toPrecision(4);
 
         service.queryWallet(state.info.name).then((val) => {
-
             service.queryBalance(val.data.wallet_id).then((val) => {
-                state.info.balance = val.data.mine.trusted
+                state.info.balance = val.data.mine.trusted > 0 ? val.data.mine.trusted : "0"
 
                 let x = new Decimal(state.info.total ? state.info.total : 0)
                 let y = new Decimal(state.info.balance ? state.info.balance : 0)
@@ -71,8 +84,8 @@ onMounted(() => {
     <div class="order-container">
         <div class="state-view">
             <el-row justify="space-between">
-                <el-col :span="2">NAME</el-col>
-                <el-col :span="2">STATE</el-col>
+                <el-col :span="2"><span class="s-name">NAME</span></el-col>
+                <el-col :span="2"><span class="s-name">STATE</span></el-col>
             </el-row>
 
             <el-row justify="space-between">
@@ -116,7 +129,7 @@ onMounted(() => {
                         <el-col :span="4">
                             <div class="list-t-view">Gas Fee</div>
                         </el-col>
-                        <el-col :span="4">
+                        <el-col :span="5">
                             <div class="owner-view">{{ state.info.gasFee + " BTC" }}</div>
                         </el-col>
                     </el-row>
@@ -125,7 +138,7 @@ onMounted(() => {
                         <el-col :span="4">
                             <div class="list-t-view">Service Fee</div>
                         </el-col>
-                        <el-col :span="4">
+                        <el-col :span="5">
                             <div class="owner-view">{{ state.info.serviceFee + " BTC" }}</div>
                         </el-col>
                     </el-row>
@@ -134,7 +147,7 @@ onMounted(() => {
                         <el-col :span="4">
                             <div class="list-t-view">Current Balance</div>
                         </el-col>
-                        <el-col :span="4">
+                        <el-col :span="5">
                             <div class="owner-view">{{ state.info.balance + " BTC" }}</div>
                         </el-col>
                     </el-row>
@@ -147,8 +160,8 @@ onMounted(() => {
                             <div class="list-tip-view" style="padding-left: 20px;">Gas fee + service fee - current balance
                             </div>
                         </el-col>
-                        <el-col :span="4">
-                            <div class="total-fee-view">{{ state.info.total }}</div>
+                        <el-col :span="5">
+                            <div class="total-fee-view">{{ state.info.total + " BTC" }}</div>
                         </el-col>
                     </el-row>
                 </div>

@@ -5,7 +5,8 @@ export interface GasInfo {
     gasFee: string;
     serviceFee: string;
     balance: string;
-    total: string
+    total: string;
+    years: number;
 }
 
 export interface DomainInfo {

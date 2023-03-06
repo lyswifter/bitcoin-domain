@@ -53,5 +53,20 @@ export default {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
         }
+    },
+    async queryConfirm(domain: string, wallet: string, year: number) {
+        // queryConfirm
+        let ret = await axios.post(Apis.queryConfirm, {
+            'domain': domain,
+            'out_wallet': wallet,
+            'expire_year': year,
+        })
+
+        if (ret.status == 200) {
+            return ret.data   
+        } else {
+            ElMessage.error("Bad request[code=" + ret.status + "]")
+            return
+        }
     }
 }

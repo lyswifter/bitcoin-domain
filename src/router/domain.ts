@@ -7,4 +7,5 @@ export let Apis = {
     queryFee: domain.domainUrl + 'queryDomFee',
     queryWallet: domain.domainUrl + 'queryWallet',
     queryBalance: domain.domainUrl + 'queryBalance',
+    queryConfirm: domain.domainUrl + 'confirm',
 }

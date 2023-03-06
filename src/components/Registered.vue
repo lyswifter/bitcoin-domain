@@ -35,7 +35,7 @@ onMounted(() => {
         state.info.create = getTime(val.data.create_time, '')
         state.info.inscriptionId = val.data.inscribe_id
         state.info.owner = val.data.wallet_id
-  })
+    })
 })
 </script>
 
@@ -43,8 +43,8 @@ onMounted(() => {
     <div class="registeried-container">
         <div class="state-view">
             <el-row justify="space-between">
-                <el-col :span="2">NAME</el-col>
-                <el-col :span="2">STATE</el-col>
+                <el-col :span="2"><span class="s-name">NAME</span></el-col>
+                <el-col :span="2"><span class="s-name">STATE</span></el-col>
             </el-row>
 
             <el-row justify="space-between">
@@ -74,8 +74,10 @@ onMounted(() => {
                         <span class="list-t-view">Owner</span>
                     </el-col>
                     <el-col :span="14">
-                        <span class="owner-view">{{state.info.owner}}</span>
-                        <img src="../assets/icon_copy@2x.png" style="width: 32px;height: 32px;cursor: pointer;vertical-align: middle;" alt="" @click="copyAction">
+                        <span class="owner-view">{{ state.info.owner }}</span>
+                        <img src="../assets/icon_copy@2x.png"
+                            style="width: 32px;height: 32px;cursor: pointer;vertical-align: middle;" alt=""
+                            @click="copyAction">
                     </el-col>
                 </el-row>
 
@@ -86,7 +88,7 @@ onMounted(() => {
                         <span class="list-t-view">Creatdate</span>
                     </el-col>
                     <el-col :span="14">
-                        <span class="owner-view">{{state.info.create}}</span>
+                        <span class="owner-view">{{ state.info.create }}</span>
                     </el-col>
                 </el-row>
 
@@ -95,7 +97,7 @@ onMounted(() => {
                         <span class="list-t-view">Registration Date</span>
                     </el-col>
                     <el-col :span="14">
-                        <span class="owner-view">{{state.info.registration}}</span>
+                        <span class="owner-view">{{ state.info.registration }}</span>
                     </el-col>
                 </el-row>
 
@@ -104,7 +106,7 @@ onMounted(() => {
                         <span class="list-t-view">Expiration Date</span>
                     </el-col>
                     <el-col :span="14">
-                        <span class="owner-view">{{state.info.expire}}</span>
+                        <span class="owner-view">{{ state.info.expire }}</span>
                     </el-col>
                 </el-row>
 
@@ -117,8 +119,9 @@ onMounted(() => {
                         <span class="list-t-view">Inscription id</span>
                     </el-col>
                     <el-col :span="14">
-                        <a class="owner-view" href="https://baidu.com">{{state.info.inscriptionId}}</a>
-                        <img src="../assets/icon_link@2x.png" style="width: 32px;height: 32px;cursor: pointer;vertical-align: middle;" alt="">
+                        <a class="owner-view" href="https://baidu.com">{{ state.info.inscriptionId }}</a>
+                        <img src="../assets/icon_link@2x.png"
+                            style="width: 32px;height: 32px;cursor: pointer;vertical-align: middle;" alt="">
                     </el-col>
                 </el-row>
             </div>
@@ -161,5 +164,4 @@ onMounted(() => {
     margin-top: 25px;
     margin-bottom: 25px;
     border-bottom: 1px dashed #A7A9BE;
-}
-</style>
+}</style>

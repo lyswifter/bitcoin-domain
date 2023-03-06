@@ -8,13 +8,13 @@ import { GasInfo } from "../router/type";
 import useClipboard from "vue-clipboard3";
 
 const props = defineProps({
-  domainName: String,
-  isAvailable: Boolean,
-  gasInfo: {},
+    domainName: String,
+    isAvailable: Boolean,
+    gasInfo: {},
 })
 
 const emit = defineEmits({
-    backAction(){},
+    backAction() { },
 })
 
 let state = reactive({
@@ -35,7 +35,12 @@ function copyAction() {
 }
 
 function conformAction() {
-    state.isPaymentVisiable = true
+    service.queryConfirm(state.info.name, state.info.addr, state.info.years).then((val) => {
+        console.log(val)
+        if (val.code == 0) {
+            ElMessage.info("I have transfered!");
+        }
+    })
 }
 
 function dismissAction() {
@@ -52,8 +57,8 @@ onMounted(() => {
     <div class="pay-container">
         <div class="state-view">
             <el-row justify="space-between">
-                <el-col :span="2">NAME</el-col>
-                <el-col :span="2">STATE</el-col>
+                <el-col :span="2"><span class="s-name">NAME</span></el-col>
+                <el-col :span="2"><span class="s-name">STATE</span></el-col>
             </el-row>
 
             <el-row justify="space-between">
