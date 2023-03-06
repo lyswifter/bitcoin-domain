@@ -15,10 +15,24 @@ import RegisteriedView from "../components/Registered.vue";
 import RegisteringView from "../components/Registering.vue";
 import { ElMessage } from 'element-plus';
 
-let state = reactive({ isAvailable: false, input: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px', history: {} as DomainHistory }) // start, hist, order, pay, registered, registering
+let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px', history: {} as DomainHistory }) // start, hist, order, pay, registered, registering
 
 function searchAction() {
-  service.queryDomain(state.input).then((val) => {
+  if (state.input.indexOf('.') != -1) {
+    ElMessage.warning(state.input + ' is not correct')
+    return
+  }
+
+  var re = /^[0-9a-zA-Z]*$/;
+
+  if (!re.test(state.input)) {
+    ElMessage.warning(state.input + ' is not format')
+    return
+  }
+
+  state.inputAppend = state.input + ".btc"
+
+  service.queryDomain(state.inputAppend).then((val) => {
     if (val.code == 310) { // able to register
       state.isAvailable = true
       state.stage = 'order'
@@ -82,15 +96,15 @@ onMounted(() => {
 
     <HistView v-else-if="state.stage == 'hist'" class="hist-view" @click-history="clickHistory" />
 
-    <OrderView v-else-if="state.stage == 'order'" class="order-view" :domain-name="state.input"
+    <OrderView v-else-if="state.stage == 'order'" class="order-view" :domain-name="state.inputAppend"
       :is-available="state.isAvailable" @continue-action="orderToPayAction" />
 
     <PayView v-else-if="state.stage == 'pay'" class="pay-view" :gas-info="state.gasInfo" @back-action="backAction" />
 
-    <RegisteriedView v-else-if="state.stage == 'registered'" class="registered-view" :domain-name="state.input"
+    <RegisteriedView v-else-if="state.stage == 'registered'" class="registered-view" :domain-name="state.inputAppend"
       :is-available="state.isAvailable" />
 
-    <RegisteringView v-else-if="state.stage == 'registering'" class="registering-view" :domain-name="state.input"
+    <RegisteringView v-else-if="state.stage == 'registering'" class="registering-view" :domain-name="state.inputAppend"
       :is-available="state.isAvailable" />
 
   </div>

@@ -33,8 +33,9 @@ onMounted(() => {
     service.queryDomain(state.info.name).then((val) => {
         state.info.expire = getTime(val.data.expire_time, '')
         state.info.create = getTime(val.data.create_time, '')
+        state.info.registration = getTime(val.data.create_time, '')
         state.info.inscriptionId = val.data.inscribe_id
-        state.info.owner = val.data.wallet_id
+        state.info.owner = val.data.owner_address
     })
 })
 </script>
