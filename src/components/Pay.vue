@@ -41,17 +41,15 @@ function conformAction() {
 
             let localHistory = localStorage.getItem("domain_history");
             if (!localHistory) {
-                return
+                localStorage.setItem("domain_history", state.info.name)
+            } else {
+                localStorage.setItem("domain_history", localHistory + "," + state.info.name)
             }
-
-            let localItems: DomainHistory = JSON.parse(localHistory)
-            localItems.records.push(state.info.name)
-
-            localStorage.setItem("domain_history", JSON.stringify(localItems))
 
             // update local storage finished
             //
             //
+            emit('toProcessing', state.info)
         } else if (val.code == 314) {
             state.isPaymentVisiable = true
         } else if (val.code == 315) {

@@ -2,12 +2,10 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
 
-import { DomainHistory } from "../router/type";
-
 let state = reactive({ records: [] as string[] })
 
 const emit = defineEmits({
-    clickHistory(name: string) {}
+    clickHistory(name: string) { }
 })
 
 function clickHistory(name: string) {
@@ -17,10 +15,9 @@ function clickHistory(name: string) {
 onMounted(() => {
     let localString = localStorage.getItem('domain_history')
     if (localString != null) {
-        let localItems: DomainHistory = JSON.parse(localString)
-
-        if (localItems.records.length > 0) {
-            state.records = localItems.records
+        let localItems = localString.split(',');
+        if (localItems.length > 0) {
+            state.records = localItems
         }
     }
 })
@@ -32,7 +29,8 @@ onMounted(() => {
 
         <div class="name-view">NAME</div>
 
-        <div class="records-view" v-for="(item, index) in state.records" :key="index" @click="clickHistory(item)">{{ item }}</div>
+        <div class="records-view" v-for="(item, index) in state.records" :key="index" @click="clickHistory(item)">{{ item }}
+        </div>
     </div>
 </template>
 
@@ -64,5 +62,6 @@ onMounted(() => {
     font-weight: 600;
     color: #2E2F3E;
     line-height: 60px;
+    cursor: pointer;
 }
 </style>

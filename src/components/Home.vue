@@ -16,7 +16,7 @@ import RegisteriedView from "../components/Registered.vue";
 import RegisteringView from "../components/Registering.vue";
 import { ElMessage, ElLoading } from 'element-plus';
 
-let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px', history: {} as DomainHistory }) 
+let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px', history: {} as DomainHistory })
 
 // '', start, hist, order, pay, registered, registering
 
@@ -24,7 +24,7 @@ function searchAction() {
   let loadingInstance = ElLoading.service({ fullscreen: true });
 
   if (state.inputAppend != '') {
-    state.stage = '' 
+    state.stage = ''
   }
 
   if (state.input.indexOf('.') != -1) {
@@ -88,9 +88,8 @@ onMounted(() => {
 
   let localString = localStorage.getItem('domain_history')
   if (localString != null) {
-    let localItems: DomainHistory = JSON.parse(localString)
-
-    if (localItems.records.length > 0) {
+    let localItems = localString.split(',');
+    if (localItems.length > 0) {
       state.stage = 'hist'
     }
   }
@@ -111,20 +110,21 @@ onMounted(() => {
 
     <EmptyView v-if="state.stage == ''" />
 
-    <StartView v-else-if="state.stage == 'start'" :ref="state.stage"/>
+    <StartView v-else-if="state.stage == 'start'" :ref="state.stage" />
 
     <HistView v-else-if="state.stage == 'hist'" :ref="state.stage" class="hist-view" @click-history="clickHistory" />
 
     <OrderView v-else-if="state.stage == 'order'" :ref="state.stage" class="order-view" :domain-name="state.inputAppend"
       :is-available="state.isAvailable" @continue-action="orderToPayAction" />
 
-    <PayView v-else-if="state.stage == 'pay'" :ref="state.stage" class="pay-view" :gas-info="state.gasInfo" @back-action="backAction" @to-processing="toProcessing"/>
+    <PayView v-else-if="state.stage == 'pay'" :ref="state.stage" class="pay-view" :gas-info="state.gasInfo"
+      @back-action="backAction" @to-processing="toProcessing" />
 
-    <RegisteriedView v-else-if="state.stage == 'registered'" :ref="state.stage" class="registered-view" :domain-name="state.inputAppend"
-      :is-available="state.isAvailable" />
+    <RegisteriedView v-else-if="state.stage == 'registered'" :ref="state.stage" class="registered-view"
+      :domain-name="state.inputAppend" :is-available="state.isAvailable" />
 
-    <RegisteringView v-else-if="state.stage == 'registering'" :ref="state.stage" class="registering-view" :domain-name="state.inputAppend"
-      :is-available="state.isAvailable" />
+    <RegisteringView v-else-if="state.stage == 'registering'" :ref="state.stage" class="registering-view"
+      :domain-name="state.inputAppend" :is-available="state.isAvailable" />
 
   </div>
 
@@ -142,7 +142,7 @@ onMounted(() => {
 }
 
 .search-view {
-  width: 62.5%;
+  width: 1200px;
   margin: 0 auto;
   margin-top: -40px;
   position: relative;

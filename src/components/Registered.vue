@@ -18,10 +18,20 @@ let state = reactive({
     info: {} as DomainInfo
 })
 
+const oridDomain = 'https://ordinals.com/inscription/';
+
 function copyAction() {
     const toClipboard = useClipboard();
 
     toClipboard.toClipboard(state.info.owner).then((val) => {
+        ElMessage.info("copied")
+    })
+}
+
+function copyLinkAction() {
+    const toClipboard = useClipboard();
+
+    toClipboard.toClipboard(state.info.inscriptionId).then((val) => {
         ElMessage.info("copied")
     })
 }
@@ -120,9 +130,9 @@ onMounted(() => {
                         <span class="list-t-view">Inscription id</span>
                     </el-col>
                     <el-col :span="14">
-                        <a class="owner-view" href="https://baidu.com">{{ state.info.inscriptionId }}</a>
-                        <img src="../assets/icon_link@2x.png"
-                            style="width: 32px;height: 32px;cursor: pointer;vertical-align: middle;" alt="">
+                        <a :href="oridDomain + state.info.inscriptionId" target="_blank">{{ state.info.inscriptionId }}</a>
+                        <img src="../assets/icon_copy@2x.png"
+                            style="width: 32px;height: 32px;cursor: pointer;vertical-align: middle;" alt="" @click="copyLinkAction">
                     </el-col>
                 </el-row>
             </div>
@@ -165,4 +175,13 @@ onMounted(() => {
     margin-top: 25px;
     margin-bottom: 25px;
     border-bottom: 1px dashed #A7A9BE;
-}</style>
+}
+
+.list-t-view {
+    color: #2E2F3E;
+}
+
+.owner-view {
+    color: #2E2F3E;
+}
+</style>
