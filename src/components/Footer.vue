@@ -17,7 +17,7 @@ onMounted(() => {
             <el-col :span="18">
                 <div class="email-view">
                     <img src="../assets/邮箱@2x.png" style="width: 40px;height: 40px;vertical-align: middle;" alt="">
-                    contact@dmaster.com
+                    contact@btcdomains.io
                 </div>
             </el-col>
             <el-col :span="3">

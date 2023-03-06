@@ -12,7 +12,7 @@ const count = ref(0)
       </el-col>
 
       <el-col :span="2">
-        <div class="doc-link-view">Document</div>
+        <div class="doc-link-view"><a href="https://docs.btcdomains.io" style="text-decoration: none;color: white;" target="_blank">Document</a></div>
       </el-col>
     </el-row>
 
@@ -53,7 +53,7 @@ const count = ref(0)
 }
 
 .solgon-title-view {
-  margin-top: 100px;
+  margin-top: 3%;
   height: 80px;
   font-size: 84px;
   font-family: CamarRegular;

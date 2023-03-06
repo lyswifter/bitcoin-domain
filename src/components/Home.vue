@@ -73,7 +73,8 @@ onMounted(() => {
     <HeaderView class="header-view" :style="{ height: state.headerHeight }" />
 
     <div class="search-view">
-      <el-input class="input-class" v-model="state.input" placeholder="Search name or address" />
+      <el-input class="input-class" v-model="state.input" placeholder="Search name or address">
+      </el-input>
       <a class="search-a" style="text-decoration: none;" href="javascript:void(0)" @click="searchAction"> Search </a>
     </div>
 

@@ -201,7 +201,7 @@ onMounted(() => {
     border-radius: 20px;
     font-size: 16px;
     font-weight: 600;
-    color: #FFFFFF;
+    /* color: #FFFFFF; */
     line-height: 40px;
     text-align: center;
 }
@@ -256,6 +256,7 @@ onMounted(() => {
 
 .list-t-view {
     padding: 20px;
+    color: #2E2F3E;
 }
 
 .list-tip-view {
@@ -269,6 +270,7 @@ onMounted(() => {
 .owner-view {
     display: block;
     padding: 20px;
+    color: #2E2F3E;
 }
 
 .total-fee-view {
