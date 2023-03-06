@@ -13,43 +13,62 @@ const props = defineProps({
     gasInfo: {},
 })
 
+interface RowInfo {
+    title: string;
+    subTitle: string;
+    index: number;
+    link: string;
+}
+
 let state = reactive({
     info: {} as DomainInfo,
     gasInfo: {} as GasInfo,
-    pending: false,
-    loading: false,
+    loading1: false,
+    loading2: false,
+    loading3: false,
+    current: 0,
+    rowInfo: [] as RowInfo[],
 })
 
 const certainUrl = '../../src/assets/icon_processing_ok@2x.png';
 const loadingUrl = 'https://dmaster.com/dcommon/img/loading.svg';
 
 onMounted(() => {
-    state.gasInfo = props.gasInfo as GasInfo
-
-    console.log("state.info")
-    console.log(state.info)
-    console.log("state.gasinfo")
-    console.log(state.gasInfo)
-
     state.info.name = props.domainName!
     state.info.isAvailable = props.isAvailable!
 
-    service.queryConfirm(state.gasInfo.name, state.gasInfo.midAddr, state.gasInfo.years).then((val) => {
-        if (val.code == 315) {
-            state.pending = true;
-        }
+    state.rowInfo = [{
+        title: 'Fund Transfer Pending',
+        subTitle: 'This may take 20 minutes',
+        index: 1,
+        link: certainUrl,
+    },{
+        title: 'Locked the dominate',
+        subTitle: "Your domain name is locked. Don't worry about being preempted.",
+        index: 2,
+        link: certainUrl,
+    },{
+        title: 'Inscripting',
+        subTitle: 'This may take 20 minutes',
+        index: 3,
+        link: certainUrl,
+    },{
+        title: 'Inscription transfer pending',
+        subTitle: 'This may take 20 minutes',
+        index: 4,
+        link: certainUrl,
+    }]
 
-        service.queryDomain(state.gasInfo.name).then((val1) => {
-            if (val1.code == 0) {
-                state.pending = false;
-                state.loading = false
-            } else if (val1.code == 311) {
-                if (val1.data.dom_state == 3) {
-                    state.pending = false;
-                    state.loading = true
-                }
-            }
-        })
+    service.queryDomain(state.info.name).then((val1) => {
+        if (val1.code == 0) {
+            state.rowInfo.forEach(element => {
+                element.link = loadingUrl
+            });
+        } else if (val1.code == 311) {
+            state.current = val1.data.dom_state;
+
+            state.rowInfo[val1.data.dom_state-1].link = loadingUrl
+        }
     })
 })
 </script>
@@ -64,7 +83,8 @@ onMounted(() => {
 
             <el-row justify="space-between">
                 <el-col :span="3"><span class="t-name">{{ state.info.name }}</span></el-col>
-                <el-col :span="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Registering...' }}</span></el-col>
+                <el-col :span="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Registering...'
+                }}</span></el-col>
             </el-row>
         </div>
 
@@ -85,48 +105,14 @@ onMounted(() => {
 
             <div class="title-view">Mint state</div>
             <div class="process-c-view">
-
-                <!-- state 1 -->
-                <el-row justify="start" class="h-72">
+                <el-row v-for="(item, index) in state.rowInfo" :key="index" justify="start" class="h-72">
                     <el-col :span="1">
-                        <img :src="state.pending ? loadingUrl : certainUrl" style="width: 32px;height: 32px;" alt="">
+                        <img v-if="state.current != item.index" src="../assets/icon_processing_waiting@2x.png" style="width: 32px;height: 32px;" alt="">
+                        <img v-else :src="item.link" style="width: 32px;height: 32px;" alt="">
                     </el-col>
                     <el-col :span="15">
-                        <div class="s-title">Fund Transfer Pending</div>
-                        <div class="s-sub-title">This may take 20 minutes</div>
-                    </el-col>
-                </el-row>
-
-                <!-- state 2 -->
-                <el-row justify="start" class="h-72">
-                    <el-col :span="1">
-                        <img src="../assets/icon_processing_ok@2x.png" style="width: 32px;height: 32px;" alt="">
-                    </el-col>
-                    <el-col :span="15">
-                        <div class="s-title">Locked the dominate</div>
-                        <div class="s-sub-title">Your domain name is locked. Don't worry about being preempted.</div>
-                    </el-col>
-                </el-row>
-
-                <!-- state 3 -->
-                <el-row justify="start" class="h-72">
-                    <el-col :span="1">
-                        <img :src="state.loading ? loadingUrl : certainUrl" style="width: 32px;height: 32px;" alt="">
-                    </el-col>
-                    <el-col :span="15">
-                        <div class="s-title">Inscripting</div>
-                        <div class="s-sub-title">This may take 20 minutes</div>
-                    </el-col>
-                </el-row>
-
-                <!-- state 4 -->
-                <el-row justify="start" class="h-72">
-                    <el-col :span="1">
-                        <img src="../assets/icon_processing_waiting@2x.png" style="width: 32px;height: 32px;" alt="">
-                    </el-col>
-                    <el-col :span="15">
-                        <div class="s-title">Inscription Transfer Panding</div>
-                        <div class="s-sub-title">This may take 20 minutes</div>
+                        <div class="s-title">{{ item.title }}</div>
+                        <div class="s-sub-title">{{ item.subTitle }}</div>
                     </el-col>
                 </el-row>
             </div>

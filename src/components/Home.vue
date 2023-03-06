@@ -137,7 +137,7 @@ onMounted(() => {
       :domain-name="state.inputAppend" :is-available="state.isAvailable" />
 
     <RegisteringView v-else-if="state.stage == 'registering'" :ref="state.stage" class="registering-view"
-      :domain-name="state.inputAppend" :is-available="state.isAvailable" />
+      :domain-name="state.inputAppend" :is-available="state.isAvailable" :gas-info="state.gasInfo" />
 
   </div>
 
