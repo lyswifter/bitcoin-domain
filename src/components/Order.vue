@@ -24,14 +24,14 @@ let state = reactive({
 function handleChange(value: number) {
     state.inputYears = value
 
-    service.queryDomainFee(state.info.name, state.inputYears).then((val) => {
-        state.info.gasFee = val.data.gas_fee.toPrecision(4)
-        state.info.serviceFee = val.data.service_fee.toPrecision(4)
-        state.info.total = val.data.total_fee.toPrecision(4)
+    service.queryDomainFee(state.info.name, state.inputYears).then((val1) => {
+        state.info.gasFee = val1.data.gas_fee.toPrecision(4);
+        state.info.serviceFee = val1.data.service_fee.toPrecision(4);
+        state.info.total = val1.data.total_fee.toPrecision(4);
 
-        service.queryWallet(state.info.name).then((val) => {
-            service.queryBalance(val.data.wallet_id).then((val) => {
-                state.info.balance = val.data.mine.trusted > 0 ? val.data.mine.trusted : "0"
+        service.queryWallet(state.info.name).then((val2) => {
+            service.queryBalance(val2.data.wallet_id).then((val3) => {
+                state.info.balance = val3.data.mine.trusted > 0 ? val3.data.mine.trusted : 0
 
                 let x = new Decimal(state.info.total ? state.info.total : 0)
                 let y = new Decimal(state.info.balance ? state.info.balance : 0)
@@ -59,14 +59,14 @@ onMounted(() => {
     state.info.name = props.domainName!
     state.info.isAvailable = props.isAvailable!
 
-    service.queryDomainFee(state.info.name, state.inputYears).then((val) => {
-        state.info.gasFee = val.data.gas_fee.toPrecision(4);
-        state.info.serviceFee = val.data.service_fee.toPrecision(4);
-        state.info.total = val.data.total_fee.toPrecision(4);
+    service.queryDomainFee(state.info.name, state.inputYears).then((val1) => {
+        state.info.gasFee = val1.data.gas_fee.toPrecision(4);
+        state.info.serviceFee = val1.data.service_fee.toPrecision(4);
+        state.info.total = val1.data.total_fee.toPrecision(4);
 
-        service.queryWallet(state.info.name).then((val) => {
-            service.queryBalance(val.data.wallet_id).then((val) => {
-                state.info.balance = val.data.mine.trusted > 0 ? val.data.mine.trusted : "0"
+        service.queryWallet(state.info.name).then((val2) => {
+            service.queryBalance(val2.data.wallet_id).then((val3) => {
+                state.info.balance = val3.data.mine.trusted > 0 ? val3.data.mine.trusted : "0"
 
                 let x = new Decimal(state.info.total ? state.info.total : 0)
                 let y = new Decimal(state.info.balance ? state.info.balance : 0)

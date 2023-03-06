@@ -25,7 +25,7 @@ function searchAction() {
     } else if (val.code == 0) {
       state.isAvailable = false
       state.stage = 'registered'
-    } if (val.code == 311) {
+    } else if (val.code == 311) {
       state.isAvailable = false
       state.stage = 'registering'
     } else {
