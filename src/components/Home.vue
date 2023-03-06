@@ -71,6 +71,7 @@ function backAction() {
 
 function clickHistory(name: string) {
   state.input = name
+  state.inputAppend = state.input + ".btc"
   state.isAvailable = false
   state.stage = 'registered'
 }
