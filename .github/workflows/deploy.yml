@@ -1,0 +1,14 @@
+name: MyDeploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  delopy:
+    name: my first job
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+    - name: first_step
