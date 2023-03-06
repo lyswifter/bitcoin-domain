@@ -15,6 +15,7 @@ const props = defineProps({
 
 const emit = defineEmits({
     backAction() { },
+    toProcessing(info: GasInfo) {},
 })
 
 let state = reactive({
@@ -28,15 +29,13 @@ function backAction() {
 
 function copyAction() {
     const toClipboard = useClipboard();
-
-    toClipboard.toClipboard(state.info.addr).then((val) => {
+    toClipboard.toClipboard(state.info.midAddr).then((val) => {
         ElMessage.info("copied")
     })
 }
 
 function conformAction() {
     service.queryConfirm(state.info.name, state.info.addr, state.info.years).then((val) => {
-        console.log(val)
         if (val.code == 0) {
             ElMessage.info("I have transfered!");
 
@@ -55,6 +54,8 @@ function conformAction() {
             //
         } else if (val.code == 314) {
             state.isPaymentVisiable = true
+        } else if (val.code == 315) {
+            emit('toProcessing', state.info)
         }
     })
 }
@@ -104,7 +105,7 @@ onMounted(() => {
                 <vue-qrcode :value="state.info.midAddr" :options="{ width: 200 }"></vue-qrcode>
 
                 <el-row justify="center">
-                    <el-col :span="6">
+                    <el-col :span="7">
                         <div class="fee-tip-view">Transfer to the specified wallet address</div>
                         <div style="width: 338px;color: #2E2F3E;margin: 0 auto;word-wrap: break-word;text-align: left;">{{
                             state.info.midAddr }} </div>

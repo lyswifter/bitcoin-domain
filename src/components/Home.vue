@@ -15,7 +15,9 @@ import RegisteriedView from "../components/Registered.vue";
 import RegisteringView from "../components/Registering.vue";
 import { ElMessage } from 'element-plus';
 
-let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px', history: {} as DomainHistory }) // start, hist, order, pay, registered, registering
+let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px', history: {} as DomainHistory }) 
+
+// start, hist, order, pay, registered, registering
 
 function searchAction() {
   if (state.input.indexOf('.') != -1) {
@@ -64,6 +66,12 @@ function clickHistory(name: string) {
   state.stage = 'registered'
 }
 
+function toProcessing(info: GasInfo) {
+  state.stage = 'registering';
+  state.isAvailable = false;
+  state.gasInfo = info;
+}
+
 onMounted(() => {
   let width = window.outerWidth
   let hei = width * 776 / 3840;
@@ -99,7 +107,7 @@ onMounted(() => {
     <OrderView v-else-if="state.stage == 'order'" class="order-view" :domain-name="state.inputAppend"
       :is-available="state.isAvailable" @continue-action="orderToPayAction" />
 
-    <PayView v-else-if="state.stage == 'pay'" class="pay-view" :gas-info="state.gasInfo" @back-action="backAction" />
+    <PayView v-else-if="state.stage == 'pay'" class="pay-view" :gas-info="state.gasInfo" @back-action="backAction" @to-processing="toProcessing"/>
 
     <RegisteriedView v-else-if="state.stage == 'registered'" class="registered-view" :domain-name="state.inputAppend"
       :is-available="state.isAvailable" />

@@ -3,21 +3,54 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
 
 import { DomainInfo } from "../router/type";
-
 import service from "../router/service";
+
+import { GasInfo } from "../router/type";
 
 const props = defineProps({
     domainName: String,
     isAvailable: Boolean,
+    gasInfo: {},
 })
 
 let state = reactive({
-    info: {} as DomainInfo
+    info: {} as DomainInfo,
+    gasInfo: {} as GasInfo,
+    pending: false,
+    loading: false,
 })
 
+const certainUrl = '../../src/assets/icon_processing_ok@2x.png';
+const loadingUrl = 'https://dmaster.com/dcommon/img/loading.svg';
+
 onMounted(() => {
+    state.gasInfo = props.gasInfo as GasInfo
+
+    console.log("state.info")
+    console.log(state.info)
+    console.log("state.gasinfo")
+    console.log(state.gasInfo)
+
     state.info.name = props.domainName!
     state.info.isAvailable = props.isAvailable!
+
+    service.queryConfirm(state.gasInfo.name, state.gasInfo.midAddr, state.gasInfo.years).then((val) => {
+        if (val.code == 315) {
+            state.pending = true;
+        }
+
+        service.queryDomain(state.gasInfo.name).then((val1) => {
+            if (val1.code == 0) {
+                state.pending = false;
+                state.loading = false
+            } else if (val1.code == 311) {
+                if (val1.data.dom_state == 3) {
+                    state.pending = false;
+                    state.loading = true
+                }
+            }
+        })
+    })
 })
 </script>
 
@@ -56,7 +89,7 @@ onMounted(() => {
                 <!-- state 1 -->
                 <el-row justify="start" class="h-72">
                     <el-col :span="1">
-                        <img src="../assets/icon_processing_ok@2x.png" style="width: 32px;height: 32px;" alt="">
+                        <img :src="state.pending ? loadingUrl : certainUrl" style="width: 32px;height: 32px;" alt="">
                     </el-col>
                     <el-col :span="15">
                         <div class="s-title">Fund Transfer Pending</div>
@@ -78,7 +111,7 @@ onMounted(() => {
                 <!-- state 3 -->
                 <el-row justify="start" class="h-72">
                     <el-col :span="1">
-                        <img src="https://dmaster.com/dcommon/img/loading.svg" style="width: 32px;height: 32px;" alt="">
+                        <img :src="state.loading ? loadingUrl : certainUrl" style="width: 32px;height: 32px;" alt="">
                     </el-col>
                     <el-col :span="15">
                         <div class="s-title">Inscripting</div>
