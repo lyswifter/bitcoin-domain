@@ -6,18 +6,18 @@ const count = ref(0)
 
 <template>
   <div class="container">
-    <el-row justify="start">
+    <el-row justify="space-between">
       <el-col :span="2">
-        <div class="logo-view">BTCDOMAIN</div>
+        <img class="logo-view" src="../assets/logo_nav@2x.png" style="width: 158px;height: 30px;" alt="">
       </el-col>
 
-      <el-col :span="22">
-        <div>Doc</div>
+      <el-col :span="2">
+        <div class="doc-link-view">Document</div>
       </el-col>
     </el-row>
 
     <div class="slogon-view">
-      <div class="solgon-title-view">btcdomain</div>
+      <img class="solgon-title-view" src="../assets/logo@2x.png" style="width: 488px;height: 80px;"  alt="">
       <div class="solgon-content-view">Search domain name or Register your domain name</div>
     </div>
   </div>
@@ -30,11 +30,21 @@ const count = ref(0)
   background-size: contain;
 }
 
-.container img {
-  margin-top: 29px;
+.logo-view {
+  margin-top: 10px;
 }
 
-.logo-view {}
+.doc-link-view {
+  height: 30px;
+  border-radius: 15px;
+  border-color: #D8D8D8;
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 30px;
+  cursor: pointer;
+  margin-top: 10px;
+}
 
 .slogon-view {
   margin: 0 auto;
@@ -43,7 +53,7 @@ const count = ref(0)
 }
 
 .solgon-title-view {
-  margin-top: 80px;
+  margin-top: 100px;
   height: 80px;
   font-size: 84px;
   font-family: CamarRegular;

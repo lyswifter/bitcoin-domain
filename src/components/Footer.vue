@@ -21,9 +21,7 @@ onMounted(() => {
                 </div>
             </el-col>
             <el-col :span="3">
-                <div class="block-logo-view">
-                    btcdomain
-                </div>
+                <img class="block-logo-view" src="../assets/logo_footer@2x.png" style="width: 158px;height: 30px;" alt="">
             </el-col>
         </el-row>
     </div>
@@ -46,10 +44,6 @@ onMounted(() => {
 }
 
 .block-logo-view {
-    height: 100px;
-    font-size: 24px;
-    font-family: CamarRegular;
-    color: #2E2F3E;
-    line-height: 100px;
+    margin-top: 30px;
 }
 </style>

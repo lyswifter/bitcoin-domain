@@ -9,10 +9,10 @@ import FooterView from "../components/Footer.vue";
 import HistView from "../components/History.vue";
 import OrderView from "../components/Order.vue";
 import PayView from "../components/Pay.vue";
+import StartView from "../components/Start.vue";
 
 import RegisteriedView from "../components/Registered.vue";
 import RegisteringView from "../components/Registering.vue";
-import { number } from 'mathjs';
 
 let state = reactive({ isAvailable: false, input: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px' }) // start, hist, order, pay, registered, registering
 
@@ -58,7 +58,9 @@ onMounted(() => {
       <a class="search-a" style="text-decoration: none;" href="javascript:void(0)" @click="searchAction"> Search </a>
     </div>
 
-    <HistView v-if="state.stage == 'hist'" class="hist-view" />
+    <StartView v-if="state.stage == 'start'" />
+
+    <HistView v-else-if="state.stage == 'hist'" class="hist-view" />
 
     <OrderView v-else-if="state.stage == 'order'" class="order-view" :domain-name="state.input"
       :is-available="state.isAvailable" @continue-action="orderToPayAction" />
@@ -86,7 +88,7 @@ onMounted(() => {
 }
 
 .search-view {
-  width: 1200px;
+  width: 62.5%;
   margin: 0 auto;
   margin-top: -40px;
   position: relative;

@@ -5,6 +5,8 @@ import { ElMessage } from "element-plus";
 import service from "../router/service";
 import { GasInfo } from "../router/type";
 
+import useClipboard from "vue-clipboard3";
+
 const props = defineProps({
   domainName: String,
   isAvailable: Boolean,
@@ -25,7 +27,11 @@ function backAction() {
 }
 
 function copyAction() {
-    console.log("copyAction action")
+    const toClipboard = useClipboard();
+
+    toClipboard.toClipboard(state.info.addr).then((val) => {
+        ElMessage.info("copied")
+    })
 }
 
 function conformAction() {
