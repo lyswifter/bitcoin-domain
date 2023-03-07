@@ -14,11 +14,19 @@ onMounted(() => {
 <template>
     <div class="footer-container">
         <el-row justify="end">
-            <el-col :span="18">
+            <el-col :span="10">
                 <div class="email-view">
                     <img src="../assets/邮箱@2x.png" style="width: 40px;height: 40px;vertical-align: middle;" alt="">
                     contact@btcdomains.io
                 </div>
+            </el-col>
+            <el-col :span="8">
+                <a href="http://twitter.com/btcdomain_btc">
+                    <img src="../assets/twitter.svg" style="width: 32px;height: 32px;margin-top: 30px;" alt="">
+                </a>
+                <a href="http://medium.com/@btcdomain">
+                    <img src="../assets/medium.png" style="width: 32px;height: 32px;margin-top: 30px;margin-left: 10px;" alt="">
+                </a>
             </el-col>
             <el-col :span="3">
                 <img class="block-logo-view" src="../assets/logo_footer@2x.png" style="width: 158px;height: 30px;" alt="">
