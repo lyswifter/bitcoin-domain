@@ -130,7 +130,7 @@ onMounted(() => {
             </div>
 
             <!-- STEP 2 -->
-            <div class="step-title-view">STEP 2: Regist fee</div>
+            <div class="step-title-view">STEP 2: Register fee</div>
             <div style="width: 1120px;margin: 0 auto;">
                 <div class="step-desc-view">Registration Period (In years)</div>
 
@@ -157,8 +157,9 @@ onMounted(() => {
                     </el-row>
 
                     <el-row justify="space-between">
-                        <el-col :span="4">
-                            <div class="list-t-view">Current Balance</div>
+                        <el-col :span="15">
+                            <div class="list-t-view" style="padding-bottom: 0px;">Current Balance</div>
+                            <div class="list-tip-view" style="padding-left: 20px;">Please do not send us more BTC than the displayed amount. If you accidentally send a larger amount, submit a request for a refund by email.</div>
                         </el-col>
                         <el-col :span="5">
                             <div class="owner-view">{{ state.info.balance + " BTC" }}</div>
@@ -211,6 +212,7 @@ onMounted(() => {
 .detail-view {
     height: 40px;
     background: #4540D6;
+    color: white;
     border-radius: 20px;
     font-size: 16px;
     font-weight: 600;
