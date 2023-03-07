@@ -2,10 +2,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
 
-import { DomainInfo } from "../router/type";
+import { DomainInfo, GasInfo } from "../router/type";
 import service from "../router/service";
-
-import { GasInfo } from "../router/type";
 
 const props = defineProps({
     domainName: String,
@@ -23,13 +21,11 @@ interface RowInfo {
 let state = reactive({
     info: {} as DomainInfo,
     gasInfo: {} as GasInfo,
-    loading1: false,
-    loading2: false,
-    loading3: false,
     current: 0,
     rowInfo: [] as RowInfo[],
 })
 
+const waitingUrl = '../../src/assets/icon_processing_waiting@2x.png';
 const certainUrl = '../../src/assets/icon_processing_ok@2x.png';
 const loadingUrl = 'https://dmaster.com/dcommon/img/loading.svg';
 
@@ -41,33 +37,42 @@ onMounted(() => {
         title: 'Fund Transfer Pending',
         subTitle: 'This may take 20 minutes',
         index: 1,
-        link: certainUrl,
+        link: waitingUrl,
     },{
         title: 'Locked the dominate',
         subTitle: "Your domain name is locked. Don't worry about being preempted.",
         index: 2,
-        link: certainUrl,
+        link: waitingUrl,
     },{
         title: 'Inscripting',
         subTitle: 'This may take 20 minutes',
         index: 3,
-        link: certainUrl,
+        link: waitingUrl,
     },{
         title: 'Inscription transfer pending',
         subTitle: 'This may take 20 minutes',
         index: 4,
-        link: certainUrl,
-    }]
+        link: waitingUrl,
+    }];
 
     service.queryDomain(state.info.name).then((val1) => {
         if (val1.code == 0) {
             state.rowInfo.forEach(element => {
-                element.link = loadingUrl
+                element.link = certainUrl
             });
         } else if (val1.code == 311) {
             state.current = val1.data.dom_state;
 
-            state.rowInfo[val1.data.dom_state-1].link = loadingUrl
+            for (let i = 0; i < state.rowInfo.length; i++) {
+                var element = state.rowInfo[i];
+                if (i < state.current-1) {
+                   element.link = certainUrl
+                } else if (i == state.current-1) {
+                    element.link = loadingUrl
+                } else if (i > state.current-1) {
+                    element.link = waitingUrl
+                }
+            }
         }
     })
 })
@@ -107,8 +112,7 @@ onMounted(() => {
             <div class="process-c-view">
                 <el-row v-for="(item, index) in state.rowInfo" :key="index" justify="start" class="h-72">
                     <el-col :span="1">
-                        <img v-if="state.current != item.index" src="../assets/icon_processing_waiting@2x.png" style="width: 32px;height: 32px;" alt="">
-                        <img v-else :src="item.link" style="width: 32px;height: 32px;" alt="">
+                        <img :src="item.link" style="width: 32px;height: 32px;" alt="">
                     </el-col>
                     <el-col :span="15">
                         <div class="s-title">{{ item.title }}</div>
