@@ -20,12 +20,15 @@ onMounted(() => {
                     contact@btcdomains.io
                 </div>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="10">
                 <a href="http://twitter.com/btcdomain_btc" target="_blank">
-                    <img src="../assets/twitter.svg" style="width: 32px;height: 32px;margin-top: 30px;" alt="">
+                    <img src="../assets/twitter@2x.png" style="width: 32px;height: 32px;margin-top: 30px;" alt="">
                 </a>
                 <a href="http://medium.com/@btcdomain" target="_blank">
-                    <img src="../assets/medium.png" style="width: 32px;height: 32px;margin-top: 30px;margin-left: 10px;" alt="">
+                    <img src="../assets/medium@2x.png" style="width: 32px;height: 32px;margin-top: 30px;margin-left: 10px;" alt="">
+                </a>
+                <a href="" target="_blank">
+                    <img src="../assets/github@2x.png" style="width: 32px;height: 32px;margin-top: 30px;margin-left: 10px;" alt="">
                 </a>
             </el-col>
             <el-col :span="3">
