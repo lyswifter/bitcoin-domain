@@ -21,10 +21,10 @@ onMounted(() => {
                 </div>
             </el-col>
             <el-col :span="8">
-                <a href="http://twitter.com/btcdomain_btc">
+                <a href="http://twitter.com/btcdomain_btc" target="_blank">
                     <img src="../assets/twitter.svg" style="width: 32px;height: 32px;margin-top: 30px;" alt="">
                 </a>
-                <a href="http://medium.com/@btcdomain">
+                <a href="http://medium.com/@btcdomain" target="_blank">
                     <img src="../assets/medium.png" style="width: 32px;height: 32px;margin-top: 30px;margin-left: 10px;" alt="">
                 </a>
             </el-col>
