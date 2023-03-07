@@ -5,6 +5,8 @@ import { ElMessage } from "element-plus";
 import { DomainInfo, GasInfo } from "../router/type";
 import service from "../router/service";
 
+import { domain } from "../router/domain";
+
 const props = defineProps({
     domainName: String,
     isAvailable: Boolean,
@@ -25,8 +27,8 @@ let state = reactive({
     rowInfo: [] as RowInfo[],
 })
 
-const waitingUrl = '../../src/assets/icon_processing_waiting@2x.png';
-const certainUrl = '../../src/assets/icon_processing_ok@2x.png';
+const waitingUrl = domain.domainImageUrl + 'icon_processing_waiting@2x.png';
+const certainUrl = domain.domainImageUrl + 'icon_processing_ok@2x.png';
 const loadingUrl = 'https://dmaster.com/dcommon/img/loading.svg';
 
 onMounted(() => {
