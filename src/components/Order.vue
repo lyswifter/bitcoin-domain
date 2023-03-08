@@ -29,11 +29,11 @@ let state = reactive({
         years: 1,
     } as GasInfo,
     inputYears: 1,
+    isAddrVisiable: false,
 })
 
 function handleChange(value: number) {
     state.inputYears = value
-
     queryAction()
 }
 
@@ -44,13 +44,21 @@ function continueAction() {
     }
 
     if (state.info.addr.indexOf(" ") != -1) {
-        ElMessage.error("Receive address format is ont correct")
+        ElMessage.error("Receive address format is not correct")
         return
     }
 
-    state.info.years = state.inputYears
-
-    emit('continueAction', state.info)
+    if (state.info.addr.indexOf('bc1p') != -1) {
+        if (state.info.addr.length == 62) {
+            state.info.years = state.inputYears
+            emit('continueAction', state.info)
+        } else {
+            ElMessage.error("Check the length of your Ordinals address");
+            return
+        }
+    } else {
+        state.isAddrVisiable = true
+    }
 }
 
 function queryAction() {
@@ -105,6 +113,18 @@ onMounted(() => {
 
     queryAction()
 })
+
+function cancelAction() {
+    state.isAddrVisiable = false
+}
+
+function confirmAction() {
+    state.isAddrVisiable = false
+
+    state.info.years = state.inputYears
+
+    emit('continueAction', state.info)
+}
 </script>
 
 <template>
@@ -139,9 +159,10 @@ onMounted(() => {
             <!-- STEP 1 -->
             <div class="step-title-view">STEP 1: Receive address</div>
             <div style="width: 1120px;margin: 0 auto;">
-                <div class="step-desc-view">Type your address to receive the nft here:</div>
+                <div class="step-desc-view">Type your address to receive nft here (Note: this is an <a
+                        href="https://ordinals.com" target="_blank">Ordinals</a> address)</div>
                 <el-input class="addr-input-view" v-model="state.info.addr"
-                    placeholder="Type your address to receive the nft here" clearable="true" size="large" />
+                    placeholder="Type your address to receive the nft here, like: bc1p..." clearable="true" size="large" />
             </div>
 
             <!-- STEP 2 -->
@@ -203,6 +224,24 @@ onMounted(() => {
             </div>
 
         </div>
+
+        <el-dialog v-model="state.isAddrVisiable" :show-close="true" align-center="true" :width="440">
+            <div style="text-align: center;">
+                <div style="font-size: 18px;font-weight: 600;color: #A7A9BE;line-height: 25px;text-align: left;">This seems
+                    not an Ordinals NFT address, do you want to continue?</div>
+                <br>
+                <el-row gutter="20">
+                    <el-col :span="12">
+                        <div style="height: 49px;background: white;border-radius: 8px;border: 1px solid blueviolet; font-size: 16px;font-weight: 600;color: blueviolet;line-height: 50px;text-align: center;cursor: pointer;"
+                            @click="cancelAction">Cancel</div>
+                    </el-col>
+                    <el-col :span="12">
+                        <div style="height: 50px;background: #2E2F3E;border-radius: 8px;font-size: 16px;border: 1px solid #2E2F3E;font-weight: 600;color: white;line-height: 50px;text-align: center;cursor: pointer;"
+                            @click="confirmAction">OK</div>
+                    </el-col>
+                </el-row>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
