@@ -8,6 +8,10 @@ const emit = defineEmits({
 })
 
 function clickHistory(name: string) {
+    if (name.indexOf('.btc') != -1) {
+        name = name.substring(0, name.length-4)    
+    }
+
     emit('clickHistory', name)
 }
 
