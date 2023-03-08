@@ -39,6 +39,11 @@ function handleChange(value: number) {
         state.info.serviceFee = val1.data.service_fee.toPrecision(4);
         state.info.total = val1.data.total_fee.toPrecision(4);
 
+        let o = new Decimal(state.info.gasFee);
+        let y = new Decimal('0.0001');
+        let t = Decimal.add(o, y);
+        state.info.gasFee = t.toString();
+
         service.queryWallet(state.info.name).then((val2) => {
             service.queryBalance(val2.data.wallet_id).then((val3) => {
                 state.info.balance = val3.data.mine.trusted > 0 ? val3.data.mine.trusted : 0
@@ -78,6 +83,11 @@ onMounted(() => {
         state.info.gasFee = val1.data.gas_fee.toPrecision(4);
         state.info.serviceFee = val1.data.service_fee.toPrecision(4);
         state.info.total = val1.data.total_fee.toPrecision(4);
+
+        let o = new Decimal(state.info.gasFee);
+        let y = new Decimal('0.0001');
+        let t = Decimal.add(o, y);
+        state.info.gasFee = t.toString();
 
         service.queryWallet(state.info.name).then((val2) => {
             state.info.midAddr = val2.data.receive_address;
