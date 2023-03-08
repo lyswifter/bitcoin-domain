@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
+import { onMounted, reactive } from 'vue';
 
 import service from "../router/service";
 import { GasInfo } from "../router/type";
@@ -57,6 +57,11 @@ function handleChange(value: number) {
 function continueAction() {
     if (!state.info.addr) {
         ElMessage.error("Receive address must not be empty")
+        return
+    }
+
+    if (state.info.addr.indexOf(" ") != -1) {
+        ElMessage.error("Receive address format is ont correct")
         return
     }
 
