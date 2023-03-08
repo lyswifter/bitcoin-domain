@@ -1,5 +1,5 @@
-import { Apis } from "./domain";
 import axios from "axios";
+import { Apis } from "./domain";
 
 import { ElMessage } from "element-plus";
 
@@ -54,12 +54,14 @@ export default {
             return
         }
     },
-    async queryConfirm(domain: string, wallet: string, year: number) {
+    async queryConfirm(domain: string, wallet: string, year: number, walletId: string) {
         // queryConfirm
+        //
         let ret = await axios.post(Apis.queryConfirm, {
             'domain': domain,
             'out_wallet': wallet,
             'expire_year': year,
+            'wallet_id': walletId,
         })
 
         if (ret.status == 200) {

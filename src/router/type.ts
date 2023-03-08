@@ -3,6 +3,7 @@ export interface GasInfo {
     isAvailable: boolean;
     addr: string;
     midAddr: string;
+    walletId: string;
     gasFee: string;
     serviceFee: string;
     balance: string;

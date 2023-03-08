@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
+import { onMounted, reactive } from 'vue';
 
 import service from "../router/service";
-import { GasInfo, DomainHistory } from "../router/type";
+import { GasInfo } from "../router/type";
 
 import useClipboard from "vue-clipboard3";
 
@@ -37,7 +37,7 @@ function copyAction() {
 }
 
 function conformAction() {
-    service.queryConfirm(state.info.name, state.info.addr, state.info.years).then((val) => {
+    service.queryConfirm(state.info.name, state.info.addr, state.info.years, state.info.walletId).then((val) => {
         if (val.code == 0) {
             ElMessage.info("I have transfered!");
 

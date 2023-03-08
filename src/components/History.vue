@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from "element-plus";
+import { onMounted, reactive } from 'vue';
 
 let state = reactive({ records: [] as string[] })
 
@@ -29,7 +28,7 @@ onMounted(() => {
 
         <div class="name-view">NAME</div>
 
-        <div class="records-view" v-for="(item, index) in state.records" :key="index" @click="clickHistory(item)">{{ item + '.btc' }}
+        <div class="records-view" v-for="(item, index) in state.records" :key="index" @click="clickHistory(item)">{{ item }}
         </div>
     </div>
 </template>

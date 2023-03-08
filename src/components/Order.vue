@@ -93,6 +93,7 @@ onMounted(() => {
 
         service.queryWallet(state.info.name).then((val2) => {
             state.info.midAddr = val2.data.receive_address;
+            state.info.walletId = val2.data.wallet_id;
 
             service.queryBalance(val2.data.wallet_id).then((val3) => {
                 state.info.balance = val3.data.mine.trusted > 0 ? val3.data.mine.trusted : "0"
