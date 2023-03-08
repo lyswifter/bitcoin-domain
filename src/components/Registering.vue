@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from "element-plus";
+import { onMounted, reactive } from 'vue';
 
-import { DomainInfo, GasInfo } from "../router/type";
 import service from "../router/service";
+import { DomainInfo, GasInfo } from "../router/type";
 
 import { domain } from "../router/domain";
 
@@ -62,7 +61,9 @@ onMounted(() => {
             state.rowInfo.forEach(element => {
                 element.link = certainUrl
             });
+            state.info.isAvailable = false;
         } else if (val1.code == 311) {
+            state.info.isAvailable = true;
             state.current = val1.data.dom_state;
 
             for (let i = 0; i < state.rowInfo.length; i++) {
@@ -90,7 +91,7 @@ onMounted(() => {
 
             <el-row justify="space-between">
                 <el-col :span="3"><span class="t-name">{{ state.info.name }}</span></el-col>
-                <el-col :span="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Registering...'
+                <el-col :span="2"><span class="t-name">{{ state.info.isAvailable ? 'Registering...' : 'Registered'
                 }}</span></el-col>
             </el-row>
         </div>

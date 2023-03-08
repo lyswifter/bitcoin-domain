@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
+import { onMounted, reactive } from 'vue';
 
-import { DomainInfo } from "../router/type";
 import service from "../router/service";
+import { DomainInfo } from "../router/type";
 
 import useClipboard from "vue-clipboard3";
 
