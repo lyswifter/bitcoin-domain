@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, toRefs, onUnmounted } from 'vue'
 
+import { pageview, event } from "vue-gtag";
+
 import service from "../router/service";
 import { DomainHistory, GasInfo } from "../router/type";
 
@@ -54,22 +56,32 @@ function searchAction() {
 
   state.inputAppend = state.input + ".btc"
 
+  event('serach', { method: 'Google' })
+
   service.queryDomain(state.inputAppend).then((val) => {
     loadingInstance.close()
 
-    if (val.code == 310) { // able to register
-      state.isAvailable = true
-      state.stage = 'order'
-    } else if (val.code == 0) {
-      state.isAvailable = false
-      state.stage = 'registered'
-    } else if (val.code == 311) {
-      state.isAvailable = false
-      state.stage = 'registering'
-    } else {
-      ElMessage.error(val.data)
-      return
+    switch (val.code) {
+      case 0:
+        state.isAvailable = false
+        state.stage = 'registered'
+        break
+        
+      case 310:
+        state.isAvailable = true
+        state.stage = 'order'
+        break;
+
+      case 311:
+        state.isAvailable = false
+        state.stage = 'registering'
+        break
+
+      default:
+        ElMessage.error(val.data)
+        break;
     }
+
   })
 }
 
@@ -96,6 +108,8 @@ function toProcessing(info: GasInfo) {
 }
 
 onMounted(() => {
+  pageview({ page_path: '/home' })
+
   let width = window.outerWidth
   let hei = width * 776 / 3840;
   state.headerHeight = hei + 'px'
@@ -117,7 +131,8 @@ onMounted(() => {
     <HeaderView class="header-view" :style="{ height: state.headerHeight }" />
 
     <div class="search-view">
-      <el-input class="input-class" v-model="state.input" placeholder="Search name or address" maxlength="32" minlength="4" @keyup.enter.native="searchAction" />
+      <el-input class="input-class" v-model="state.input" placeholder="Search name or address" maxlength="32"
+        minlength="4" @keyup.enter.native="searchAction" />
       <a class="search-a" style="text-decoration: none;" href="javascript:void(0)" @click="searchAction"> Search </a>
     </div>
 

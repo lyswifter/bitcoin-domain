@@ -7,6 +7,8 @@ import { GasInfo, DomainHistory } from "../router/type";
 
 import useClipboard from "vue-clipboard3";
 
+import { event } from "vue-gtag";
+
 const props = defineProps({
     domainName: String,
     isAvailable: Boolean,
@@ -49,6 +51,8 @@ function conformAction() {
             // update local storage finished
             //
             //
+            event('payment', { method: 'Google' })
+
             emit('toProcessing', state.info)
         } else if (val.code == 314) {
             state.isPaymentVisiable = true
