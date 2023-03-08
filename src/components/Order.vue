@@ -37,7 +37,6 @@ function handleChange(value: number) {
     service.queryDomainFee(state.info.name, state.inputYears).then((val1) => {
         state.info.gasFee = val1.data.gas_fee.toPrecision(4);
         state.info.serviceFee = val1.data.service_fee.toPrecision(4);
-        state.info.total = val1.data.total_fee.toPrecision(4);
 
         let o = new Decimal(state.info.gasFee);
         let y = new Decimal('0.0001');
