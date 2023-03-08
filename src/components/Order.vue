@@ -41,8 +41,11 @@ function handleChange(value: number) {
 
         let o = new Decimal(state.info.gasFee);
         let y = new Decimal('0.0001');
-        let t = Decimal.add(o, y);
-        state.info.gasFee = t.toString();
+        let g_fee = Decimal.add(o, y);
+        let s_fee = new Decimal(state.info.serviceFee)
+
+        state.info.gasFee = g_fee.toString();
+        state.info.total = Decimal.add(g_fee, s_fee).toString();
 
         service.queryWallet(state.info.name).then((val2) => {
             service.queryBalance(val2.data.wallet_id).then((val3) => {
@@ -51,9 +54,7 @@ function handleChange(value: number) {
                 let x = new Decimal(state.info.total ? state.info.total : 0)
                 let y = new Decimal(state.info.balance ? state.info.balance : 0)
                 let z = Decimal.sub(x, y);
-
                 state.info.total = z.toString();
-                console.log(state.info)
             })
         })
     })
@@ -82,12 +83,14 @@ onMounted(() => {
     service.queryDomainFee(state.info.name, state.inputYears).then((val1) => {
         state.info.gasFee = val1.data.gas_fee.toPrecision(4);
         state.info.serviceFee = val1.data.service_fee.toPrecision(4);
-        state.info.total = val1.data.total_fee.toPrecision(4);
 
         let o = new Decimal(state.info.gasFee);
         let y = new Decimal('0.0001');
-        let t = Decimal.add(o, y);
-        state.info.gasFee = t.toString();
+        let g_fee = Decimal.add(o, y);
+        let s_fee = new Decimal(state.info.serviceFee)
+
+        state.info.gasFee = g_fee.toString();
+        state.info.total = Decimal.add(g_fee, s_fee).toString();
 
         service.queryWallet(state.info.name).then((val2) => {
             state.info.midAddr = val2.data.receive_address;
@@ -98,9 +101,7 @@ onMounted(() => {
                 let x = new Decimal(state.info.total ? state.info.total : 0)
                 let y = new Decimal(state.info.balance ? state.info.balance : 0)
                 let z = Decimal.sub(x, y);
-
                 state.info.total = z.toString();
-                console.log(state.info)
             })
         })
     })
