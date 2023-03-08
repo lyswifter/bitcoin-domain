@@ -34,29 +34,7 @@ let state = reactive({
 function handleChange(value: number) {
     state.inputYears = value
 
-    service.queryDomainFee(state.info.name, state.inputYears).then((val1) => {
-        state.info.gasFee = val1.data.gas_fee.toPrecision(4);
-        state.info.serviceFee = val1.data.service_fee.toPrecision(4);
-
-        let o = new Decimal(state.info.gasFee);
-        let y = new Decimal('0.0001');
-        let g_fee = Decimal.add(o, y);
-        let s_fee = new Decimal(state.info.serviceFee)
-
-        state.info.gasFee = g_fee.toString();
-        state.info.total = Decimal.add(g_fee, s_fee).toString();
-
-        service.queryWallet(state.info.name).then((val2) => {
-            service.queryBalance(val2.data.wallet_id).then((val3) => {
-                state.info.balance = val3.data.mine.trusted > 0 ? val3.data.mine.trusted : 0
-
-                let x = new Decimal(state.info.total ? state.info.total : 0)
-                let y = new Decimal(state.info.balance ? state.info.balance : 0)
-                let z = Decimal.sub(x, y);
-                state.info.total = z.toString();
-            })
-        })
-    })
+    queryAction()
 }
 
 function continueAction() {
@@ -75,10 +53,7 @@ function continueAction() {
     emit('continueAction', state.info)
 }
 
-onMounted(() => {
-    state.info.name = props.domainName!
-    state.info.isAvailable = props.isAvailable!
-
+function queryAction() {
     service.queryDomainFee(state.info.name, state.inputYears).then((val1) => {
         state.info.gasFee = val1.data.gas_fee.toPrecision(4);
         state.info.serviceFee = val1.data.service_fee.toPrecision(4);
@@ -91,20 +66,44 @@ onMounted(() => {
         state.info.gasFee = g_fee.toString();
         state.info.total = Decimal.add(g_fee, s_fee).toString();
 
-        service.queryWallet(state.info.name).then((val2) => {
-            state.info.midAddr = val2.data.receive_address;
-            state.info.walletId = val2.data.wallet_id;
+        let localWalletStr = localStorage.getItem(state.info.name);
 
-            service.queryBalance(val2.data.wallet_id).then((val3) => {
-                state.info.balance = val3.data.mine.trusted > 0 ? val3.data.mine.trusted : "0"
+        if (!localWalletStr) {
+            service.queryWallet(state.info.name).then((val2) => {
+                state.info.midAddr = val2.data.receive_address;
+                state.info.walletId = val2.data.wallet_id;
 
-                let x = new Decimal(state.info.total ? state.info.total : 0)
-                let y = new Decimal(state.info.balance ? state.info.balance : 0)
-                let z = Decimal.sub(x, y);
-                state.info.total = z.toString();
+                localStorage.setItem(state.info.name, JSON.stringify(val2.data));
+
+                queryBal(val2.data.wallet_id)
             })
-        })
+        } else {
+            let localWallet = JSON.parse(localWalletStr);
+
+            state.info.midAddr = localWallet.receive_address;
+            state.info.walletId = localWallet.wallet_id;
+
+            queryBal(localWallet.wallet_id)
+        }
     })
+}
+
+function queryBal(walletId: string) {
+    service.queryBalance(walletId).then((val3) => {
+        state.info.balance = val3.data.mine.trusted > 0 ? val3.data.mine.trusted : "0"
+
+        let x = new Decimal(state.info.total ? state.info.total : 0)
+        let y = new Decimal(state.info.balance ? state.info.balance : 0)
+        let z = Decimal.sub(x, y);
+        state.info.total = z.toString();
+    })
+}
+
+onMounted(() => {
+    state.info.name = props.domainName!
+    state.info.isAvailable = props.isAvailable!
+
+    queryAction()
 })
 </script>
 
@@ -175,7 +174,9 @@ onMounted(() => {
                     <el-row justify="space-between">
                         <el-col :span="15">
                             <div class="list-t-view" style="padding-bottom: 0px;">Current Balance</div>
-                            <div class="list-tip-view" style="padding-left: 20px;">Please do not send us more BTC than the displayed amount. If you accidentally send a larger amount, submit a request for a refund by email.</div>
+                            <div class="list-tip-view" style="padding-left: 20px;">Please do not send us more BTC than the
+                                displayed amount. If you accidentally send a larger amount, submit a request for a refund by
+                                email.</div>
                         </el-col>
                         <el-col :span="5">
                             <div class="owner-view">{{ state.info.balance + " BTC" }}</div>
