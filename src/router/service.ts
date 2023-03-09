@@ -70,5 +70,21 @@ export default {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
         }
+    },
+    async lockFee(domain: string, year: number, walletId: string) {
+        // lockFee
+        //
+        let ret = await axios.post(Apis.lockFee, {
+            'domain': domain,
+            'expire_year': year,
+            'wallet_id': walletId,
+        })
+
+        if (ret.status == 200) {
+            return ret.data   
+        } else {
+            ElMessage.error("Bad request[code=" + ret.status + "]")
+            return
+        }
     }
 }

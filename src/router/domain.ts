@@ -11,4 +11,7 @@ export let Apis = {
     queryWallet: domain.domainUrl + '/api/queryWallet',
     queryBalance: domain.domainUrl + '/api/queryBalance',
     queryConfirm: domain.domainUrl + '/api/confirm',
+
+    lockFee: domain.domainUrl + '/api/lockFee',
+    leavePage: domain.domainUrl + '/api/leavePage',
 }

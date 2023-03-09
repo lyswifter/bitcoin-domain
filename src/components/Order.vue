@@ -6,6 +6,7 @@ import service from "../router/service";
 import { GasInfo } from "../router/type";
 
 import Decimal from 'decimal.js';
+import { useRequest } from 'vue-request';
 
 const props = defineProps({
     domainName: String,
@@ -38,7 +39,15 @@ const histories = ref<string[]>([])
 function handleChange(value: number) {
     state.inputYears = value
 
-    queryAction()
+    queryAction().then((val1) => {
+        state.info.gasFee = val1.data.gas_fee.toPrecision(4);
+        state.info.serviceFee = val1.data.service_fee.toPrecision(4);
+
+        let g_fee = new Decimal(state.info.gasFee);
+        let s_fee = new Decimal(state.info.serviceFee)
+
+        state.info.registerFee = Decimal.add(g_fee, s_fee).toString();
+    })
 }
 
 function continueAction() {
@@ -66,16 +75,8 @@ function continueAction() {
     }
 }
 
-function queryAction() {
-    service.queryDomainFee(state.info.name, state.inputYears).then((val1) => {
-        state.info.gasFee = val1.data.gas_fee.toPrecision(4);
-        state.info.serviceFee = val1.data.service_fee.toPrecision(4);
-
-        let g_fee = new Decimal(state.info.gasFee);
-        let s_fee = new Decimal(state.info.serviceFee)
-
-        state.info.registerFee = Decimal.add(g_fee, s_fee).toString();
-    })
+const queryAction = async function () {
+    return service.queryDomainFee(state.info.name, state.inputYears)
 }
 
 function cancelAction() {
@@ -90,23 +91,21 @@ function confirmAction() {
 }
 
 const createFilter = (queryString: string) => {
-  return (history: string) => {
-    return (
-        history.toLowerCase().indexOf(queryString.toLowerCase()) === 0
-    )
-  }
+    return (history: string) => {
+        return (
+            history.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        )
+    }
 }
 
 const querySearch = (queryString: string, cb: any) => {
-  const results = queryString
-    ? histories.value.filter(createFilter(queryString))
-    : histories.value
-    
-  // call callback function to return suggestions
+    const results = queryString
+        ? histories.value.filter(createFilter(queryString))
+        : histories.value
 
-  console.log(results)
-  
-  cb(toRaw(results))
+    // call callback function to return suggestions
+
+    cb(toRaw(results))
 }
 
 function handleSelect(item: string) {
@@ -122,7 +121,19 @@ onMounted(() => {
         histories.value = history.split(',')
     }
 
-    queryAction()
+    useRequest(queryAction, {
+        pollingInterval: 10000,
+        pollingWhenHidden: false,
+        onSuccess: val1 => {
+            state.info.gasFee = val1.data.gas_fee.toPrecision(4);
+            state.info.serviceFee = val1.data.service_fee.toPrecision(4);
+
+            let g_fee = new Decimal(state.info.gasFee);
+            let s_fee = new Decimal(state.info.serviceFee)
+
+            state.info.registerFee = Decimal.add(g_fee, s_fee).toString();
+        }
+    });
 })
 </script>
 
@@ -161,10 +172,10 @@ onMounted(() => {
                 <div class="step-desc-view">Type your address to receive nft here (Note: this is an <a
                         href="https://ordinals.com" target="_blank">Ordinals</a> address)</div>
 
-                <el-autocomplete class="addr-input-view" v-model="state.info.addr" :fetch-suggestions="querySearch" trigger-on-focus="true"
-                    clearable placeholder="Type your address to receive the nft here, like: bc1p..."
+                <el-autocomplete class="addr-input-view" v-model="state.info.addr" :fetch-suggestions="querySearch"
+                    trigger-on-focus="true" clearable placeholder="Type your address to receive the nft here, like: bc1p..."
                     @select="handleSelect" />
-                    
+
             </div>
 
             <!-- STEP 2 -->
@@ -177,8 +188,9 @@ onMounted(() => {
 
                 <div class="fee-view">
                     <el-row justify="space-between">
-                        <el-col :span="4">
-                            <div class="list-t-view">Gas Fee</div>
+                        <el-col :span="8">
+                            <div class="list-t-view" style="padding-bottom: 0px;">Gas Fee</div>
+                            <div class="list-tip-view" style="padding-left: 20px;">The gas fee fluctuates and is updated every 30 seconds.</div>
                         </el-col>
                         <el-col :span="5">
                             <div class="owner-view">{{ state.info.gasFee + " BTC" }}</div>
@@ -313,6 +325,14 @@ onMounted(() => {
 .list-t-view {
     padding: 20px;
     color: #2E2F3E;
+}
+
+.list-tip-view {
+    height: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #A7A9BE;
+    line-height: 20px;
 }
 
 .total-list-t-view {

@@ -79,7 +79,9 @@ onMounted(() => {
 
             localStorage.setItem(state.info.name, JSON.stringify(val2.data));
 
-            queryBal(val2.data.wallet_id)
+            service.lockFee(state.info.name, state.info.years, state.info.walletId).then(val3 => {
+                queryBal(val2.data.wallet_id, val3)
+            })
         })
     } else {
         let localWallet = JSON.parse(localWalletStr);
@@ -87,11 +89,13 @@ onMounted(() => {
         state.info.midAddr = localWallet.receive_address;
         state.info.walletId = localWallet.wallet_id;
 
-        queryBal(localWallet.wallet_id)
+        service.lockFee(state.info.name, state.info.years, state.info.walletId).then(val3 => {
+            queryBal(localWallet, val3)
+        })
     }
 })
 
-function queryBal(walletId: string) {
+function queryBal(walletId: string, val3: any) {
     service.queryBalance(walletId).then((val3) => {
         state.info.balance = val3.data.mine.trusted > 0 ? val3.data.mine.trusted : "0"
 
