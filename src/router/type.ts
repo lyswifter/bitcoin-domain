@@ -5,6 +5,7 @@ export interface GasInfo {
     midAddr: string;
     walletId: string;
     gasFee: string;
+    registerFee: string;
     serviceFee: string;
     balance: string;
     total: string;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElMessage } from "element-plus";
-import { onMounted, reactive } from 'vue';
+import { onMounted, reactive, toRaw } from 'vue';
 
 import service from "../router/service";
 import { GasInfo } from "../router/type";
@@ -24,16 +24,19 @@ let state = reactive({
         midAddr: '',
         gasFee: '',
         serviceFee: '',
+        registerFee: '',
         balance: '',
         total: '',
         years: 1,
     } as GasInfo,
     inputYears: 1,
     isAddrVisiable: false,
+    histories: [] as string[],
 })
 
 function handleChange(value: number) {
     state.inputYears = value
+
     queryAction()
 }
 
@@ -51,6 +54,7 @@ function continueAction() {
     if (state.info.addr.indexOf('bc1p') != -1) {
         if (state.info.addr.length == 62) {
             state.info.years = state.inputYears
+            
             emit('continueAction', state.info)
         } else {
             ElMessage.error("Check the length of your Ordinals address");
@@ -66,53 +70,12 @@ function queryAction() {
         state.info.gasFee = val1.data.gas_fee.toPrecision(4);
         state.info.serviceFee = val1.data.service_fee.toPrecision(4);
 
-        let o = new Decimal(state.info.gasFee);
-        let y = new Decimal('0.0001');
-        let g_fee = Decimal.add(o, y);
+        let g_fee = new Decimal(state.info.gasFee);
         let s_fee = new Decimal(state.info.serviceFee)
 
-        state.info.gasFee = g_fee.toString();
-        state.info.total = Decimal.add(g_fee, s_fee).toString();
-
-        let localWalletStr = localStorage.getItem(state.info.name);
-
-        if (!localWalletStr) {
-            service.queryWallet(state.info.name).then((val2) => {
-                state.info.midAddr = val2.data.receive_address;
-                state.info.walletId = val2.data.wallet_id;
-
-                localStorage.setItem(state.info.name, JSON.stringify(val2.data));
-
-                queryBal(val2.data.wallet_id)
-            })
-        } else {
-            let localWallet = JSON.parse(localWalletStr);
-
-            state.info.midAddr = localWallet.receive_address;
-            state.info.walletId = localWallet.wallet_id;
-
-            queryBal(localWallet.wallet_id)
-        }
+        state.info.registerFee = Decimal.add(g_fee, s_fee).toString();
     })
 }
-
-function queryBal(walletId: string) {
-    service.queryBalance(walletId).then((val3) => {
-        state.info.balance = val3.data.mine.trusted > 0 ? val3.data.mine.trusted : "0"
-
-        let x = new Decimal(state.info.total ? state.info.total : 0)
-        let y = new Decimal(state.info.balance ? state.info.balance : 0)
-        let z = Decimal.sub(x, y);
-        state.info.total = z.toString();
-    })
-}
-
-onMounted(() => {
-    state.info.name = props.domainName!
-    state.info.isAvailable = props.isAvailable!
-
-    queryAction()
-})
 
 function cancelAction() {
     state.isAddrVisiable = false
@@ -120,11 +83,43 @@ function cancelAction() {
 
 function confirmAction() {
     state.isAddrVisiable = false
-
     state.info.years = state.inputYears
 
     emit('continueAction', state.info)
 }
+
+const createFilter = (queryString: string) => {
+  return (history: string) => {
+    return (
+        history.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+    )
+  }
+}
+
+function querySearch(queryString: string, cb: any) {
+    const results = queryString ? state.histories.filter(createFilter(queryString)) : state.histories
+    console.log(toRaw(results))
+    
+    cb(toRaw(results))
+}
+
+function handleSelect(item: string) {
+    console.log(item)
+}
+
+onMounted(() => {
+    state.info.name = props.domainName!
+    state.info.isAvailable = props.isAvailable!
+
+    let history = localStorage.getItem('receive_address_history')
+    if (history) {
+        state.histories = history.split(',')
+
+        console.log(state.histories)
+    }
+
+    queryAction()
+})
 </script>
 
 <template>
@@ -161,8 +156,11 @@ function confirmAction() {
             <div style="width: 1120px;margin: 0 auto;">
                 <div class="step-desc-view">Type your address to receive nft here (Note: this is an <a
                         href="https://ordinals.com" target="_blank">Ordinals</a> address)</div>
-                <el-input class="addr-input-view" v-model="state.info.addr"
-                    placeholder="Type your address to receive the nft here, like: bc1p..." clearable="true" size="large" />
+
+                <el-autocomplete class="addr-input-view" v-model="state.info.addr" :fetch-suggestions="querySearch" trigger-on-focus="true"
+                    clearable placeholder="Type your address to receive the nft here, like: bc1p..."
+                    @select="handleSelect" />
+                    
             </div>
 
             <!-- STEP 2 -->
@@ -192,35 +190,21 @@ function confirmAction() {
                         </el-col>
                     </el-row>
 
-                    <el-row justify="space-between">
-                        <el-col :span="15">
-                            <div class="list-t-view" style="padding-bottom: 0px;">Current Balance</div>
-                            <div class="list-tip-view" style="padding-left: 20px;">Please do not send us more BTC than the
-                                displayed amount. If you accidentally send a larger amount, submit a request for a refund by
-                                email.</div>
-                        </el-col>
-                        <el-col :span="5">
-                            <div class="owner-view">{{ state.info.balance + " BTC" }}</div>
-                        </el-col>
-                    </el-row>
-
                     <div class="line-view"></div>
 
                     <el-row justify="space-between">
                         <el-col :span="6">
                             <div class="total-list-t-view" style="padding-left: 20px;">Total Register Fee</div>
-                            <div class="list-tip-view" style="padding-left: 20px;">Gas fee + service fee - current balance
-                            </div>
                         </el-col>
                         <el-col :span="5">
-                            <div class="total-fee-view">{{ state.info.total + " BTC" }}</div>
+                            <div class="total-fee-view">{{ state.info.registerFee + " BTC" }}</div>
                         </el-col>
                     </el-row>
                 </div>
             </div>
 
             <div style="margin: 0 auto;margin-top: 40px;width: 100%;margin-bottom: 50px;cursor: pointer;">
-                <div class="continue-view" @click="continueAction">Continue</div>
+                <div class="continue-view" @click="continueAction">Next Step</div>
             </div>
 
         </div>
@@ -284,7 +268,6 @@ function confirmAction() {
 
 .addr-input-view {
     margin-top: 5px;
-    width: 100%;
 }
 
 .step-title-view {
@@ -315,9 +298,8 @@ function confirmAction() {
 
 .fee-view {
     margin: 0 auto;
-    margin-top: 10px;
-    width: 1120px;
-    height: 326px;
+    margin-top: 20px;
+    padding-bottom: 20px;
     background: #FFFFFF;
     box-shadow: 0px 10px 24px 0px rgba(16, 38, 92, 0.1);
     border-radius: 8px;
@@ -331,14 +313,6 @@ function confirmAction() {
 
 .total-list-t-view {
     color: #2E2F3E;
-}
-
-.list-tip-view {
-    height: 20px;
-    font-size: 14px;
-    font-weight: 400;
-    color: #A7A9BE;
-    line-height: 20px;
 }
 
 .owner-view {
@@ -364,5 +338,11 @@ function confirmAction() {
     font-weight: 600;
     color: #FFFFFF;
     line-height: 50px;
+}
+</style>
+
+<style scoped>
+:deep(.el-input__wrapper) {
+    width: 1120px;
 }
 </style>
