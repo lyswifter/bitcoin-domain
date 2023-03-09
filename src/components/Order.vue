@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElMessage } from "element-plus";
-import { onMounted, reactive, toRaw } from 'vue';
+import { onMounted, reactive, ref, toRaw } from 'vue';
 
 import service from "../router/service";
 import { GasInfo } from "../router/type";
@@ -31,8 +31,9 @@ let state = reactive({
     } as GasInfo,
     inputYears: 1,
     isAddrVisiable: false,
-    histories: [] as string[],
 })
+
+const histories = ref<string[]>([])
 
 function handleChange(value: number) {
     state.inputYears = value
@@ -96,11 +97,16 @@ const createFilter = (queryString: string) => {
   }
 }
 
-function querySearch(queryString: string, cb: any) {
-    const results = queryString ? state.histories.filter(createFilter(queryString)) : state.histories
-    console.log(toRaw(results))
+const querySearch = (queryString: string, cb: any) => {
+  const results = queryString
+    ? histories.value.filter(createFilter(queryString))
+    : histories.value
     
-    cb(toRaw(results))
+  // call callback function to return suggestions
+
+  console.log(results)
+  
+  cb(toRaw(results))
 }
 
 function handleSelect(item: string) {
@@ -113,9 +119,7 @@ onMounted(() => {
 
     let history = localStorage.getItem('receive_address_history')
     if (history) {
-        state.histories = history.split(',')
-
-        console.log(state.histories)
+        histories.value = history.split(',')
     }
 
     queryAction()
