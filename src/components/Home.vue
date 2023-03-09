@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, toRefs, onUnmounted } from 'vue'
+import { onMounted, reactive } from 'vue';
 
-import { pageview, event } from "vue-gtag";
+import { event, pageview } from "vue-gtag";
 
 import service from "../router/service";
 import { DomainHistory, GasInfo } from "../router/type";
 
-import HeaderView from "../components/Header.vue";
+import EmptyView from "../components/Empty.vue";
 import FooterView from "../components/Footer.vue";
+import HeaderView from "../components/Header.vue";
 import HistView from "../components/History.vue";
 import OrderView from "../components/Order.vue";
 import PayView from "../components/Pay.vue";
 import StartView from "../components/Start.vue";
-import EmptyView from "../components/Empty.vue";
 
+import { ElLoading, ElMessage } from 'element-plus';
 import RegisteriedView from "../components/Registered.vue";
 import RegisteringView from "../components/Registering.vue";
-import { ElMessage, ElLoading } from 'element-plus';
 
 let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px', history: {} as DomainHistory })
 
@@ -86,8 +86,11 @@ function searchAction() {
 }
 
 function orderToPayAction(gasInfo: GasInfo) {
-  state.stage = 'pay'
   state.gasInfo = gasInfo
+
+  console.log(gasInfo)
+  
+  state.stage = 'pay'
 }
 
 function backAction() {
@@ -98,6 +101,7 @@ function clickHistory(name: string) {
   state.input = name
   state.inputAppend = state.input + ".btc"
   state.isAvailable = false
+  
   state.stage = 'registered'
 }
 
@@ -145,8 +149,7 @@ onMounted(() => {
     <OrderView v-else-if="state.stage == 'order'" :ref="state.stage" class="order-view" :domain-name="state.inputAppend"
       :is-available="state.isAvailable" @continue-action="orderToPayAction" />
 
-    <PayView v-else-if="state.stage == 'pay'" :ref="state.stage" class="pay-view" :gas-info="state.gasInfo"
-      @back-action="backAction" @to-processing="toProcessing" />
+    <PayView v-else-if="state.stage == 'pay'" :ref="state.stage" class="pay-view" :gas-info="state.gasInfo" @back-action="backAction" @to-processing="toProcessing" />
 
     <RegisteriedView v-else-if="state.stage == 'registered'" :ref="state.stage" class="registered-view"
       :domain-name="state.inputAppend" :is-available="state.isAvailable" />

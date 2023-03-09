@@ -1,7 +1,8 @@
 export let domain = {
-    // domainUrl: "http://172.16.10.26:8080/api/",
-    // domainUrl: "http://18.232.119.81:8080/api/",
-    domainUrl: "https://btcdomains.io",
+    // domainUrl: "http://172.16.10.26:8080",
+    domainUrl: "http://137.184.180.14:8080",
+    // domainUrl: "https://btcdomains.io",
+
     domainImageUrl: "https://btcdomains.io/images/static-files/",
 }
 

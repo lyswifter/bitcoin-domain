@@ -86,5 +86,19 @@ export default {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
         }
+    },
+    async leavePage(walletId: string) {
+        // lockFee
+        //
+        let ret = await axios.post(Apis.leavePage, {
+            'wallet_id': walletId,
+        })
+
+        if (ret.status == 200) {
+            return ret.data   
+        } else {
+            ElMessage.error("Bad request[code=" + ret.status + "]")
+            return
+        }
     }
 }

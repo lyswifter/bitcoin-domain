@@ -37,20 +37,21 @@ let state = reactive({
 const histories = ref<string[]>([])
 
 function handleChange(value: number) {
-    state.inputYears = value
+    state.info.years = value
 
     queryAction().then((val1) => {
-        state.info.gasFee = val1.data.gas_fee.toPrecision(4);
-        state.info.serviceFee = val1.data.service_fee.toPrecision(4);
+        let g_fee = new Decimal(val1.data.gas_fee);
+        let s_fee = new Decimal(val1.data.service_fee)
 
-        let g_fee = new Decimal(state.info.gasFee);
-        let s_fee = new Decimal(state.info.serviceFee)
+        let reg_fee = Decimal.add(g_fee, s_fee);
 
-        state.info.registerFee = Decimal.add(g_fee, s_fee).toString();
+        state.info.gasFee = g_fee.toPrecision(4).toString();
+        state.info.serviceFee = s_fee.toPrecision(4).toString();
+        state.info.registerFee = reg_fee.toPrecision(4).toString();
     })
 }
 
-function continueAction() {
+function nextStepAction() {
     if (!state.info.addr) {
         ElMessage.error("Receive address must not be empty")
         return
@@ -63,9 +64,8 @@ function continueAction() {
 
     if (state.info.addr.indexOf('bc1p') != -1) {
         if (state.info.addr.length == 62) {
-            state.info.years = state.inputYears
-            
-            emit('continueAction', state.info)
+
+            loadWallet()
         } else {
             ElMessage.error("Check the length of your Ordinals address");
             return
@@ -75,8 +75,69 @@ function continueAction() {
     }
 }
 
+function loadWallet() {
+    let localWalletStr = localStorage.getItem(state.info.name);
+
+    if (!localWalletStr) {
+        service.queryWallet(state.info.name).then((val1) => {
+
+            state.info.midAddr = val1.data.receive_address;
+            state.info.walletId = val1.data.wallet_id;
+
+            localStorage.setItem(state.info.name, JSON.stringify(val1.data));
+
+            service.lockFee(state.info.name, state.info.years, state.info.walletId).then(val2 => {
+                service.queryBalance(val1.data.wallet_id).then((val3) => {
+                    let g_fee = new Decimal(val2.data.gas_fee);
+                    let s_fee = new Decimal(val2.data.service_fee)
+                    let b_fee = new Decimal(val3.data.mine.trusted)
+
+                    let reg_fee = Decimal.add(g_fee, s_fee);
+                    let z = Decimal.sub(reg_fee, b_fee);
+
+                    state.info.gasFee = g_fee.toPrecision(4).toString();
+                    state.info.serviceFee = s_fee.toPrecision(4).toString();
+                    state.info.registerFee = reg_fee.toPrecision(4).toString();
+                    state.info.balance = b_fee.toPrecision(4).toString();
+                    state.info.total = z.toPrecision(4).toString();
+
+                    emit('continueAction', state.info)
+                })
+            })
+        })
+    } else {
+        let localWallet = JSON.parse(localWalletStr);
+
+        state.info.midAddr = localWallet.receive_address;
+        state.info.walletId = localWallet.wallet_id;
+
+        service.lockFee(state.info.name, state.info.years, state.info.walletId).then(val4 => {
+            service.queryBalance(localWallet.wallet_id).then((val5) => {
+                let g_fee = new Decimal(val4.data.gas_fee);
+                let s_fee = new Decimal(val4.data.service_fee)
+                let b_fee = new Decimal(val5.data.mine.trusted)
+
+                let reg_fee = Decimal.add(g_fee, s_fee);
+                let z = Decimal.sub(reg_fee, b_fee);
+
+                state.info.gasFee = g_fee.toPrecision(4).toString();
+                state.info.serviceFee = s_fee.toPrecision(4).toString();
+                state.info.registerFee = reg_fee.toPrecision(4).toString();
+                state.info.balance = b_fee.toPrecision(4).toString();
+                state.info.total = z.toPrecision(4).toString();
+
+                emit('continueAction', state.info)
+            })
+        })
+    }
+}
+
+function calculate() {
+
+}
+
 const queryAction = async function () {
-    return service.queryDomainFee(state.info.name, state.inputYears)
+    return service.queryDomainFee(state.info.name, state.info.years)
 }
 
 function cancelAction() {
@@ -85,9 +146,8 @@ function cancelAction() {
 
 function confirmAction() {
     state.isAddrVisiable = false
-    state.info.years = state.inputYears
-
-    emit('continueAction', state.info)
+    
+    loadWallet()
 }
 
 const createFilter = (queryString: string) => {
@@ -183,14 +243,15 @@ onMounted(() => {
             <div style="width: 1120px;margin: 0 auto;">
                 <div class="step-desc-view">Registration Period (In years)</div>
 
-                <el-input-number v-model="state.inputYears" :min="1" :max="5" @change="handleChange" />
+                <el-input-number v-model="state.info.years" :min="1" :max="5" @change="handleChange" />
                 <span class="tip-view"> Maximum 5 years</span>
 
                 <div class="fee-view">
                     <el-row justify="space-between">
                         <el-col :span="8">
                             <div class="list-t-view" style="padding-bottom: 0px;">Gas Fee</div>
-                            <div class="list-tip-view" style="padding-left: 20px;">The gas fee fluctuates and is updated every 30 seconds.</div>
+                            <div class="list-tip-view" style="padding-left: 20px;">The gas fee fluctuates and is updated
+                                every 30 seconds.</div>
                         </el-col>
                         <el-col :span="5">
                             <div class="owner-view">{{ state.info.gasFee + " BTC" }}</div>
@@ -220,7 +281,7 @@ onMounted(() => {
             </div>
 
             <div style="margin: 0 auto;margin-top: 40px;width: 100%;margin-bottom: 50px;cursor: pointer;">
-                <div class="continue-view" @click="continueAction">Next Step</div>
+                <div class="continue-view" @click="nextStepAction">Next Step</div>
             </div>
 
         </div>

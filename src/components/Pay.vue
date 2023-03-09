@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ElMessage } from "element-plus";
-import { onMounted, reactive } from 'vue';
+import { onBeforeMount, onMounted, onUnmounted, reactive } from 'vue';
 
 import service from "../router/service";
 import { GasInfo } from "../router/type";
 
-import Decimal from 'decimal.js';
 import useClipboard from "vue-clipboard3";
 
 import { event } from "vue-gtag";
@@ -22,7 +21,18 @@ const emit = defineEmits({
 })
 
 let state = reactive({
-    info: {} as GasInfo,
+    info: {
+        name: '',
+        isAvailable: false,
+        addr: '',
+        midAddr: '',
+        gasFee: '',
+        serviceFee: '',
+        registerFee: '',
+        balance: '',
+        total: '',
+        years: 1,
+    } as GasInfo,
     isPaymentVisiable: false,
 })
 
@@ -32,6 +42,7 @@ function backAction() {
 
 function copyAction() {
     const toClipboard = useClipboard();
+    
     toClipboard.toClipboard(state.info.midAddr).then((val) => {
         ElMessage.info("copied")
     })
@@ -67,45 +78,23 @@ function dismissAction() {
     state.isPaymentVisiable = false
 }
 
+onBeforeMount(() => {
+    state.info = props.gasInfo! as GasInfo
+})
+
 onMounted(() => {
-    state.info = props.gasInfo as GasInfo
+    console.log(state.info)
+})
 
+onUnmounted(() => {
     let localWalletStr = localStorage.getItem(state.info.name);
-
-    if (!localWalletStr) {
-        service.queryWallet(state.info.name).then((val2) => {
-            state.info.midAddr = val2.data.receive_address;
-            state.info.walletId = val2.data.wallet_id;
-
-            localStorage.setItem(state.info.name, JSON.stringify(val2.data));
-
-            service.lockFee(state.info.name, state.info.years, state.info.walletId).then(val3 => {
-                queryBal(val2.data.wallet_id, val3)
-            })
-        })
-    } else {
+    if (localWalletStr) {
         let localWallet = JSON.parse(localWalletStr);
-
-        state.info.midAddr = localWallet.receive_address;
-        state.info.walletId = localWallet.wallet_id;
-
-        service.lockFee(state.info.name, state.info.years, state.info.walletId).then(val3 => {
-            queryBal(localWallet, val3)
+        service.leavePage(localWallet.wallet_id).then(val => {
+            console.log(val.data)
         })
     }
 })
-
-function queryBal(walletId: string, val3: any) {
-    service.queryBalance(walletId).then((val3) => {
-        state.info.balance = val3.data.mine.trusted > 0 ? val3.data.mine.trusted : "0"
-
-        let x = new Decimal(state.info.registerFee ? state.info.registerFee : 0)
-        let y = new Decimal(state.info.balance ? state.info.balance : 0)
-        let z = Decimal.sub(x, y);
-
-        state.info.total = z.toString();
-    })
-}
 
 </script>
 
@@ -155,7 +144,7 @@ function queryBal(walletId: string, val3: any) {
             <el-row justify="space-between">
                 <el-col :span="6">
                     <div class="list-t-view">Final Payment</div>
-                    <div class="list-tip-view" style="padding-left: 20px;">Gas fee + service fee - current balance</div>
+                    <div class="list-tip-view" style="padding-left: 20px;">Total Register Fee - Current Balance</div>
                 </el-col>
                 <el-col :span="3">
                     <div class="owner-view">{{ state.info.total + " BTC" }}</div>
