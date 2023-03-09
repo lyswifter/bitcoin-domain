@@ -63,17 +63,6 @@ function continueAction() {
 
 function queryAction() {
     service.queryDomainFee(state.info.name, state.inputYears).then((val1) => {
-        state.info.gasFee = val1.data.gas_fee.toPrecision(4);
-        state.info.serviceFee = val1.data.service_fee.toPrecision(4);
-
-        let o = new Decimal(state.info.gasFee);
-        let y = new Decimal('0.0001');
-        let g_fee = Decimal.add(o, y);
-        let s_fee = new Decimal(state.info.serviceFee)
-
-        state.info.gasFee = g_fee.toString();
-        state.info.total = Decimal.add(g_fee, s_fee).toString();
-
         let localWalletStr = localStorage.getItem(state.info.name);
 
         if (!localWalletStr) {
@@ -83,7 +72,7 @@ function queryAction() {
 
                 localStorage.setItem(state.info.name, JSON.stringify(val2.data));
 
-                queryBal(val2.data.wallet_id)
+                queryBal(val2.data.wallet_id, val1)
             })
         } else {
             let localWallet = JSON.parse(localWalletStr);
@@ -91,19 +80,28 @@ function queryAction() {
             state.info.midAddr = localWallet.receive_address;
             state.info.walletId = localWallet.wallet_id;
 
-            queryBal(localWallet.wallet_id)
+            queryBal(localWallet.wallet_id, val1)
         }
     })
 }
 
-function queryBal(walletId: string) {
+function queryBal(walletId: string, val1: any) {
     service.queryBalance(walletId).then((val3) => {
-        state.info.balance = val3.data.mine.trusted > 0 ? val3.data.mine.trusted : "0"
+        let o = new Decimal(val1.data.gas_fee);
+        let p = new Decimal('0.0001');
+        let g_fee = Decimal.add(o, p);
+        let s_fee = new Decimal(val1.data.service_fee)
 
-        let x = new Decimal(state.info.total ? state.info.total : 0)
-        let y = new Decimal(state.info.balance ? state.info.balance : 0)
-        let z = Decimal.sub(x, y);
-        state.info.total = z.toString();
+        state.info.gasFee = g_fee.toPrecision(4).toString();
+        state.info.serviceFee = s_fee.toPrecision(4).toString();
+
+        let total = Decimal.add(g_fee, s_fee);
+        let bal_fee = new Decimal(val3.data.mine.trusted)
+        let z = Decimal.sub(total, bal_fee);
+
+        state.info.balance = bal_fee.toPrecision(4).toString();
+        
+        state.info.total = z.toPrecision(4).toString();
     })
 }
 
