@@ -87,9 +87,6 @@ function searchAction() {
 
 function orderToPayAction(gasInfo: GasInfo) {
   state.gasInfo = gasInfo
-
-  console.log(gasInfo)
-  
   state.stage = 'pay'
 }
 
@@ -101,7 +98,6 @@ function clickHistory(name: string) {
   state.input = name
   state.inputAppend = state.input + ".btc"
   state.isAvailable = false
-  
   state.stage = 'registered'
 }
 
@@ -126,6 +122,16 @@ onMounted(() => {
     }
   }
 })
+
+// onUpdated(() => {
+//   let localWalletStr = localStorage.getItem(state.inputAppend);
+//     if (localWalletStr) {
+//         let localWallet = JSON.parse(localWalletStr);
+//         service.leavePage(localWallet.wallet_id).then(val => {
+//             console.log(val.data)
+//         })
+//     }
+// })
 
 </script>
 

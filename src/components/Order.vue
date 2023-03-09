@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ElMessage } from "element-plus";
+import { ElLoading, ElMessage } from 'element-plus';
 import { onMounted, reactive, ref, toRaw } from 'vue';
 
 import service from "../router/service";
@@ -76,6 +76,8 @@ function nextStepAction() {
 }
 
 function loadWallet() {
+    let loadingInstance = ElLoading.service({ fullscreen: true });
+    
     let localWalletStr = localStorage.getItem(state.info.name);
 
     if (!localWalletStr) {
@@ -100,6 +102,8 @@ function loadWallet() {
                     state.info.registerFee = reg_fee.toPrecision(4).toString();
                     state.info.balance = b_fee.toPrecision(4).toString();
                     state.info.total = z.toPrecision(4).toString();
+
+                    loadingInstance.close()
 
                     emit('continueAction', state.info)
                 })
@@ -126,14 +130,12 @@ function loadWallet() {
                 state.info.balance = b_fee.toPrecision(4).toString();
                 state.info.total = z.toPrecision(4).toString();
 
+                loadingInstance.close()
+
                 emit('continueAction', state.info)
             })
         })
     }
-}
-
-function calculate() {
-
 }
 
 const queryAction = async function () {
@@ -248,12 +250,12 @@ onMounted(() => {
 
                 <div class="fee-view">
                     <el-row justify="space-between">
-                        <el-col :span="8">
+                        <el-col :span="10">
                             <div class="list-t-view" style="padding-bottom: 0px;">Gas Fee</div>
                             <div class="list-tip-view" style="padding-left: 20px;">The gas fee fluctuates and is updated
                                 every 30 seconds.</div>
                         </el-col>
-                        <el-col :span="5">
+                        <el-col :span="5" style="text-align: right;">
                             <div class="owner-view">{{ state.info.gasFee + " BTC" }}</div>
                         </el-col>
                     </el-row>
@@ -262,7 +264,7 @@ onMounted(() => {
                         <el-col :span="4">
                             <div class="list-t-view">Service Fee</div>
                         </el-col>
-                        <el-col :span="5">
+                        <el-col :span="5" style="text-align: right;">
                             <div class="owner-view">{{ state.info.serviceFee + " BTC" }}</div>
                         </el-col>
                     </el-row>
@@ -273,7 +275,7 @@ onMounted(() => {
                         <el-col :span="6">
                             <div class="total-list-t-view" style="padding-left: 20px;">Total Register Fee</div>
                         </el-col>
-                        <el-col :span="5">
+                        <el-col :span="5" style="text-align: right;padding-right: 10px;">
                             <div class="total-fee-view">{{ state.info.registerFee + " BTC" }}</div>
                         </el-col>
                     </el-row>

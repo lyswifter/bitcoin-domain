@@ -5,9 +5,10 @@ import { onBeforeMount, onMounted, onUnmounted, reactive } from 'vue';
 import service from "../router/service";
 import { GasInfo } from "../router/type";
 
+import Decimal from 'decimal.js';
 import useClipboard from "vue-clipboard3";
-
 import { event } from "vue-gtag";
+import { useRequest } from 'vue-request';
 
 const props = defineProps({
     domainName: String,
@@ -60,9 +61,6 @@ function conformAction() {
                 localStorage.setItem("domain_history", localHistory + "," + state.info.name)
             }
 
-            // update local storage finished
-            //
-            //
             event('payment', { method: 'Google' })
 
             emit('toProcessing', state.info)
@@ -80,10 +78,30 @@ function dismissAction() {
 
 onBeforeMount(() => {
     state.info = props.gasInfo! as GasInfo
+    window.addEventListener('beforeunload', e => uoload(e) )
 })
 
+function uoload(e: Event) {
+    let localWalletStr = localStorage.getItem(state.info.name);
+    if (localWalletStr) {
+        let localWallet = JSON.parse(localWalletStr);
+        service.leavePage(localWallet.wallet_id).then(val => {
+            console.log(val.data)
+            // alert("uuload" + localWallet.wallet_id)
+        })
+    }
+}
+
 onMounted(() => {
-    console.log(state.info)
+    useRequest(updateBalance, {
+        pollingInterval: 10000,
+        pollingWhenHidden: false,
+        onSuccess: val1 => {
+            let s_fee = new Decimal(state.info.registerFee)
+            let b_fee = new Decimal(val1.data.mine.trusted)
+            state.info.total = Decimal.sub(s_fee, b_fee).toPrecision(4).toString();
+        }
+    });
 })
 
 onUnmounted(() => {
@@ -92,9 +110,14 @@ onUnmounted(() => {
         let localWallet = JSON.parse(localWalletStr);
         service.leavePage(localWallet.wallet_id).then(val => {
             console.log(val.data)
+            // alert("uuload" + localWallet.wallet_id)
         })
     }
 })
+
+function updateBalance() {
+    return service.queryBalance(state.info.walletId)
+}
 
 </script>
 
@@ -127,14 +150,14 @@ onUnmounted(() => {
 
             <el-row justify="space-between">
                 <el-col :span="4" class="list-t-view">Register Fee</el-col>
-                <el-col :span="3">{{ state.info.registerFee + ' BTC' }}</el-col>
+                <el-col :span="3" style="text-align: right;">{{ state.info.registerFee + ' BTC' }}</el-col>
             </el-row>
 
             <el-row justify="space-between">
                 <el-col :span="4">
                     <div class="list-t-view">Current Balance</div>
                 </el-col>
-                <el-col :span="3">
+                <el-col :span="3" style="text-align: right;">
                     <div class="owner-view">{{ state.info.balance + " BTC" }}</div>
                 </el-col>
             </el-row>
@@ -146,7 +169,7 @@ onUnmounted(() => {
                     <div class="list-t-view">Final Payment</div>
                     <div class="list-tip-view" style="padding-left: 20px;">Total Register Fee - Current Balance</div>
                 </el-col>
-                <el-col :span="3">
+                <el-col :span="3" style="text-align: right;">
                     <div class="owner-view">{{ state.info.total + " BTC" }}</div>
                 </el-col>
             </el-row>
