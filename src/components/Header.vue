@@ -7,12 +7,12 @@ function reloadPage() {
 <template>
   <div class="container">
     <el-row justify="space-between">
-      <el-col :span="2">
+      <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2">
         <img class="logo-view" src="../assets/logo_nav@2x.png" style="width: 158px;height: 30px;cursor: pointer;" alt=""
           @click="reloadPage">
       </el-col>
 
-      <el-col :span="2">
+      <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2">
         <div class="doc-link-view"><a href="https://docs.btcdomains.io" style="text-decoration: none;color: white;"
             target="_blank">Document</a></div>
       </el-col>
@@ -54,7 +54,7 @@ function reloadPage() {
 
 .solgon-title-view {
   margin-top: 3%;
-  height: 80px;
+  height: 60px;
 }
 
 .solgon-content-view {

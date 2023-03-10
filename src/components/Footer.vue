@@ -1,23 +1,24 @@
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue';
 
+import 'element-plus/theme-chalk/display.css';
+
 let state = reactive({ input: '', isMintAble: false, isMinting: false, inscriptId: '', targetAddr: '' })
 
 onMounted(() => {
 })
-
 </script>
 
 <template>
     <div class="footer-container">
-        <el-row justify="end">
-            <el-col :span="10">
-                <div class="email-view">
-                    <img src="../assets/邮箱@2x.png" style="width: 40px;height: 40px;vertical-align: middle;" alt="">
-                    contact@btcdomains.io
-                </div>
-            </el-col>
-            <el-col :span="10">
+
+        <el-row>
+            <div class="email-view" style="margin-left: 5%;">
+                <img src="../assets/邮箱@2x.png" style="width: 40px;height: 40px;vertical-align: middle;" alt="">
+                contact@btcdomains.io
+            </div>
+
+            <div style="margin-left: 30%;">
                 <a href="http://twitter.com/btcdomain_btc" target="_blank">
                     <img src="../assets/twitter@2x.png" style="width: 32px;height: 32px;margin-top: 30px;" alt="">
                 </a>
@@ -29,10 +30,9 @@ onMounted(() => {
                     <img src="../assets/github@2x.png" style="width: 32px;height: 32px;margin-top: 30px;margin-left: 10px;"
                         alt="">
                 </a>
-            </el-col>
-            <el-col :span="3">
-                <img class="block-logo-view" src="../assets/logo_footer@2x.png" style="width: 158px;height: 30px;" alt="">
-            </el-col>
+            </div>
+
+            <img class="block-logo-view" src="../assets/logo_footer@2x.png" style="height: 30px;margin-left: 30%;" alt="">
         </el-row>
     </div>
 </template>
@@ -40,13 +40,11 @@ onMounted(() => {
 <style scoped>
 .footer-container {
     border-top: 1px solid lightgray;
-    height: 100px;
     width: 100%;
     background: #FFFFFF;
 }
 
 .email-view {
-    height: 100px;
     font-size: 14px;
     font-weight: 400;
     color: #222840;

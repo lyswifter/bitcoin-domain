@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { onMounted } from 'vue';
 
 onMounted(() => {
 })
@@ -7,37 +7,24 @@ onMounted(() => {
 
 <template>
     <div class="start-container">
-        <el-row justify="space-between">
-            <el-col :span="12" style="text-align: center;">
-                <div>
-                    <img src="../assets/icon_search@2x.png" style="width: 278px;height: 240px;" alt="">
-                </div>
+        <div style="display: inline-block;">
+            <img src="../assets/icon_search@2x.png" style="height: 120px;" alt="">
+            <div class="text-view">Search</div>
+        </div>
 
-                <div class="text-view">Search</div>
-            </el-col>
+        <div style="display: inline-block;margin-left: 40px;">
+            <img src="../assets/icon_register@2x.png" style="height: 120px;" alt="">
+            <div class="text-view">Register</div>
+        </div>
 
-            <el-col :span="12" style="text-align: center;">
-                <div>
-                    <img src="../assets/icon_register@2x.png" style="width: 278px;height: 240px;" alt="">
-                </div>
-
-                <div class="text-view">Register</div>
-            </el-col>
-        </el-row>
     </div>
 </template>
 
 <style scoped>
 .start-container {
-    width: 918px;
+    text-align: center;
     margin: 0 auto;
-}
-.search-text-view {
-    width: 89px;
-    height: 40px;
-    font-size: 28px;
-    font-weight: 300;
-    color: #2E2F3E;
-    line-height: 40px;
+    padding-top: 40px;
+    padding-bottom: 15%;
 }
 </style>

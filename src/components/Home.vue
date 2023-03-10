@@ -110,10 +110,6 @@ function toProcessing(info: GasInfo) {
 onMounted(() => {
   pageview({ page_path: '/home' })
 
-  let width = window.outerWidth
-  let hei = width * 776 / 3840;
-  state.headerHeight = hei + 'px'
-
   let localString = localStorage.getItem('domain_history')
   if (localString != null) {
     let localItems = localString.split(',');
@@ -122,16 +118,6 @@ onMounted(() => {
     }
   }
 })
-
-// onUpdated(() => {
-//   let localWalletStr = localStorage.getItem(state.inputAppend);
-//     if (localWalletStr) {
-//         let localWallet = JSON.parse(localWalletStr);
-//         service.leavePage(localWallet.wallet_id).then(val => {
-//             console.log(val.data)
-//         })
-//     }
-// })
 
 </script>
 
@@ -170,7 +156,6 @@ onMounted(() => {
 
 <style scoped>
 .main-view {
-  min-height: 1000px;
   background-color: white;
 }
 
@@ -179,7 +164,7 @@ onMounted(() => {
 }
 
 .search-view {
-  width: 1200px;
+  max-width: 1200px;
   margin: 0 auto;
   margin-top: -40px;
   position: relative;
@@ -196,7 +181,7 @@ onMounted(() => {
   display: block;
   top: 8px;
   right: 8px;
-  width: 164px;
+  width: 120px;
   height: 64px;
   background: #4540D6;
   border-radius: 8px;
