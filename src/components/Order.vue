@@ -184,13 +184,13 @@ onMounted(() => {
     <div class="order-container">
         <div class="state-view">
             <el-row justify="space-between">
-                <el-col :span="2"><span class="s-name">NAME</span></el-col>
-                <el-col :span="2"><span class="s-name">STATE</span></el-col>
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="s-name">NAME</span></el-col>
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="s-name">STATE</span></el-col>
             </el-row>
 
             <el-row justify="space-between">
-                <el-col :span="3"><span class="t-name">{{ state.info.name }}</span></el-col>
-                <el-col :span="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Unavailable'
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3"><span class="t-name">{{ state.info.name }}</span></el-col>
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Unavailable'
                 }}</span></el-col>
             </el-row>
         </div>
@@ -199,10 +199,10 @@ onMounted(() => {
 
         <div class="re-content-view">
             <el-row justify="space-between" style="height: 60px;">
-                <el-col :span="3">
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3">
                     <div class="domain-name-view">{{ state.info.name }}</div>
                 </el-col>
-                <el-col :span="3">
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3">
                     <div class="detail-view">
                         Register
                     </div>
@@ -211,7 +211,7 @@ onMounted(() => {
 
             <!-- STEP 1 -->
             <div class="step-title-view">STEP 1: Receive address</div>
-            <div style="width: 1120px;margin: 0 auto;">
+            <div style="margin: 0 auto;">
                 <div class="step-desc-view">Type your address to receive nft here (Note: this is an <a
                         href="https://ordinals.com" target="_blank">Ordinals</a> address)</div>
 
@@ -223,7 +223,7 @@ onMounted(() => {
 
             <!-- STEP 2 -->
             <div class="step-title-view">STEP 2: Register fee</div>
-            <div style="width: 1120px;margin: 0 auto;">
+            <div style="margin: 0 auto;">
                 <div class="step-desc-view">Registration Period (In years)</div>
 
                 <el-input-number v-model="state.info.years" :min="1" :max="5" @change="handleChange" />
@@ -231,21 +231,21 @@ onMounted(() => {
 
                 <div class="fee-view">
                     <el-row justify="space-between">
-                        <el-col :span="10">
+                        <el-col :xs="14" :sm="12" :md="10" :lg="10" :xl="10">
                             <div class="list-t-view" style="padding-bottom: 0px;">Gas Fee</div>
                             <div class="list-tip-view" style="padding-left: 20px;">The gas fee fluctuates and is updated
                                 every 10 seconds.</div>
                         </el-col>
-                        <el-col :span="5" style="text-align: right;">
+                        <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" style="text-align: right;">
                             <div class="owner-view">{{ state.info.gasFee + " BTC" }}</div>
                         </el-col>
                     </el-row>
 
                     <el-row justify="space-between">
-                        <el-col :span="4">
+                        <el-col :xs="14" :sm="12" :md="10" :lg="10" :xl="10">
                             <div class="list-t-view">Service Fee</div>
                         </el-col>
-                        <el-col :span="5" style="text-align: right;">
+                        <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" style="text-align: right;">
                             <div class="owner-view">{{ state.info.serviceFee + " BTC" }}</div>
                         </el-col>
                     </el-row>
@@ -253,10 +253,10 @@ onMounted(() => {
                     <div class="line-view"></div>
 
                     <el-row justify="space-between">
-                        <el-col :span="6">
+                        <el-col :xs="14" :sm="12" :md="10" :lg="10" :xl="10">
                             <div class="total-list-t-view" style="padding-left: 20px;">Total Register Fee</div>
                         </el-col>
-                        <el-col :span="5" style="text-align: right;padding-right: 10px;">
+                        <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" style="text-align: right;padding-right: 10px;">
                             <div class="total-fee-view">{{ state.info.registerFee + " BTC" }}</div>
                         </el-col>
                     </el-row>
@@ -291,7 +291,7 @@ onMounted(() => {
 
 <style scoped>
 .order-container {
-    width: 1200px;
+    max-width: 1200px;
     margin: 0 auto;
     margin-top: 40px;
 }
@@ -410,7 +410,8 @@ onMounted(() => {
 </style>
 
 <style scoped>
-:deep(.el-input__wrapper) {
-    width: 1120px;
+:deep(.addr-input-view .el-input .el-input__wrapper) {
+    max-width: 1120px;
+    min-width: 350px;
 }
 </style>

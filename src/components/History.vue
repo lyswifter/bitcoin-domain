@@ -40,6 +40,8 @@ onMounted(() => {
 <style scoped>
 .history-container {
     padding-top: 40px;
+    padding-left: 20px;
+    padding-bottom: 40px;
 }
 
 .hist-title-view {
@@ -60,7 +62,8 @@ onMounted(() => {
 }
 
 .records-view {
-    height: 60px;
+    padding-left: 10px;
+    height: 40px;
     font-size: 16px;
     font-weight: 600;
     color: #2E2F3E;

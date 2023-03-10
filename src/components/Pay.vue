@@ -122,13 +122,13 @@ function updateBalance() {
     <div class="pay-container">
         <div class="state-view">
             <el-row justify="space-between">
-                <el-col :span="2"><span class="s-name">NAME</span></el-col>
-                <el-col :span="2"><span class="s-name">STATE</span></el-col>
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="s-name">NAME</span></el-col>
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="s-name">STATE</span></el-col>
             </el-row>
 
             <el-row justify="space-between">
-                <el-col :span="3"><span class="t-name">{{ state.info.name }}</span></el-col>
-                <el-col :span="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Unavailable'
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3"><span class="t-name">{{ state.info.name }}</span></el-col>
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Unavailable'
                 }}</span></el-col>
             </el-row>
         </div>
@@ -146,15 +146,15 @@ function updateBalance() {
             <br>
 
             <el-row justify="space-between">
-                <el-col :span="4" class="list-t-view">Register Fee</el-col>
-                <el-col :span="3" style="text-align: right;">{{ state.info.registerFee + ' BTC' }}</el-col>
+                <el-col :xs="14" :sm="12" :md="10" :lg="10" :xl="10" class="list-t-view">Register Fee</el-col>
+                <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" style="text-align: right;">{{ state.info.registerFee + ' BTC' }}</el-col>
             </el-row>
 
             <el-row justify="space-between">
-                <el-col :span="4">
+                <el-col :xs="14" :sm="12" :md="10" :lg="10" :xl="10">
                     <div class="list-t-view">Current Balance</div>
                 </el-col>
-                <el-col :span="3" style="text-align: right;">
+                <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" style="text-align: right;">
                     <div class="owner-view">{{ state.info.balance + " BTC" }}</div>
                 </el-col>
             </el-row>
@@ -162,11 +162,11 @@ function updateBalance() {
             <div class="line-view"></div>
 
             <el-row justify="space-between">
-                <el-col :span="6">
+                <el-col :xs="14" :sm="12" :md="10" :lg="10" :xl="10">
                     <div class="list-t-view">Final Payment</div>
                     <div class="list-tip-view" style="padding-left: 20px;">Total Register Fee - Current Balance</div>
                 </el-col>
-                <el-col :span="3" style="text-align: right;">
+                <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" style="text-align: right;">
                     <div class="owner-view">{{ state.info.total + " BTC" }}</div>
                 </el-col>
             </el-row>
@@ -175,12 +175,13 @@ function updateBalance() {
                 <vue-qrcode :value="state.info.midAddr" :options="{ width: 200 }"></vue-qrcode>
 
                 <el-row justify="center">
-                    <el-col :span="7">
+                    <el-col :xs="14" :sm="12" :md="10" :lg="8" :xl="6">
                         <div class="fee-tip-view">Transfer to the specified wallet address</div>
-                        <div style="width: 338px;color: #2E2F3E;margin: 0 auto;word-wrap: break-word;text-align: left;">{{
+                        <div style="color: #2E2F3E;margin: 0 auto;word-wrap: break-word;text-align: left;">{{
                             state.info.midAddr }} </div>
                     </el-col>
-                    <el-col :span="2">
+                    
+                    <el-col :xs="4" :sm="3" :md="2" :lg="2" :xl="2">
                         <img src="../assets/icon_copy@2x.png"
                             style="width: 32px;height: 32px;cursor: pointer;margin-top: 20px;" alt="" @click="copyAction">
                     </el-col>
@@ -189,7 +190,7 @@ function updateBalance() {
                 <div class="conform-view" @click="conformAction">Next Step</div>
 
                 <div class="note-view"><img src="../assets/icon_16_tips@2x.png"
-                        style="width: 16px;height: 16px;vertical-align: middle;" alt="">
+                        style="width: 16px;vertical-align: middle;word-wrap: break-word;" alt="">
                     The domain name will belong to the person who has the priority to complete the transfer. If the transfer
                     amount is incorrect, please contact us by email.
                 </div>
@@ -211,7 +212,7 @@ function updateBalance() {
 
 <style scoped>
 .pay-container {
-    width: 1200px;
+    max-width: 1200px;
     margin: 0 auto;
     margin-top: 40px;
 }
@@ -286,9 +287,9 @@ function updateBalance() {
 
 .note-view {
     margin: 0 auto;
-    margin-top: 40px;
-    width: 588px;
-    height: 40px;
+    margin-top: 20px;
+    width: 80%;
+    max-width: 388px;
     font-size: 14px;
     font-weight: 400;
     color: #2E2F3E;
