@@ -147,7 +147,7 @@ function updateBalance() {
 
             <el-row justify="space-between">
                 <el-col :xs="14" :sm="12" :md="10" :lg="10" :xl="10" class="list-t-view">Register Fee</el-col>
-                <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" style="text-align: right;">{{ state.info.registerFee + ' BTC' }}</el-col>
+                <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" class="owner-view" style="text-align: right;">{{ state.info.registerFee + ' BTC' }}</el-col>
             </el-row>
 
             <el-row justify="space-between">
@@ -248,6 +248,11 @@ function updateBalance() {
 
 .tran-fee-title {
     margin-top: 50px;
+    color: #2E2F3E;
+}
+
+.owner-view {
+    color: #2E2F3E;
 }
 
 .line-view {
