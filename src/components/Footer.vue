@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from "element-plus";
-
-import service from "../router/service";
+import { onMounted, reactive } from 'vue';
 
 let state = reactive({ input: '', isMintAble: false, isMinting: false, inscriptId: '', targetAddr: '' })
 
@@ -25,10 +22,12 @@ onMounted(() => {
                     <img src="../assets/twitter@2x.png" style="width: 32px;height: 32px;margin-top: 30px;" alt="">
                 </a>
                 <a href="http://medium.com/@btcdomain" target="_blank">
-                    <img src="../assets/medium@2x.png" style="width: 32px;height: 32px;margin-top: 30px;margin-left: 10px;" alt="">
+                    <img src="../assets/medium@2x.png" style="width: 32px;height: 32px;margin-top: 30px;margin-left: 10px;"
+                        alt="">
                 </a>
                 <a href="" target="_blank">
-                    <img src="../assets/github@2x.png" style="width: 32px;height: 32px;margin-top: 30px;margin-left: 10px;" alt="">
+                    <img src="../assets/github@2x.png" style="width: 32px;height: 32px;margin-top: 30px;margin-left: 10px;"
+                        alt="">
                 </a>
             </el-col>
             <el-col :span="3">

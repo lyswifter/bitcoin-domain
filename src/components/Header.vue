@@ -8,16 +8,18 @@ function reloadPage() {
   <div class="container">
     <el-row justify="space-between">
       <el-col :span="2">
-        <img class="logo-view" src="../assets/logo_nav@2x.png" style="width: 158px;height: 30px;cursor: pointer;" alt="" @click="reloadPage">
+        <img class="logo-view" src="../assets/logo_nav@2x.png" style="width: 158px;height: 30px;cursor: pointer;" alt=""
+          @click="reloadPage">
       </el-col>
 
       <el-col :span="2">
-        <div class="doc-link-view"><a href="https://docs.btcdomains.io" style="text-decoration: none;color: white;" target="_blank">Document</a></div>
+        <div class="doc-link-view"><a href="https://docs.btcdomains.io" style="text-decoration: none;color: white;"
+            target="_blank">Document</a></div>
       </el-col>
     </el-row>
 
     <div class="slogon-view">
-      <img class="solgon-title-view" src="../assets/logo@2x.png" style="width: 488px;height: 80px;"  alt="">
+      <img class="solgon-title-view" src="../assets/logo@2x.png" alt="">
       <div class="solgon-content-view">Search domain name or Register your domain name</div>
     </div>
   </div>
@@ -25,9 +27,7 @@ function reloadPage() {
 
 <style scoped>
 .container {
-  background-image: url(../assets/顶部背景@2x.png);
-  background-repeat: no-repeat;
-  background-size: contain;
+  background-image: linear-gradient(90deg, #513eff 0%, #52e5ff 100%);
 }
 
 .logo-view {
@@ -55,9 +55,6 @@ function reloadPage() {
 .solgon-title-view {
   margin-top: 3%;
   height: 80px;
-  font-size: 84px;
-  color: #FFFFFF;
-  line-height: 80px;
 }
 
 .solgon-content-view {
