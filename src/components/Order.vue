@@ -371,7 +371,6 @@ onMounted(() => {
 }
 
 .list-tip-view {
-    height: 20px;
     font-size: 14px;
     font-weight: 400;
     color: #A7A9BE;

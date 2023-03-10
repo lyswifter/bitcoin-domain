@@ -61,8 +61,6 @@ function searchAction() {
   service.queryDomain(state.inputAppend).then((val) => {
     loadingInstance.close()
 
-    val.code = 311
-
     switch (val.code) {
       case 0:
         state.isAvailable = false

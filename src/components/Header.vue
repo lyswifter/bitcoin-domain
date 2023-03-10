@@ -53,7 +53,7 @@ function reloadPage() {
 }
 
 .solgon-title-view {
-  margin-top: 3%;
+  margin-top: 60px;
   height: 60px;
 }
 
