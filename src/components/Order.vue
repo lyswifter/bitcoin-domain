@@ -3,7 +3,7 @@ import { ElLoading, ElMessage } from 'element-plus';
 import { onMounted, reactive, ref, toRaw } from 'vue';
 
 import service from "../router/service";
-import { GasInfo } from "../router/type";
+import { GasInfo, Types } from "../router/type";
 
 import Decimal from 'decimal.js';
 import { useRequest } from 'vue-request';
@@ -42,12 +42,11 @@ function handleChange(value: number) {
     queryAction().then((val1) => {
         let g_fee = new Decimal(val1.data.gas_fee);
         let s_fee = new Decimal(val1.data.service_fee)
-
         let reg_fee = Decimal.add(g_fee, s_fee);
 
-        state.info.gasFee = g_fee.toPrecision(4).toString();
-        state.info.serviceFee = s_fee.toPrecision(4).toString();
-        state.info.registerFee = reg_fee.toPrecision(4).toString();
+        state.info.gasFee = g_fee.toPrecision(Types.precision).toString();
+        state.info.serviceFee = s_fee.toPrecision(Types.precision).toString();
+        state.info.registerFee = reg_fee.toPrecision(Types.precision).toString();
     })
 }
 
@@ -64,7 +63,6 @@ function nextStepAction() {
 
     if (state.info.addr.indexOf('bc1p') != -1) {
         if (state.info.addr.length == 62) {
-
             loadWallet()
         } else {
             ElMessage.error("Check the length of your Ordinals address");
@@ -77,37 +75,17 @@ function nextStepAction() {
 
 function loadWallet() {
     let loadingInstance = ElLoading.service({ fullscreen: true });
-    
+
     let localWalletStr = localStorage.getItem(state.info.name);
 
     if (!localWalletStr) {
         service.queryWallet(state.info.name).then((val1) => {
-
             state.info.midAddr = val1.data.receive_address;
             state.info.walletId = val1.data.wallet_id;
 
             localStorage.setItem(state.info.name, JSON.stringify(val1.data));
 
-            service.lockFee(state.info.name, state.info.years, state.info.walletId).then(val2 => {
-                service.queryBalance(val1.data.wallet_id).then((val3) => {
-                    let g_fee = new Decimal(val2.data.gas_fee);
-                    let s_fee = new Decimal(val2.data.service_fee)
-                    let b_fee = new Decimal(val3.data.mine.trusted)
-
-                    let reg_fee = Decimal.add(g_fee, s_fee);
-                    let z = Decimal.sub(reg_fee, b_fee);
-
-                    state.info.gasFee = g_fee.toPrecision(4).toString();
-                    state.info.serviceFee = s_fee.toPrecision(4).toString();
-                    state.info.registerFee = reg_fee.toPrecision(4).toString();
-                    state.info.balance = b_fee.toPrecision(4).toString();
-                    state.info.total = z.toPrecision(4).toString();
-
-                    loadingInstance.close()
-
-                    emit('continueAction', state.info)
-                })
-            })
+            lockFeeAndQueryBalance(loadingInstance)
         })
     } else {
         let localWallet = JSON.parse(localWalletStr);
@@ -115,27 +93,31 @@ function loadWallet() {
         state.info.midAddr = localWallet.receive_address;
         state.info.walletId = localWallet.wallet_id;
 
-        service.lockFee(state.info.name, state.info.years, state.info.walletId).then(val4 => {
-            service.queryBalance(localWallet.wallet_id).then((val5) => {
-                let g_fee = new Decimal(val4.data.gas_fee);
-                let s_fee = new Decimal(val4.data.service_fee)
-                let b_fee = new Decimal(val5.data.mine.trusted)
-
-                let reg_fee = Decimal.add(g_fee, s_fee);
-                let z = Decimal.sub(reg_fee, b_fee);
-
-                state.info.gasFee = g_fee.toPrecision(4).toString();
-                state.info.serviceFee = s_fee.toPrecision(4).toString();
-                state.info.registerFee = reg_fee.toPrecision(4).toString();
-                state.info.balance = b_fee.toPrecision(4).toString();
-                state.info.total = z.toPrecision(4).toString();
-
-                loadingInstance.close()
-
-                emit('continueAction', state.info)
-            })
-        })
+        lockFeeAndQueryBalance(loadingInstance)
     }
+}
+
+function lockFeeAndQueryBalance(loadingIns: any) {
+    service.lockFee(state.info.name, state.info.years, state.info.walletId).then(val4 => {
+        service.queryBalance(state.info.walletId).then((val5) => {
+            let g_fee = new Decimal(val4.data.gas_fee);
+            let s_fee = new Decimal(val4.data.service_fee)
+            let b_fee = new Decimal(val5.data.mine.trusted)
+
+            let reg_fee = Decimal.add(g_fee, s_fee);
+            let z = Decimal.sub(reg_fee, b_fee);
+
+            state.info.gasFee = g_fee.toPrecision(Types.precision).toString();
+            state.info.serviceFee = s_fee.toPrecision(Types.precision).toString();
+            state.info.registerFee = reg_fee.toPrecision(Types.precision).toString();
+            state.info.balance = b_fee.toPrecision(Types.precision).toString();
+            state.info.total = z.toPrecision(Types.precision).toString();
+
+            loadingIns.close()
+
+            emit('continueAction', state.info)
+        })
+    })
 }
 
 const queryAction = async function () {
@@ -148,7 +130,6 @@ function cancelAction() {
 
 function confirmAction() {
     state.isAddrVisiable = false
-    
     loadWallet()
 }
 
@@ -184,11 +165,11 @@ onMounted(() => {
     }
 
     useRequest(queryAction, {
-        pollingInterval: 10000,
+        pollingInterval: Types.queryBalInterval,
         pollingWhenHidden: false,
         onSuccess: val1 => {
-            state.info.gasFee = val1.data.gas_fee.toPrecision(4);
-            state.info.serviceFee = val1.data.service_fee.toPrecision(4);
+            state.info.gasFee = val1.data.gas_fee.toPrecision(Types.precision);
+            state.info.serviceFee = val1.data.service_fee.toPrecision(Types.precision);
 
             let g_fee = new Decimal(state.info.gasFee);
             let s_fee = new Decimal(state.info.serviceFee)
@@ -253,7 +234,7 @@ onMounted(() => {
                         <el-col :span="10">
                             <div class="list-t-view" style="padding-bottom: 0px;">Gas Fee</div>
                             <div class="list-tip-view" style="padding-left: 20px;">The gas fee fluctuates and is updated
-                                every 30 seconds.</div>
+                                every 10 seconds.</div>
                         </el-col>
                         <el-col :span="5" style="text-align: right;">
                             <div class="owner-view">{{ state.info.gasFee + " BTC" }}</div>

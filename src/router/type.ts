@@ -26,3 +26,8 @@ export interface DomainHistory {
     date: string;
     records: string[];
 }
+
+export const Types =  {
+    precision: 6,
+    queryBalInterval: 10000,
+};
