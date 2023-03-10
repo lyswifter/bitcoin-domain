@@ -85,13 +85,13 @@ onMounted(() => {
     <div class="registering-container">
         <div class="state-view">
             <el-row justify="space-between">
-                <el-col :span="2"><span class="s-name">NAME</span></el-col>
-                <el-col :span="2"><span class="s-name">STATE</span></el-col>
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="s-name">NAME</span></el-col>
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="s-name">STATE</span></el-col>
             </el-row>
 
             <el-row justify="space-between">
-                <el-col :span="3"><span class="t-name">{{ state.info.name }}</span></el-col>
-                <el-col :span="2"><span class="t-name">{{ state.info.isAvailable ? 'Registering...' : 'Registered'
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3"><span class="t-name">{{ state.info.name }}</span></el-col>
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="t-name">{{ state.info.isAvailable ? 'Registering...' : 'Registered'
                 }}</span></el-col>
             </el-row>
         </div>
@@ -101,10 +101,10 @@ onMounted(() => {
 
         <div class="re-content-view">
             <el-row justify="space-between" style="height: 60px;">
-                <el-col :span="3">
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3">
                     <div class="domain-name-view">{{ state.info.name }}</div>
                 </el-col>
-                <el-col :span="3">
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3">
                     <div class="detail-view">
                         Register
                     </div>
@@ -114,10 +114,10 @@ onMounted(() => {
             <div class="title-view">Mint state</div>
             <div class="process-c-view">
                 <el-row v-for="(item, index) in state.rowInfo" :key="index" justify="start" class="h-72">
-                    <el-col :span="1">
+                    <el-col :xs="4" :sm="4" :md="4" :lg="2" :xl="1">
                         <img :src="item.link" style="width: 32px;height: 32px;" alt="">
                     </el-col>
-                    <el-col :span="15">
+                    <el-col :xs="19" :sm="19" :md="19" :lg="21" :xl="22">
                         <div class="s-title">{{ item.title }}</div>
                         <div class="s-sub-title">{{ item.subTitle }}</div>
                     </el-col>
@@ -129,7 +129,7 @@ onMounted(() => {
 
 <style scoped>
 .registering-container {
-    width: 1200px;
+    max-width: 1200px;
     margin: 0 auto;
     margin-top: 40px;
 }
@@ -167,7 +167,7 @@ onMounted(() => {
 }
 
 .process-c-view {
-    width: 1060px;
+    max-width: 1060px;
     margin: 0 auto;
 }
 

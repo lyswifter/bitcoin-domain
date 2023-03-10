@@ -212,8 +212,7 @@ onMounted(() => {
             <!-- STEP 1 -->
             <div class="step-title-view">STEP 1: Receive address</div>
             <div style="margin: 0 auto;">
-                <div class="step-desc-view">Type your address to receive nft here (Note: this is an <a
-                        href="https://ordinals.com" target="_blank">Ordinals</a> address)</div>
+                <div class="step-desc-view">Type your address to receive nft here(Note:this is an <a href="https://ordinals.com" target="_blank">Ordinals</a> address)</div>
 
                 <el-autocomplete class="addr-input-view" v-model="state.info.addr" :fetch-suggestions="querySearch"
                     trigger-on-focus="true" clearable placeholder="Type your address to receive the nft here, like: bc1p..."
@@ -231,21 +230,21 @@ onMounted(() => {
 
                 <div class="fee-view">
                     <el-row justify="space-between">
-                        <el-col :xs="14" :sm="12" :md="10" :lg="10" :xl="10">
+                        <el-col :xs="12" :sm="12" :md="10" :lg="10" :xl="10">
                             <div class="list-t-view" style="padding-bottom: 0px;">Gas Fee</div>
                             <div class="list-tip-view" style="padding-left: 20px;">The gas fee fluctuates and is updated
                                 every 10 seconds.</div>
                         </el-col>
-                        <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" style="text-align: right;">
+                        <el-col :xs="12" :sm="10" :md="8" :lg="5" :xl="5" style="text-align: right;">
                             <div class="owner-view">{{ state.info.gasFee + " BTC" }}</div>
                         </el-col>
                     </el-row>
 
                     <el-row justify="space-between">
-                        <el-col :xs="14" :sm="12" :md="10" :lg="10" :xl="10">
+                        <el-col :xs="12" :sm="12" :md="10" :lg="10" :xl="10">
                             <div class="list-t-view">Service Fee</div>
                         </el-col>
-                        <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" style="text-align: right;">
+                        <el-col :xs="12" :sm="10" :md="8" :lg="5" :xl="5" style="text-align: right;">
                             <div class="owner-view">{{ state.info.serviceFee + " BTC" }}</div>
                         </el-col>
                     </el-row>
@@ -253,10 +252,10 @@ onMounted(() => {
                     <div class="line-view"></div>
 
                     <el-row justify="space-between">
-                        <el-col :xs="14" :sm="12" :md="10" :lg="10" :xl="10">
+                        <el-col :xs="12" :sm="12" :md="10" :lg="10" :xl="10">
                             <div class="total-list-t-view" style="padding-left: 20px;">Total Register Fee</div>
                         </el-col>
-                        <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" style="text-align: right;padding-right: 10px;">
+                        <el-col :xs="12" :sm="10" :md="8" :lg="5" :xl="5" style="text-align: right;padding-right: 10px;">
                             <div class="total-fee-view">{{ state.info.registerFee + " BTC" }}</div>
                         </el-col>
                     </el-row>
@@ -327,6 +326,7 @@ onMounted(() => {
 }
 
 .addr-input-view {
+    width: 100%;
     margin-top: 5px;
 }
 
@@ -341,7 +341,6 @@ onMounted(() => {
 
 .step-desc-view {
     margin-top: 20px;
-    height: 20px;
     font-size: 14px;
     font-weight: 600;
     color: #A7A9BE;
