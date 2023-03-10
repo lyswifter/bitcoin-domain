@@ -66,15 +66,20 @@ function searchAction() {
         state.isAvailable = false
         state.stage = 'registered'
         break
-        
+
       case 310:
         state.isAvailable = true
         state.stage = 'order'
         break;
 
-      case 311:
-        state.isAvailable = false
-        state.stage = 'registering'
+      case 311: // registering
+        if (val.data.dom_state == 5) { // registered
+          state.isAvailable = false
+          state.stage = 'registered'
+        } else {
+          state.isAvailable = false
+          state.stage = 'registering'
+        }
         break
 
       default:
@@ -141,7 +146,8 @@ onMounted(() => {
     <OrderView v-else-if="state.stage == 'order'" :ref="state.stage" class="order-view" :domain-name="state.inputAppend"
       :is-available="state.isAvailable" @continue-action="orderToPayAction" />
 
-    <PayView v-else-if="state.stage == 'pay'" :ref="state.stage" class="pay-view" :gas-info="state.gasInfo" @back-action="backAction" @to-processing="toProcessing" />
+    <PayView v-else-if="state.stage == 'pay'" :ref="state.stage" class="pay-view" :gas-info="state.gasInfo"
+      @back-action="backAction" @to-processing="toProcessing" />
 
     <RegisteriedView v-else-if="state.stage == 'registered'" :ref="state.stage" class="registered-view"
       :domain-name="state.inputAppend" :is-available="state.isAvailable" />

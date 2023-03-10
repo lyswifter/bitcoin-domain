@@ -39,17 +39,17 @@ onMounted(() => {
         subTitle: 'This may take 20 minutes',
         index: 1,
         link: waitingUrl,
-    },{
+    }, {
         title: 'Locked the dominate',
         subTitle: "Your domain name is locked. Don't worry about being preempted.",
         index: 2,
         link: waitingUrl,
-    },{
+    }, {
         title: 'Inscripting',
         subTitle: 'This may take 20 minutes',
         index: 3,
         link: waitingUrl,
-    },{
+    }, {
         title: 'Inscription transfer pending',
         subTitle: 'This may take 20 minutes',
         index: 4,
@@ -68,11 +68,11 @@ onMounted(() => {
 
             for (let i = 0; i < state.rowInfo.length; i++) {
                 var element = state.rowInfo[i];
-                if (i < state.current-1) {
-                   element.link = certainUrl
-                } else if (i == state.current-1) {
+                if (i < state.current - 1) {
+                    element.link = certainUrl
+                } else if (i == state.current - 1) {
                     element.link = loadingUrl
-                } else if (i > state.current-1) {
+                } else if (i > state.current - 1) {
                     element.link = waitingUrl
                 }
             }
@@ -91,7 +91,8 @@ onMounted(() => {
 
             <el-row justify="space-between">
                 <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3"><span class="t-name">{{ state.info.name }}</span></el-col>
-                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="t-name">{{ state.info.isAvailable ? 'Registering...' : 'Registered'
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="t-name">{{ state.info.isAvailable ?
+                    'Registering...' : 'Registered'
                 }}</span></el-col>
             </el-row>
         </div>
