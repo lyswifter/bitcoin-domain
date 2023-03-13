@@ -46,7 +46,7 @@ onMounted(() => {
         state.info.create = getTime(val.data.create_time, '')
         state.info.registration = getTime(val.data.create_time, '')
         state.info.inscriptionId = val.data.inscribe_id
-        state.info.owner = val.data.out_wallet
+        state.info.owner = val.data.owner_address
     })
 })
 </script>

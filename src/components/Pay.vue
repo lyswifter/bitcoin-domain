@@ -147,14 +147,14 @@ function updateBalance() {
 
             <el-row justify="space-between">
                 <el-col :xs="14" :sm="12" :md="10" :lg="10" :xl="10" class="list-t-view">Register Fee</el-col>
-                <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" class="owner-view" style="text-align: right;">{{ state.info.registerFee + ' BTC' }}</el-col>
+                <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" class="owner-view">{{ state.info.registerFee + ' BTC' }}</el-col>
             </el-row>
 
             <el-row justify="space-between">
                 <el-col :xs="14" :sm="12" :md="10" :lg="10" :xl="10">
                     <div class="list-t-view">Current Balance</div>
                 </el-col>
-                <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" style="text-align: right;">
+                <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5">
                     <div class="owner-view">{{ state.info.balance + " BTC" }}</div>
                 </el-col>
             </el-row>
@@ -166,7 +166,7 @@ function updateBalance() {
                     <div class="list-t-view">Final Payment</div>
                     <div class="list-tip-view" style="padding-left: 20px;">Total Register Fee - Current Balance</div>
                 </el-col>
-                <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5" style="text-align: right;">
+                <el-col :xs="10" :sm="8" :md="6" :lg="5" :xl="5">
                     <div class="owner-view">{{ state.info.total + " BTC" }}</div>
                 </el-col>
             </el-row>

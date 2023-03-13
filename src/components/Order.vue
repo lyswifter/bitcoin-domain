@@ -110,7 +110,7 @@ function lockFeeAndQueryBalance(loadingIns: any) {
             state.info.gasFee = g_fee.toPrecision(Types.precision).toString();
             state.info.serviceFee = s_fee.toPrecision(Types.precision).toString();
             state.info.registerFee = reg_fee.toPrecision(Types.precision).toString();
-            state.info.balance = b_fee.toPrecision(Types.precision).toString();
+            state.info.balance = b_fee.equals(0) ? "0" : b_fee.toPrecision(Types.precision).toString();
             state.info.total = z.toPrecision(Types.precision).toString();
 
             loadingIns.close()
