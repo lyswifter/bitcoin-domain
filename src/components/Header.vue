@@ -2,6 +2,9 @@
 function reloadPage() {
   location.reload();
 }
+
+const openOrdexLink = "https://openordex.org/collection?slug=btcdomain";
+
 </script>
 
 <template>
@@ -12,9 +15,14 @@ function reloadPage() {
           @click="reloadPage">
       </el-col>
 
-      <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2">
-        <div class="doc-link-view"><a href="https://docs.btcdomains.io" style="text-decoration: none;color: white;"
-            target="_blank">Document</a></div>
+      <el-col :xs="12" :sm="6" :md="5" :lg="4" :xl="3">
+        <el-row>
+          <div class="doc-link-view"><a :href="openOrdexLink" style="text-decoration: none;color: white;"
+              target="_blank">Openordex</a></div>
+
+          <div class="doc-link-view"><a href="https://docs.btcdomains.io"
+              style="text-decoration: none;color: white;margin-left: 15px;" target="_blank">Document</a></div>
+        </el-row>
       </el-col>
     </el-row>
 
