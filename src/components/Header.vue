@@ -3,7 +3,7 @@ function reloadPage() {
   location.reload();
 }
 
-const openOrdexLink = "https://openordex.org/collection?slug=btcdomain";
+const openOrdexLink = "https://btcdomains.click/openordex-open-2f8217";
 
 </script>
 
