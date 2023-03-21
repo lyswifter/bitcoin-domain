@@ -26,7 +26,7 @@ onMounted(() => {
                     <img src="../assets/medium@2x.png" style="width: 32px;height: 32px;margin-top: 30px;margin-left: 10px;"
                         alt="">
                 </a>
-                <a href="" target="_blank">
+                <a href="https://github.com/btcdomain" target="_blank">
                     <img src="../assets/github@2x.png" style="width: 32px;height: 32px;margin-top: 30px;margin-left: 10px;"
                         alt="">
                 </a>
