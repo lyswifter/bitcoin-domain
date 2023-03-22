@@ -12,6 +12,6 @@ echo "build ok."
 
 tar -czvf dist.tar.gz dist
 
-scp -i ~/.ssh/bitcoin.pem dist.tar.gz ubuntu@18.232.119.81:/home/ubuntu
+scp -i ~/.ssh/bitcoin.pem dist.tar.gz ubuntu@54.234.246.200:/home/ubuntu
 
 echo "upload finished!"
