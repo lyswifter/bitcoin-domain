@@ -35,13 +35,13 @@ onMounted(() => {
     state.info.isAvailable = props.isAvailable!
 
     state.rowInfo = [{
-        title: 'Fund Transfer Pending',
-        subTitle: 'This may take 20 minutes',
+        title: 'Locked the dominate',
+        subTitle: "Your domain name is locked. Don't worry about being preempted.",
         index: 1,
         link: waitingUrl,
     }, {
-        title: 'Locked the dominate',
-        subTitle: "Your domain name is locked. Don't worry about being preempted.",
+        title: 'Fund Transfer Pending',
+        subTitle: 'This may take 20 minutes',
         index: 2,
         link: waitingUrl,
     }, {

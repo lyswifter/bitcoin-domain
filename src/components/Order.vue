@@ -8,6 +8,8 @@ import { GasInfo, Types } from "../router/type";
 import Decimal from 'decimal.js';
 import { useRequest } from 'vue-request';
 
+import { validate } from 'bitcoin-address-validation';
+
 const props = defineProps({
     domainName: String,
     isAvailable: Boolean,
@@ -56,8 +58,9 @@ function nextStepAction() {
         return
     }
 
-    if (state.info.addr.indexOf(" ") != -1) {
-        ElMessage.error("Receive address format is not correct")
+    // bitcoinjs
+    if (!validate(state.info.addr)) {
+        ElMessage.error("Receive bitcoin address is not valid")
         return
     }
 

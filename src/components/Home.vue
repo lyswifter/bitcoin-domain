@@ -12,11 +12,11 @@ import HeaderView from "../components/Header.vue";
 import HistView from "../components/History.vue";
 import OrderView from "../components/Order.vue";
 import PayView from "../components/Pay.vue";
+import RegisteriedView from "../components/Registered.vue";
+import RegisteringView from "../components/Registering.vue";
 import StartView from "../components/Start.vue";
 
 import { ElLoading, ElMessage } from 'element-plus';
-import RegisteriedView from "../components/Registered.vue";
-import RegisteringView from "../components/Registering.vue";
 
 let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px', history: {} as DomainHistory })
 
@@ -82,6 +82,10 @@ function searchAction() {
         }
         break
 
+      case 500:
+        ElMessage.error(val.message)
+        break
+
       default:
         ElMessage.error(val.data)
         break;
@@ -134,7 +138,8 @@ onMounted(() => {
     <div class="search-view">
       <el-input class="input-class" v-model="state.input" placeholder="Search name or address" maxlength="32"
         minlength="4" @keyup.enter.native="searchAction" />
-      <a class="search-a" style="text-decoration: none;" href="javascript:void(0)" @click="searchAction"> Search </a>
+      <a class="search-a" :class="state.input ? 'search-a-enable' : 'search-a-disable'" style="text-decoration: none;" href="javascript:void(0)"
+        @click="searchAction"> Search </a>
     </div>
 
     <EmptyView v-if="state.stage == ''" />
@@ -193,7 +198,14 @@ onMounted(() => {
   border-radius: 8px;
   text-align: center;
   line-height: 64px;
+}
+
+.search-a-enable {
   color: white;
+}
+
+.search-a-disable {
+  color: #A7A9BE;
 }
 
 .hist-view {
