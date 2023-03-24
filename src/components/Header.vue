@@ -4,6 +4,7 @@ function reloadPage() {
 }
 
 const openOrdexLink = "https://btcdomains.click/openordex-open-2f8217";
+const magicEdenLink = "https://magiceden.io/ordinals/marketplace/btcdomain";
 
 </script>
 
@@ -11,17 +12,20 @@ const openOrdexLink = "https://btcdomains.click/openordex-open-2f8217";
   <div class="container">
     <el-row justify="space-between">
       <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2">
-        <img class="logo-view" src="../assets/logo_nav@2x.png" style="width: 158px;height: 30px;cursor: pointer;" alt=""
+        <img class="logo-view" src="../assets/logo_nav@2x.png" style="width: 126px;height: 24px;cursor: pointer;" alt=""
           @click="reloadPage">
       </el-col>
 
-      <el-col :xs="12" :sm="6" :md="5" :lg="4" :xl="3">
+      <el-col :xs="15" :sm="7" :md="6" :lg="5" :xl="3">
         <el-row>
-          <div class="doc-link-view"><a :href="openOrdexLink" style="text-decoration: none;color: white;"
+          <div class="doc-link-view"><a :href="magicEdenLink" style="text-decoration: none;color: white;"
+              target="_blank">Magiceden</a></div>
+
+          <div class="doc-link-view"><a :href="openOrdexLink" style="text-decoration: none;color: white;margin-left: 10px;"
               target="_blank">Openordex</a></div>
 
           <div class="doc-link-view"><a href="https://docs.btcdomains.io"
-              style="text-decoration: none;color: white;margin-left: 15px;" target="_blank">Document</a></div>
+              style="text-decoration: none;color: white;margin-left: 10px;" target="_blank">Document</a></div>
         </el-row>
       </el-col>
     </el-row>
@@ -35,7 +39,7 @@ const openOrdexLink = "https://btcdomains.click/openordex-open-2f8217";
 
 <style scoped>
 .container {
-  background-image: linear-gradient(90deg, #513eff 0%, #52e5ff 100%);
+  background-image: linear-gradient(180deg, #513eff 0%, #52e5ff 100%);
 }
 
 .logo-view {
