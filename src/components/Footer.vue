@@ -5,8 +5,6 @@ import { Links } from "../router/type";
 
 import 'element-plus/theme-chalk/display.css';
 
-const docLink = "https://docs.btcdomains.io";
-
 let state = reactive({ input: '', isMintAble: false, isMinting: false, inscriptId: '', targetAddr: '' })
 
 onMounted(() => {
@@ -18,7 +16,7 @@ onMounted(() => {
         <div class="footer-main-view">
             <img class="footer-logo-view" src="../assets/logo_footer@2x.png" style="height: 30px;" alt="">
 
-            <div class="footer-email-view" style="margin-left: 5%;">
+            <div class="footer-email-view ele-show-mobile ">
                 <img src="../assets/邮箱@2x.png" style="width: 40px;height: 40px;vertical-align: middle;" alt="">
                 contact@btcdomains.io
             </div>
@@ -44,6 +42,11 @@ onMounted(() => {
                     <img class="link-icon" src="../assets/github@2x.png" alt="">
                 </a>
             </div>
+
+            <div class="footer-email-view ele-show">
+                <img src="../assets/邮箱@2x.png" style="width: 40px;height: 40px;vertical-align: middle;" alt="">
+                contact@btcdomains.io
+            </div>
         </div>
     </div>
 </template>
@@ -59,7 +62,7 @@ onMounted(() => {
     background: #FFFFFF;
 }
 
-@media screen and (min-width: 375px) and (max-width: 700px) {
+@media screen and (max-width: 599px) {
     .footer-logo-view {
         margin-top: 30px;
         max-width: 40%;
@@ -68,11 +71,12 @@ onMounted(() => {
     .footer-links-view {
         width: 100%;
         min-width: 40%;
+        margin-left: 10px;
     }
 
     .footer-email-view {
+        margin-left: 10px;
         min-width: 25%;
-        float: right;
         font-size: 14px;
         font-weight: 400;
         color: #222840;
@@ -84,9 +88,13 @@ onMounted(() => {
         height: 32px;
         margin-top: 30px;
     }
+
+    .ele-show-mobile {
+        display: none;
+    }
 }
 
-@media screen and (min-width: 700px) and (max-width: 1920px) {
+@media screen and (min-width: 600px){
     .footer-logo-view {
         margin-top: 30px;
         max-width: 15%;
@@ -100,6 +108,7 @@ onMounted(() => {
     }
 
     .footer-email-view {
+        float: right;
         min-width: 25%;
         float: right;
         font-size: 14px;
@@ -113,6 +122,10 @@ onMounted(() => {
         height: 32px;
         margin-top: 30px;
         margin-left: 5px;
+    }
+
+    .ele-show {
+        display: none;
     }
 }
 </style>
