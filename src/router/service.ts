@@ -100,5 +100,37 @@ export default {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
         }
+    },
+
+    async avatarSet(inscriptId: string, address: string, domain: string) {
+        // avatarSet
+        //
+        let ret = await axios.post(Apis.avatarSet, {
+            inscribe_id: inscriptId,
+            address: address,
+            domain: domain,
+        })
+
+        if (ret.status == 200) {
+            return ret.data   
+        } else {
+            ElMessage.error("Bad request[code=" + ret.status + "]")
+            return
+        }
+    },
+
+    async avatarGet(address: string) {
+        // avatarGet
+        //
+        let ret = await axios.post(Apis.avatarGet, {
+            address: address,
+        })
+
+        if (ret.status == 200) {
+            return ret.data   
+        } else {
+            ElMessage.error("Bad request[code=" + ret.status + "]")
+            return
+        }
     }
 }

@@ -27,7 +27,20 @@ export interface DomainHistory {
     records: string[];
 }
 
-export const Types =  {
+export const Types = {
     precision: 6,
     queryBalInterval: 10000,
 };
+
+export const Links = {
+    doc: "https://docs.btcdomains.io",
+    openOrdex: "https://btcdomains.click/openordex-open-2f8217",
+    magicEden: "https://magiceden.io/ordinals/marketplace/btcdomain",
+
+    twitter: "http://twitter.com/btcdomain_btc",
+    trees: "http://twitter.com/btcdomain_btc",
+    github: "https://github.com/btcdomain",
+    medium: "http://medium.com/@btcdomain",
+}
+
+export const GivingMsg = "Signing this to get a bitcoin key-pair --";
