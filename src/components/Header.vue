@@ -3,11 +3,10 @@ import ecc from '@bitcoinerlab/secp256k1';
 import BIP32Factory from 'bip32';
 import * as bitcoin from 'bitcoinjs-lib';
 import { Buffer } from 'buffer';
+import { ElMessage } from 'element-plus';
 import { ethers } from "ethers";
 import { reactive } from "vue";
 import { GivingMsg, Links } from "../router/type";
-
-import { ElMessage } from 'element-plus';
 
 const defaultPath = "m/86'/0'/0'/0/0";
 const subSLen = 8;
@@ -18,10 +17,17 @@ const bip32 = BIP32Factory(ecc);
 const toXOnly = (pubKey: Buffer) =>
   pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
 
-let state = reactive({ account: '', bitcoinAddr: '', shortAddr: '' })
+let state = reactive({ isExpand: false, account: '', bitcoinAddr: '', shortAddr: '' })
+
+const menuIcon = '../../src/assets/icon_menu@2x.png'
+const closeIcon = '../../src/assets/icon_close_nav@2x.png'
 
 function reloadPage() {
   location.reload();
+}
+
+function expandAction() {
+  state.isExpand = !state.isExpand
 }
 
 async function connectAction() {
@@ -95,8 +101,8 @@ async function connectAction() {
     <nav class="navbar navbar-expand-md bg-body-tertiary">
       <button class="navbar-toggler" style="box-shadow: none;" type="button" data-bs-toggle="collapse"
         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-        aria-label="Toggle navigation">
-        <img src="../assets/icon_menu@2x.png" alt="" width="24" height="24">
+        aria-label="Toggle navigation" @click="expandAction">
+        <img :src="state.isExpand?closeIcon:menuIcon" alt="" width="24" height="24">
       </button>
 
       <a class="navbar-brand brand-mobile" href="" @click="reloadPage">
@@ -192,9 +198,8 @@ async function connectAction() {
 .connect-btn-selected {
   width: 170px;
   background: rgba(255, 255, 255, 0.3);
-  border-radius: 20px;
   border: 1px solid #FFFFFF;
-  color: white;
+  color: #FFFFFF;
 }
 
 @media screen and (max-width: 767px) {
