@@ -2,15 +2,15 @@
 import ecc from '@bitcoinerlab/secp256k1';
 import BIP32Factory from 'bip32';
 import * as bitcoin from 'bitcoinjs-lib';
-import { ethers } from "ethers";
 import { Buffer } from 'buffer';
+import { ethers } from "ethers";
 import { reactive } from "vue";
 import { GivingMsg, Links } from "../router/type";
 
 import { ElMessage } from 'element-plus';
 
 const defaultPath = "m/86'/0'/0'/0/0";
-const subSLen = 6;
+const subSLen = 8;
 
 bitcoin.initEccLib(ecc);
 const bip32 = BIP32Factory(ecc);
@@ -18,7 +18,7 @@ const bip32 = BIP32Factory(ecc);
 const toXOnly = (pubKey: Buffer) =>
   pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
 
-let state = reactive({ account: '', bitcoinAddr: '' })
+let state = reactive({ account: '', bitcoinAddr: '', shortAddr: '' })
 
 function reloadPage() {
   location.reload();
@@ -26,7 +26,7 @@ function reloadPage() {
 
 async function connectAction() {
   if (state.bitcoinAddr) {
-    return  
+    return
   }
 
   if (typeof window.ethereum === 'undefined') {
@@ -81,8 +81,9 @@ async function connectAction() {
   if (taprootAddress) {
     console.log("taprootChild: " + taprootChild)
     console.log("address: " + taprootAddress)
-    
+
     state.bitcoinAddr = taprootAddress
+    state.shortAddr = state.bitcoinAddr.substring(0, subSLen) + '...' + state.bitcoinAddr.substring(state.bitcoinAddr.length - subSLen, state.bitcoinAddr.length);
   } else {
     ElMessage.error("generate your bitcoin address failed, please retry.")
   }
@@ -91,21 +92,21 @@ async function connectAction() {
 
 <template>
   <div class="header-container">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-md bg-body-tertiary">
+      <button class="navbar-toggler" style="box-shadow: none;" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+        aria-label="Toggle navigation">
+        <img src="../assets/icon_menu@2x.png" alt="" width="24" height="24">
+      </button>
+
+      <a class="navbar-brand brand-mobile" href="" @click="reloadPage">
+        <img src="../assets/logo_nav@2x.png" alt="bitcoin_domain" width="150" height="30">
+      </a>
+
+      <img class="avatar-icon-view" src="../assets/icon_btc@2x.png" style="margin-right: 10px;" alt="" width="30"
+        height="30">
+
       <div class="container-fluid">
-        <a class="navbar-brand brand-mobile" href="" @click="reloadPage">
-          <img src="../assets/logo_nav@2x.png" alt="bitcoin_domain" width="150" height="30">
-        </a>
-
-        <div class="connect-btn connect-btn-mobile" @click="connectAction">{{ state.bitcoinAddr ? state.bitcoinAddr.substring(0, subSLen) + '...' +
-            state.bitcoinAddr.substring(state.bitcoinAddr.length - subSLen, state.bitcoinAddr.length) : "Connect Wallet" }}</div>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <!-- <span class="navbar-toggler-icon"></span> -->
-          <img src="../assets/icon_processing_waiting@2x.png" alt="" width="32" height="32">
-        </button>
-
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
@@ -117,8 +118,10 @@ async function connectAction() {
             </li>
           </ul>
 
-          <div class="connect-btn connect-btn-web" @click="connectAction">{{ state.bitcoinAddr ? state.bitcoinAddr.substring(0, subSLen) + '...' +
-            state.bitcoinAddr.substring(state.bitcoinAddr.length - subSLen, state.bitcoinAddr.length) : "Connect Wallet" }}</div>
+          <div class="connect-btn" :class="state.bitcoinAddr ? 'connect-btn-selected' : 'connect-btn-normal'" @click="connectAction">
+            <img v-if="state.bitcoinAddr" src="../assets/icon_btc@2x.png" alt="" width="30" height="30">
+            {{ state.shortAddr ? state.shortAddr : "Connect Wallet" }}
+          </div>
         </div>
       </div>
     </nav>
@@ -171,37 +174,37 @@ async function connectAction() {
 }
 
 .connect-btn {
-  width: 132px;
   height: 40px;
-  background: #FFFFFF;
   border-radius: 20px;
-  font-size: 14px;
-  font-weight: 400;
-  color: #4540D6;
   line-height: 40px;
   text-align: center;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
 }
 
-@media screen and (min-width: 375px) and (max-width: 700px) {
-  .brand-mobile {
-    display: none;
-  }
+.connect-btn-normal {
+  width: 132px;
+  background: #FFFFFF;
+  color: #4540D6;
+}
 
-  .connect-btn-web {
-    display: none;
-  }
+.connect-btn-selected {
+  width: 170px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  border: 1px solid #FFFFFF;
+  color: white;
+}
 
-  .connect-btn-mobile {
-    margin: 0 auto;
+@media screen and (max-width: 767px) {
+  .navbar-web {
+    display: none;
   }
 }
 
-@media screen and (min-width: 700px) and (max-width: 1920px) {
-  /* .connect-btn-web {
-  } */
-
-  .connect-btn-mobile {
+@media screen and (min-width: 768px) {
+  .avatar-icon-view {
     display: none;
   }
 }
