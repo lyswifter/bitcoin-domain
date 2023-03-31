@@ -18,6 +18,8 @@ import StartView from "../components/Start.vue";
 
 import { ElLoading, ElMessage } from 'element-plus';
 
+import router from "../router/index";
+
 let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px', history: {} as DomainHistory })
 
 // '', start, hist, order, pay, registered, registering
@@ -90,7 +92,6 @@ function searchAction() {
         ElMessage.error(val.data)
         break;
     }
-
   })
 }
 
@@ -116,6 +117,11 @@ function toProcessing(info: GasInfo) {
   state.gasInfo = info;
 }
 
+function connectParentAction(addr: string) {
+  console.log('connectAction: ' + addr)
+  router.push({ name: 'wallet', params: { addr: addr }})
+}
+
 onMounted(() => {
   pageview({ page_path: '/home' })
 
@@ -133,7 +139,12 @@ onMounted(() => {
 <template>
   <div class="main-view">
 
-    <HeaderView class="header-view" :style="{ height: state.headerHeight }" />
+    <HeaderView class="header-view" @connect-parent-action="connectParentAction"/>
+
+    <div class="slogon-view">
+      <img class="solgon-title-view" src="../assets/logo@2x.png" alt="">
+      <div class="solgon-content-view">Search domain name or Register your domain name</div>
+    </div>
 
     <div class="search-view">
       <el-input class="input-class" v-model="state.input" placeholder="Search name or address" maxlength="32"
@@ -160,9 +171,8 @@ onMounted(() => {
     <RegisteringView v-else-if="state.stage == 'registering'" :ref="state.stage" class="registering-view"
       :domain-name="state.inputAppend" :is-available="state.isAvailable" :gas-info="state.gasInfo" />
 
+    <FooterView class="footer-view" />
   </div>
-
-  <FooterView class="footer-view" />
 </template>
 
 <style scoped>
@@ -172,6 +182,27 @@ onMounted(() => {
 
 .header-view {
   width: 100%;
+}
+
+.slogon-view {
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
+  padding-bottom: 60px;
+  background-image: linear-gradient(180deg, #513eff 0%, #52e5ff 100%);
+}
+
+.solgon-title-view {
+  margin-top: 60px;
+  height: 60px;
+}
+
+.solgon-content-view {
+  height: 25px;
+  font-size: 18px;
+  font-weight: 400;
+  color: #FFFFFF;
+  line-height: 25px;
 }
 
 .search-view {

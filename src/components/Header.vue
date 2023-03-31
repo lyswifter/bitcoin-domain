@@ -5,11 +5,14 @@ import * as bitcoin from 'bitcoinjs-lib';
 import { Buffer } from 'buffer';
 import { ElMessage } from 'element-plus';
 import { ethers } from "ethers";
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
 import { GivingMsg, Links } from "../router/type";
 
 const defaultPath = "m/86'/0'/0'/0/0";
 const subSLen = 8;
+
+const menuIcon = '../../src/assets/icon_menu@2x.png';
+const closeIcon = '../../src/assets/icon_close_nav@2x.png';
 
 bitcoin.initEccLib(ecc);
 const bip32 = BIP32Factory(ecc);
@@ -17,10 +20,14 @@ const bip32 = BIP32Factory(ecc);
 const toXOnly = (pubKey: Buffer) =>
   pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
 
+const shortenAddr = (addr: string) =>
+addr.substring(0, subSLen) + '...' + addr.substring(addr.length - subSLen, addr.length)
+
 let state = reactive({ isExpand: false, account: '', bitcoinAddr: '', shortAddr: '' })
 
-const menuIcon = '../../src/assets/icon_menu@2x.png'
-const closeIcon = '../../src/assets/icon_close_nav@2x.png'
+const emit = defineEmits({
+  connectParentAction(addr: string) { },
+})
 
 function reloadPage() {
   location.reload();
@@ -30,11 +37,7 @@ function expandAction() {
   state.isExpand = !state.isExpand
 }
 
-async function connectAction() {
-  if (state.bitcoinAddr) {
-    return
-  }
-
+async function generateBitcoinAddr() {
   if (typeof window.ethereum === 'undefined') {
     alert("Matamask is not installed!")
     return
@@ -89,11 +92,29 @@ async function connectAction() {
     console.log("address: " + taprootAddress)
 
     state.bitcoinAddr = taprootAddress
-    state.shortAddr = state.bitcoinAddr.substring(0, subSLen) + '...' + state.bitcoinAddr.substring(state.bitcoinAddr.length - subSLen, state.bitcoinAddr.length);
+    state.shortAddr = shortenAddr(state.bitcoinAddr);
+
+    localStorage.setItem('bitcoin_address', taprootAddress)
   } else {
     ElMessage.error("generate your bitcoin address failed, please retry.")
   }
 }
+
+function connectAction() {
+  if (state.bitcoinAddr) {
+    emit('connectParentAction', state.bitcoinAddr)
+  } else {
+    generateBitcoinAddr()
+  }
+}
+
+onMounted(() => {
+  if (localStorage.getItem('bitcoin_address')) {
+    let localAddr = localStorage.getItem('bitcoin_address')!;
+    state.bitcoinAddr = localAddr;
+    state.shortAddr = shortenAddr(localAddr);
+  }
+})
 </script>
 
 <template>
@@ -102,15 +123,18 @@ async function connectAction() {
       <button class="navbar-toggler" style="box-shadow: none;" type="button" data-bs-toggle="collapse"
         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
         aria-label="Toggle navigation" @click="expandAction">
-        <img :src="state.isExpand?closeIcon:menuIcon" alt="" width="24" height="24">
+        <img :src="state.isExpand ? closeIcon : menuIcon" alt="" width="24" height="24">
       </button>
 
       <a class="navbar-brand brand-mobile" href="" @click="reloadPage">
         <img src="../assets/logo_nav@2x.png" alt="bitcoin_domain" width="150" height="30">
       </a>
 
-      <img class="avatar-icon-view" src="../assets/icon_btc@2x.png" style="margin-right: 10px;" alt="" width="30"
-        height="30">
+      <div class="avatar-icon-view">
+        <img v-if="state.bitcoinAddr" src="../assets/icon_btc@2x.png" style="margin-right: 10px;" alt="" width="30"
+          height="30" @click="connectAction">
+        <div v-else class="connect-btn connect-btn-normal-mobile" @click="connectAction">Wallet</div>
+      </div>
 
       <div class="container-fluid">
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -124,24 +148,21 @@ async function connectAction() {
             </li>
           </ul>
 
-          <div class="connect-btn" :class="state.bitcoinAddr ? 'connect-btn-selected' : 'connect-btn-normal'" @click="connectAction">
+          <div class="connect-btn" :class="state.bitcoinAddr ? 'connect-btn-selected' : 'connect-btn-normal'"
+            @click="connectAction">
             <img v-if="state.bitcoinAddr" src="../assets/icon_btc@2x.png" alt="" width="30" height="30">
             {{ state.shortAddr ? state.shortAddr : "Connect Wallet" }}
           </div>
         </div>
       </div>
     </nav>
-
-    <div class="slogon-view">
-      <img class="solgon-title-view" src="../assets/logo@2x.png" alt="">
-      <div class="solgon-content-view">Search domain name or Register your domain name</div>
-    </div>
   </div>
 </template>
 
 <style scoped>
 .header-container {
-  background-image: linear-gradient(180deg, #513eff 0%, #52e5ff 100%);
+  background-image: linear-gradient(180deg, #513eff 0%, #513eff 100%);
+  /* 52e5ff */
 }
 
 .logo-view {
@@ -160,25 +181,6 @@ async function connectAction() {
   margin-top: 10px;
 }
 
-.slogon-view {
-  margin: 0 auto;
-  width: 100%;
-  text-align: center;
-}
-
-.solgon-title-view {
-  margin-top: 60px;
-  height: 60px;
-}
-
-.solgon-content-view {
-  height: 25px;
-  font-size: 18px;
-  font-weight: 400;
-  color: #FFFFFF;
-  line-height: 25px;
-}
-
 .connect-btn {
   height: 40px;
   border-radius: 20px;
@@ -187,6 +189,12 @@ async function connectAction() {
   cursor: pointer;
   font-size: 14px;
   font-weight: 400;
+}
+
+.connect-btn-normal-mobile {
+  width: 66px;
+  background: #FFFFFF;
+  color: #4540D6;
 }
 
 .connect-btn-normal {

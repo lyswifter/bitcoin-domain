@@ -1,13 +1,6 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
 import { Links } from "../router/type";
 
-// import 'element-plus/theme-chalk/display.css';
-
-let state = reactive({ input: '', isMintAble: false, isMinting: false, inscriptId: '', targetAddr: '' })
-
-onMounted(() => {
-})
 </script>
 
 <template>
