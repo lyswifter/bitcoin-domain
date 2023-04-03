@@ -21,12 +21,23 @@ const toXOnly = (pubKey: Buffer) =>
   pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
 
 const shortenAddr = (addr: string) =>
-addr.substring(0, subSLen) + '...' + addr.substring(addr.length - subSLen, addr.length)
+  addr.substring(0, subSLen) + '...' + addr.substring(addr.length - subSLen, addr.length)
 
 let state = reactive({ isExpand: false, account: '', bitcoinAddr: '', shortAddr: '' })
 
 const emit = defineEmits({
   connectParentAction(addr: string) { },
+})
+
+function doDisconnect() {
+  localStorage.clear();
+  state.account = '';
+  state.bitcoinAddr = '';
+  state.shortAddr = '';
+}
+
+defineExpose({
+  doDisconnect,
 })
 
 function reloadPage() {
@@ -162,7 +173,6 @@ onMounted(() => {
 <style scoped>
 .header-container {
   background-image: linear-gradient(180deg, #513eff 0%, #513eff 100%);
-  /* 52e5ff */
 }
 
 .logo-view {

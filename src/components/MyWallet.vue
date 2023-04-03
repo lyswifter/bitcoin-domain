@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ElMessage } from "element-plus";
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import useClipboard from "vue-clipboard3";
 import HeaderView from "../components/Header.vue";
 import { signAsync } from "../crypto/sign";
 import { PersonInfo } from "../router/type";
 
+import router from "../router/index";
 import service from "../router/service";
+
+const headerRef = ref();
 
 let state = reactive({
     pinfo: {
@@ -33,7 +36,6 @@ function sendAction() {
     if (addr) {
         signAsync(addr).then((val) => {
             console.log("sign ret: " + val)
-
             service.avatarSet('01a22903bf8ba76d68edd1d1cd344178591713ffc7ce718a12704e1135da5126i0', addr!, '1111.btc', val).then((ret) => {
                 console.log("avatar set: " + ret)
             })
@@ -42,35 +44,38 @@ function sendAction() {
 }
 
 function receiveAction() {
-
 }
 
 function showQrCodeAction() {
+}
+
+function disconnectAction() {
+    headerRef.value.doDisconnect()
+    router.push({ name: 'home' })
 }
 
 </script>
 
 <template>
     <div class="wallet-container">
-        <HeaderView class="header-view" />
+        <HeaderView class="header-view" ref="headerRef" />
 
         <div class="top-information-view">
             <div class="top-inner-view">
-
                 <div class="info-view">
-                    <img class="avatar-view" src="../assets/icon_btc@2x.png" alt="">
-
-                    <div class="nick-addr-view">
-                        <div class="nickname-view">btcdoamin.btc</div>
-                        <div class="addrname-view">bc1puz…344ne0<img src="../assets/icon_copy_white@2x.png"
-                                style="width: 24px;height: 24px;cursor: pointer;margin-left: 10px;" alt=""
-                                @click="copyAction"><img src="../assets/icon_qrcode@2x.png"
-                                style="width: 24px;height: 24px;cursor: pointer;;margin-left: 10px;" alt=""
-                                @click="showQrCodeAction"></div>
+                    <div class="topwarp-view">
+                        <img class="avatar-view" src="../assets/icon_btc@2x.png" alt="">
+                        <div class="nick-addr-view">
+                            <div class="nickname-view">btcdoamin.btc</div>
+                            <div class="addrname-view">bc1puz…344ne0<img src="../assets/icon_copy_white@2x.png"
+                                    style="width: 24px;height: 24px;cursor: pointer;margin-left: 10px;" alt=""
+                                    @click="copyAction"><img src="../assets/icon_qrcode@2x.png"
+                                    style="width: 24px;height: 24px;cursor: pointer;;margin-left: 10px;" alt=""
+                                    @click="showQrCodeAction"></div>
+                        </div>
                     </div>
 
-                    <div class="disconnect-view dis-postion web-hidden">Disconnect</div>
-
+                    <div class="disconnect-view dis-postion web-hidden" @click="disconnectAction">Disconnect</div>
                 </div>
 
                 <div class="line-view"></div>
@@ -142,14 +147,14 @@ function showQrCodeAction() {
 .addrname-view {
     width: 257px;
     height: 28px;
+    padding-left: 10px;
+    padding-right: 10px;
     font-size: 20px;
     font-weight: 600;
     color: #FFFFFF;
     line-height: 28px;
-    background: rgba(69, 64, 214, 1);
     border-radius: 24px;
-    padding-left: 10px;
-    padding-right: 10px;
+    background: rgba(69, 64, 214, 0.3);
 }
 
 .disconnect-view {
@@ -208,20 +213,6 @@ function showQrCodeAction() {
     line-height: 28px;
 }
 
-.actions-view {
-    display: flex;
-    justify-content: space-between;
-}
-
-.send-one {
-    width: 126px;
-}
-
-.receive-one {
-    width: 126px;
-    margin-left: 19px;
-}
-
 .action-view {
     height: 48px;
     margin-top: 10px;
@@ -241,11 +232,46 @@ function showQrCodeAction() {
         right: 10px;
         top: 20px;
     }
+
+    .actions-view {
+        display: flex;
+        justify-content: center;
+        margin: 0 auto;
+        width: 90%;
+    }
+
+    .send-one {
+        min-width: 158px;
+        margin-left: 19px;
+    }
+
+    .receive-one {
+        min-width: 158px;
+        margin-left: 19px;
+    }
 }
 
 @media screen and (min-width: 768px) {
+    .actions-view {
+        display: flex;
+        justify-content: center;
+    }
+
+    .send-one {
+        width: 126px;
+    }
+
+    .receive-one {
+        width: 126px;
+        margin-left: 19px;
+    }
+
     .dis-postion {
         margin-top: 60px;
+    }
+
+    .topwarp-view {
+        display: flex;
     }
 }
 </style>
