@@ -27,6 +27,17 @@ export interface DomainHistory {
     records: string[];
 }
 
+export interface PersonInfo {
+    id: number;
+    inscribeId: string;
+    address: string;
+    contentUrl: string;
+    contentType: string;
+    domain: string;
+    createTime: string;
+    updateTime: string;
+}
+
 export const Types = {
     precision: 6,
     queryBalInterval: 10000,
