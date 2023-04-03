@@ -32,7 +32,7 @@ const magicEdenLink = "https://magiceden.io/ordinals/marketplace/btcdomain";
 
     <div class="slogon-view">
       <img class="solgon-title-view" src="../assets/logo@2x.png" alt="">
-      <div class="solgon-content-view">Search domain name or Register your domain name</div>
+      <div class="solgon-content-view">Discover the Future of BTC Doamin. Search, Register and Trade your .btc Domain Name</div>
     </div>
   </div>
 </template>
