@@ -3,7 +3,10 @@ import { ElMessage } from "element-plus";
 import { reactive } from 'vue';
 import useClipboard from "vue-clipboard3";
 import HeaderView from "../components/Header.vue";
+import { signAsync } from "../crypto/sign";
 import { PersonInfo } from "../router/type";
+
+import service from "../router/service";
 
 let state = reactive({
     pinfo: {
@@ -25,6 +28,23 @@ function copyAction() {
     })
 }
 
+function sendAction() {
+    let addr = localStorage.getItem('bitcoin_address')
+    if (addr) {
+        signAsync(addr).then((val) => {
+            console.log("sign ret: " + val)
+
+            service.avatarSet('01a22903bf8ba76d68edd1d1cd344178591713ffc7ce718a12704e1135da5126i0', addr!, '1111.btc', val).then((ret) => {
+                console.log("avatar set: " + ret)
+            })
+        })
+    }
+}
+
+function receiveAction() {
+
+}
+
 function showQrCodeAction() {
 }
 
@@ -36,35 +56,40 @@ function showQrCodeAction() {
 
         <div class="top-information-view">
             <div class="top-inner-view">
-                <img class="avatar-view" src="../assets/icon_btc@2x.png" alt="">
-
-                <div class="disconnect-view dis-postion web-hidden">Disconnect</div>
 
                 <div class="info-view">
-                    <div class="nickname-view">btcdoamin.btc</div>
-                    <div class="addrname-view">bc1puz…344ne0<img src="../assets/icon_copy_white@2x.png"
-                            style="width: 24px;height: 24px;cursor: pointer;margin-left: 10px;" alt=""
-                            @click="copyAction"><img src="../assets/icon_qrcode@2x.png"
-                            style="width: 24px;height: 24px;cursor: pointer;;margin-left: 10px;" alt=""
-                            @click="showQrCodeAction"></div>
+                    <img class="avatar-view" src="../assets/icon_btc@2x.png" alt="">
+
+                    <div class="nick-addr-view">
+                        <div class="nickname-view">btcdoamin.btc</div>
+                        <div class="addrname-view">bc1puz…344ne0<img src="../assets/icon_copy_white@2x.png"
+                                style="width: 24px;height: 24px;cursor: pointer;margin-left: 10px;" alt=""
+                                @click="copyAction"><img src="../assets/icon_qrcode@2x.png"
+                                style="width: 24px;height: 24px;cursor: pointer;;margin-left: 10px;" alt=""
+                                @click="showQrCodeAction"></div>
+                    </div>
+
+                    <div class="disconnect-view dis-postion web-hidden">Disconnect</div>
+
                 </div>
 
                 <div class="line-view"></div>
 
-                <div class="assets-view row">
-                    <img class="money-view col-1" src="../assets/icon_btc@2x.png" alt="" width="32" height="32">
-
-                    <div class="nums-view col-6">
-                        <div class="btc-view">0.00093834 BTC <img src="../assets/icon_q@2x.png" alt="" width="24"
-                                height="24"></div>
-                        <div class="usdt-view">≈ 25.4323 USDT</div>
+                <div class="assets-view">
+                    <div class="nums-view">
+                        <img class="money-view" src="../assets/icon_btc@2x.png" alt="" width="32" height="32">
+                        <div style="margin-left: 10px;">
+                            <div class="btc-view">0.00093834 BTC <img src="../assets/icon_q@2x.png" alt="" width="24"
+                                    height="24"></div>
+                            <div class="usdt-view">≈ 25.4323 USDT</div>
+                        </div>
                     </div>
 
-                    <div class="actions-view col-8">
-                        <div class="action-view send-one">Send <img src="../assets/icon_send@2x.png" alt="" width="24"
-                                height="24"></div>
-                        <div class="action-view receive-one">Receive <img src="../assets/icon_receive@2x.png" alt=""
-                                width="24" height="24"></div>
+                    <div class="actions-view">
+                        <div class="action-view send-one" @click="sendAction">Send <img src="../assets/icon_send@2x.png"
+                                alt="" width="24" height="24"></div>
+                        <div class="action-view receive-one" @click="receiveAction">Receive <img
+                                src="../assets/icon_receive@2x.png" alt="" width="24" height="24"></div>
                     </div>
                 </div>
             </div>
@@ -76,7 +101,7 @@ function showQrCodeAction() {
 .top-information-view {
     width: 100%;
     padding-bottom: 60px;
-    background: linear-gradient(180deg, #4540D6 0%, #BFEAFF 100%);
+    background: linear-gradient(180deg, #513eff 0%, #BFEAFF 100%);
 }
 
 .top-inner-view {
@@ -84,11 +109,26 @@ function showQrCodeAction() {
     margin: 0 auto;
 }
 
+.info-view {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+}
+
+.top-left-view {
+    display: flex;
+}
+
 .avatar-view {
     width: 140px;
     height: 140px;
     margin-top: 20px;
     margin-left: 20px;
+}
+
+.nick-addr-view {
+    margin-top: 30px;
+    margin-left: 10px;
 }
 
 .nickname-view {
@@ -115,6 +155,7 @@ function showQrCodeAction() {
 .disconnect-view {
     width: 100px;
     height: 36px;
+    margin-top: 60px;
     background: rgba(255, 255, 255, 0.3);
     border-radius: 24px;
     font-size: 13px;
@@ -136,16 +177,19 @@ function showQrCodeAction() {
 .assets-view {
     margin: 0 auto;
     width: 95%;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
 }
 
 .money-view {
     width: 32px;
+    margin-top: 8px;
 }
 
 .nums-view {
-    /* float: right; */
-    width: 74%;
     color: white;
+    display: flex;
 }
 
 .btc-view {
@@ -164,12 +208,23 @@ function showQrCodeAction() {
     line-height: 28px;
 }
 
+.actions-view {
+    display: flex;
+    justify-content: space-between;
+}
+
 .send-one {
     width: 126px;
 }
 
+.receive-one {
+    width: 126px;
+    margin-left: 19px;
+}
+
 .action-view {
     height: 48px;
+    margin-top: 10px;
     background: #4540D6;
     border-radius: 24px;
     color: white;
@@ -181,47 +236,16 @@ function showQrCodeAction() {
 }
 
 @media screen and (max-width: 767px) {
-    .info-view {
-        margin-top: 10px;
-        margin-left: 20px;
-    }
-
     .dis-postion {
-        float: right;
-        margin-top: 60px;
-    }
-
-    .actions-view {
-        color: white;
-    }
-
-    .receive-one {
-        /* float: right; */
-        width: 126px;
+        position: absolute;
+        right: 10px;
+        top: 20px;
     }
 }
 
 @media screen and (min-width: 768px) {
-    .info-view {
-        float: right;
-        margin-top: 50px;
-        margin-right: 30%;
-    }
-
     .dis-postion {
-        float: right;
         margin-top: 60px;
-    }
-
-    .actions-view {
-        /* float: right; */
-        width: 22%;
-        color: white;
-    }
-
-    .receive-one {
-        /* float: right; */
-        width: 126px;
     }
 }
 </style>

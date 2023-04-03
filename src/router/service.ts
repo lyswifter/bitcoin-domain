@@ -102,13 +102,15 @@ export default {
         }
     },
 
-    async avatarSet(inscriptId: string, address: string, domain: string) {
+    async avatarSet(inscriptId: string, address: string, domain: string, signature: string) {
         // avatarSet
+        //
         //
         let ret = await axios.post(Apis.avatarSet, {
             inscribe_id: inscriptId,
             address: address,
             domain: domain,
+            signature: signature,
         })
 
         if (ret.status == 200) {
