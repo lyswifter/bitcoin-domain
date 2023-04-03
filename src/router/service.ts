@@ -134,5 +134,16 @@ export default {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
         }
+    },
+
+    async queryInsWith(address: string) {
+        let ret = await axios.get(Apis.queryInscriptions + address)
+        
+        if (ret.status == 200) {
+            return ret.data   
+        } else {
+            ElMessage.error("Bad request[code=" + ret.status + "]")
+            return
+        }
     }
 }

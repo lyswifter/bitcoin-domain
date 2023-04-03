@@ -24,4 +24,6 @@ export let Apis = {
     avatarSet: domain.domainUrl + '/api/head/set',
 
     avatarGet: domain.domainUrl + '/api/head/get',
+
+    queryInscriptions: domain.domainUrl + '/api/address/',
 }

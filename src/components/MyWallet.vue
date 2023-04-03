@@ -3,6 +3,8 @@ import { ElMessage } from "element-plus";
 import { reactive, ref } from 'vue';
 import useClipboard from "vue-clipboard3";
 import HeaderView from "../components/Header.vue";
+import HistoryView from "../components/MyHistory.vue";
+import InscriptionView from "../components/MyInscriptions.vue";
 import { signAsync } from "../crypto/sign";
 import { PersonInfo } from "../router/type";
 
@@ -21,7 +23,7 @@ let state = reactive({
         domain: "www.btc.domain",
         createTime: "xxxxx",
         updateTime: "yyyy",
-    } as PersonInfo
+    } as PersonInfo, activeName: 'inscription',
 })
 
 function copyAction() {
@@ -47,6 +49,10 @@ function receiveAction() {
 }
 
 function showQrCodeAction() {
+}
+
+function handleClick() {
+
 }
 
 function disconnectAction() {
@@ -98,6 +104,17 @@ function disconnectAction() {
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="mid-content-view">
+            <el-tabs v-model="state.activeName" class="mywallet-tabs" @tab-click="handleClick">
+            <el-tab-pane label="Inscription" name="inscription">
+                <InscriptionView />
+            </el-tab-pane>
+            <el-tab-pane label="History" name="history">
+                <HistoryView />
+            </el-tab-pane>
+        </el-tabs>
         </div>
     </div>
 </template>
@@ -273,5 +290,13 @@ function disconnectAction() {
     .topwarp-view {
         display: flex;
     }
+}
+</style>
+
+<style scoped>
+.mid-content-view {
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: 20px;
 }
 </style>
