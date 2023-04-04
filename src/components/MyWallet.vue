@@ -2,6 +2,7 @@
 import { ElMessage } from "element-plus";
 import { reactive, ref } from 'vue';
 import useClipboard from "vue-clipboard3";
+import FooterView from "../components/Footer.vue";
 import HeaderView from "../components/Header.vue";
 import HistoryView from "../components/History.vue";
 import InscriptionView from "../components/MyInscriptions.vue";
@@ -123,6 +124,8 @@ function disconnectAction() {
                 </el-tab-pane>
             </el-tabs>
         </div>
+
+        <FooterView class="footer-view" />
 
         <el-dialog v-model="state.isReceiveShow" :show-close="true" :align-center="true" :width="440">
             <template #header="{ close, titleId, titleClass }">

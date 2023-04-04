@@ -94,8 +94,10 @@ async function generateBitcoinAddr() {
 
   const taprootChild = root.derivePath(defaultPath);
 
+  const pubKey = toXOnly(taprootChild.publicKey)
+
   const { address: taprootAddress } = bitcoin.payments.p2tr({
-    internalPubkey: toXOnly(taprootChild.publicKey),
+    internalPubkey: pubKey,
   });
 
   if (taprootAddress) {
@@ -106,6 +108,7 @@ async function generateBitcoinAddr() {
     state.shortAddr = shortenAddr(state.bitcoinAddr);
 
     localStorage.setItem('bitcoin_address', taprootAddress)
+    localStorage.setItem('public_key', pubKey.toString('hex'))
   } else {
     ElMessage.error("generate your bitcoin address failed, please retry.")
   }

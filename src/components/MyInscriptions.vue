@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElMessage } from "element-plus";
 import { onBeforeMount, onMounted, reactive } from "vue";
 import { signAsync } from "../crypto/sign";
 import service from "../router/service";
@@ -8,10 +9,21 @@ const props = defineProps({
     address: String,
 })
 
-let state = reactive({ count: 0, items: [] as InscriptionItem[], addr: '', isSetVisiable: false, selectedItem: {} as InscriptionItem, setItems: [] as SettingItem[] })
+let stat = reactive({
+    count: 0,
+    items: [] as InscriptionItem[],
+    addr: '',
+    isSetVisiable: false,
+    selectedItem: {} as InscriptionItem,
+
+    setItems: [] as SettingItem[],
+    setType: '',
+
+    isSendInsShow: false,
+})
 
 function load() {
-    service.queryInsWith(state.addr).then((val) => {
+    service.queryInsWith(stat.addr).then((val) => {
         console.log(val.data.result)
 
         val.data.result.forEach(element => {
@@ -46,53 +58,79 @@ function load() {
             }
         });
 
-        state.items = val.data.result;
+        stat.items = val.data.result;
     })
 }
 
 function sendAction(item: InscriptionItem) {
+    stat.isSendInsShow = true
 }
 
 function setAction(item: InscriptionItem) {
-    state.selectedItem = item
-    switch (state.selectedItem.type) {
+    stat.selectedItem = item
+    switch (stat.selectedItem.type) {
         case InsType.DOMAIN:
-            state.setItems[1].isSelected = true
-            state.setItems[0].isSelected = false
+            stat.setItems[1].isSelected = true
+            stat.setItems[0].isSelected = false
             break;
 
         case InsType.IMAGE:
-            state.setItems[0].isSelected = true
-            state.setItems[1].isSelected = false
+            stat.setItems[0].isSelected = true
+            stat.setItems[1].isSelected = false
             break;
 
         default:
             break;
     }
-    state.isSetVisiable = true
+    stat.isSetVisiable = true
 }
 
 function settingOkAction() {
-    let selectAddr = state.selectedItem.detail.address
+    let selectAddr = stat.selectedItem.detail.address
+    let selectPubKey = localStorage.getItem('public_key');
+    if (!selectPubKey) {
+        ElMessage.error('public key is not found!')
+        return
+    }
+
     signAsync(selectAddr).then(val => {
-        service.avatarSet(state.selectedItem.number.toString(), selectAddr, state.selectedItem.domain, val).then(ret => {
-            console.log(ret)
-        })
+        switch (stat.selectedItem.type) {
+            case InsType.DOMAIN:
+                service.avatarSet('', selectAddr, stat.selectedItem.domain, val, selectPubKey!).then(ret => {
+                    console.log(ret)
+                })
+                break;
+
+            case InsType.IMAGE:
+                service.avatarSet(stat.selectedItem.number.toString(), selectAddr, '', val, selectPubKey!).then(ret => {
+                    console.log(ret)
+                })
+                break;
+
+            default:
+                break;
+        }
     })
 }
 
+function loadmoreAction() {
+
+}
+
 onBeforeMount(() => {
-    state.addr = props.address ? props.address : '';
+    stat.addr = props.address ? props.address : '';
 })
 
 onMounted(() => {
     let localAddr = localStorage.getItem('bitcoin_address');
-    // localAddr = 'bc1phcsyla7gd2jjgtkj5rz2e3j0m8xunppnx5ff8tqhmm92gy54u7dsu4h478';// //bc1phcsyla7gd2jjgtkj5rz2e3j0m8xunppnx5ff8tqhmm92gy54u7dsu4h478 //bc1pghl3vvk6ln7zl2u46gn8jvgghpkm93y837fclk3putmf3lrmf87sld3ehl
+    localAddr = 'bc1phcsyla7gd2jjgtkj5rz2e3j0m8xunppnx5ff8tqhmm92gy54u7dsu4h478';
+    //bc1phcsyla7gd2jjgtkj5rz2e3j0m8xunppnx5ff8tqhmm92gy54u7dsu4h478 
+    //bc1pghl3vvk6ln7zl2u46gn8jvgghpkm93y837fclk3putmf3lrmf87sld3ehl
     if (localAddr) {
-        state.addr = localAddr
+        stat.addr = localAddr
     }
 
-    state.setItems = [{
+    stat.setItems = [{
         id: 0,
         title: 'Set as avatar',
         subtitle: 'After setting, your avatar will display as this image.',
@@ -103,13 +141,15 @@ onMounted(() => {
         subtitle: 'After setting up, your name will appear as your primary domain name instead of your wallet address.',
         isSelected: false,
     }]
+
+    load()
 })
 </script>
 
 <template>
     <div class="ins-container-view">
-        <ul v-infinite-scroll="load" class="infinite-list" style="overflow: auto">
-            <li v-for="(item, i) in state.items" :key="i" class="infinite-list-item">
+        <ul class="infinite-list">
+            <li v-for="(item, i) in stat.items" :key="i" class="infinite-list-item">
                 <div class="card-item">
 
                     <img class="pic-view" v-if="item.type == InsType.IMAGE" :src="item.detail.content" alt=""
@@ -140,7 +180,9 @@ onMounted(() => {
             </li>
         </ul>
 
-        <el-dialog v-model="state.isSetVisiable" :show-close="true" :align-center="true" :width="500">
+        <div class="loadmore-view" @click="loadmoreAction">load more</div>
+
+        <el-dialog v-model="stat.isSetVisiable" :show-close="true" :align-center="true" :width="500">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">Setting</h4>
@@ -148,8 +190,30 @@ onMounted(() => {
             </template>
 
             <div>
-                <div class="dia-id-view">Inscription #{{ state.selectedItem.number }}</div>
-                <div class="set-as-view" v-for="(item, index) in state.setItems" :key="index"
+                <div class="dia-id-view">Inscription #{{ stat.selectedItem.number }}</div>
+                <div class="set-as-view" v-for="(item, index) in stat.setItems" :key="index"
+                    :class="item.isSelected ? 'isSelect-view' : 'normal-view'">
+                    <div>
+                        <div class="dia-til-view">{{ item.title }}</div>
+                        <div class="dia-sub-view">{{ item.subtitle }}</div>
+                    </div>
+                    <img v-if="item.isSelected" src="../assets/icon_check_full@2x.png" alt="" width="16" height="16">
+                </div>
+                <br>
+                <div class="ok-btn" @click="settingOkAction">OK</div>
+            </div>
+        </el-dialog>
+
+        <el-dialog v-model="stat.isSendInsShow" :show-close="true" :align-center="true" :width="500">
+            <template #header="{ close, titleId, titleClass }">
+                <div class="my-header">
+                    <h4 :id="titleId" :class="titleClass">Setting</h4>
+                </div>
+            </template>
+
+            <div>
+                <div class="dia-id-view">Inscription #{{ stat.selectedItem.number }}</div>
+                <div class="set-as-view" v-for="(item, index) in stat.setItems" :key="index"
                     :class="item.isSelected ? 'isSelect-view' : 'normal-view'">
                     <div>
                         <div class="dia-til-view">{{ item.title }}</div>
@@ -170,12 +234,11 @@ onMounted(() => {
 .infinite-list {
     margin: 0 auto;
     width: 100%;
-    height: 1000px;
     display: flex;
     flex-wrap: wrap;
     flex-grow: 3;
     padding: 5px;
-    margin: 0;
+    margin-bottom: 100px;
     list-style: none;
 }
 
@@ -228,6 +291,21 @@ onMounted(() => {
     cursor: pointer;
 }
 
+.loadmore-view {
+    margin: 0 auto;
+    margin-bottom: 40px;
+    width: 220px;
+    height: 44px;
+    background: linear-gradient(270deg, #1E5CEF 0%, #628BEC 100%);
+    border-radius: 22px;
+    border: 1px solid #C3D5FF;
+    font-size: 14px;
+    font-weight: 500;
+    color: #FFFFFF;
+    line-height: 44px;
+    text-align: center;
+}
+
 @media screen and (max-width: 767px) {
     .infinite-list-item {
         margin: 0 auto;
@@ -278,7 +356,6 @@ onMounted(() => {
     margin-top: 10px;
     background: #F6F6FC;
     border-radius: 4px;
-    /* cursor: pointer; */
 }
 
 .dia-til-view {

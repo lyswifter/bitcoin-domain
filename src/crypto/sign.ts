@@ -32,6 +32,8 @@ export async function signAsync(message: string) {
 
     var hashBuf = bitcoin.crypto.sha256(buf);
 
+    console.log(hashBuf.toString('hex'))
+
     const signMsg = taprootChild.sign(hashBuf);
 
     const signRet = signMsg.toString('hex')

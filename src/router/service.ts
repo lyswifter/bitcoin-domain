@@ -102,7 +102,7 @@ export default {
         }
     },
 
-    async avatarSet(inscriptId: string, address: string, domain: string, signature: string) {
+    async avatarSet(inscriptId: string, address: string, domain: string, signature: string, pubKey: string) {
         // avatarSet
         //
         //
@@ -111,6 +111,7 @@ export default {
             address: address,
             domain: domain,
             signature: signature,
+            public_key: pubKey,
         })
 
         if (ret.status == 200) {
