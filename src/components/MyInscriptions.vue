@@ -123,7 +123,7 @@ onBeforeMount(() => {
 
 onMounted(() => {
     let localAddr = localStorage.getItem('bitcoin_address');
-    localAddr = 'bc1phcsyla7gd2jjgtkj5rz2e3j0m8xunppnx5ff8tqhmm92gy54u7dsu4h478';
+    // localAddr = 'bc1phcsyla7gd2jjgtkj5rz2e3j0m8xunppnx5ff8tqhmm92gy54u7dsu4h478';
     //bc1phcsyla7gd2jjgtkj5rz2e3j0m8xunppnx5ff8tqhmm92gy54u7dsu4h478 
     //bc1pghl3vvk6ln7zl2u46gn8jvgghpkm93y837fclk3putmf3lrmf87sld3ehl
     if (localAddr) {
@@ -182,7 +182,7 @@ onMounted(() => {
 
         <div class="loadmore-view" @click="loadmoreAction">load more</div>
 
-        <el-dialog v-model="stat.isSetVisiable" :show-close="true" :align-center="true" :width="500">
+        <el-dialog v-model="stat.isSetVisiable" :show-close="true" :align-center="true" :width="400">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">Setting</h4>
@@ -204,7 +204,7 @@ onMounted(() => {
             </div>
         </el-dialog>
 
-        <el-dialog v-model="stat.isSendInsShow" :show-close="true" :align-center="true" :width="500">
+        <el-dialog v-model="stat.isSendInsShow" :show-close="true" :align-center="true" :width="400">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">Setting</h4>
@@ -349,6 +349,8 @@ onMounted(() => {
 }
 
 .set-as-view {
+    width: 100%;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     text-align: left;
@@ -359,8 +361,7 @@ onMounted(() => {
 }
 
 .dia-til-view {
-    width: 376px;
-    height: 20px;
+    width: 80%;
     font-size: 14px;
     font-weight: 600;
     color: #2E2F3E;
@@ -368,7 +369,8 @@ onMounted(() => {
 }
 
 .dia-sub-view {
-    width: 410px;
+    width: 80%;
+    word-break: break-all;
     font-size: 12px;
     font-weight: 400;
     color: #A7A9BE;
@@ -385,7 +387,7 @@ onMounted(() => {
 
 .ok-btn {
     margin: 0 auto;
-    width: 440px;
+    width: 80%;
     height: 50px;
     background: #2E2F3E;
     border-radius: 4px;
