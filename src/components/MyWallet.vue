@@ -2,6 +2,9 @@
 import { ElMessage } from "element-plus";
 import { reactive, ref } from 'vue';
 import useClipboard from "vue-clipboard3";
+import HeaderView from "../components/Header.vue";
+import HistoryView from "../components/History.vue";
+import InscriptionView from "../components/MyInscriptions.vue";
 import { signAsync } from "../crypto/sign";
 import router from "../router/index";
 import service from "../router/service";
@@ -53,10 +56,10 @@ function copyReveiveAddr() {
 }
 
 function showQrCodeAction() {
+    state.isReceiveShow = true
 }
 
 function handleClick() {
-
 }
 
 function disconnectAction() {
@@ -113,34 +116,39 @@ function disconnectAction() {
         <div class="mid-content-view">
             <el-tabs v-model="state.activeName" class="mywallet-tabs" @tab-click="handleClick">
                 <el-tab-pane label="Inscription" name="inscription">
-                    <InscriptionView />
+                    <InscriptionView :ref="state.pinfo.address" />
                 </el-tab-pane>
                 <el-tab-pane label="History" name="history">
                     <HistoryView />
                 </el-tab-pane>
             </el-tabs>
         </div>
+
+        <el-dialog v-model="state.isReceiveShow" :show-close="true" :align-center="true" :width="440">
+            <template #header="{ close, titleId, titleClass }">
+                <div class="my-header">
+                    <h4 :id="titleId" :class="titleClass">Receive BTC</h4>
+                </div>
+            </template>
+
+            <div style="text-align: center;">
+                <vue-qrcode :value="state.pinfo.address" :options="{ width: 200 }"></vue-qrcode>
+                <br>
+                <div style="display: flex;">
+                    <div style="max-width: 356px;word-break: break-all;text-align: left;">{{ state.pinfo.address }}</div>
+                    <img src="../assets/icon_copy_black@2x.png" style="cursor: pointer;" alt="" width="24" height="24"
+                        @click="copyReveiveAddr">
+                </div>
+            </div>
+        </el-dialog>
     </div>
-
-    <el-dialog v-model="state.isReceiveShow" :show-close="true" align-center="true" :width="440">
-        <template #header="{ close, titleId, titleClass }">
-            <div class="my-header">
-                <h4 :id="titleId" :class="titleClass">Receive BTC</h4>
-            </div>
-        </template>
-
-        <div style="text-align: center;">
-            <vue-qrcode :value="state.pinfo.address" :options="{ width: 200 }"></vue-qrcode>
-            <br>
-            <div style="display: flex;">
-                <div style="max-width: 356px;word-break: break-all;text-align: left;">{{ state.pinfo.address }}</div>
-                <img src="../assets/icon_copy_black@2x.png" style="cursor: pointer;" alt="" width="24" height="24" @click="copyReveiveAddr">
-            </div>
-        </div>
-    </el-dialog>
 </template>
 
 <style scoped>
+.header-view {
+    width: 100%;
+}
+
 .top-information-view {
     width: 100%;
     padding-bottom: 60px;

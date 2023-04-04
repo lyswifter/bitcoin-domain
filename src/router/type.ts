@@ -1,3 +1,4 @@
+
 export interface GasInfo {
     name: string;
     isAvailable: boolean;
@@ -42,6 +43,29 @@ export const Types = {
     precision: 6,
     queryBalInterval: 10000,
 };
+
+export interface InscriptionDetail {
+    address: string;
+    content: string;
+    content_body: string;
+    content_length: number;
+    content_type: string;
+    genesis_transaction: string;
+    location: string;
+    offset: number;
+    output: string;
+    output_value: number;
+    preview: string;
+    timestamp: string;
+}
+
+export interface InscriptionItem {
+    id: string;
+    domain: string;
+    num: number;
+    number: number;
+    detail: InscriptionDetail;
+}
 
 export const Links = {
     doc: "https://docs.btcdomains.io",
