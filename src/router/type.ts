@@ -62,9 +62,28 @@ export interface InscriptionDetail {
 export interface InscriptionItem {
     id: string;
     domain: string;
+    domain_img: string;
     num: number;
     number: number;
+    type: InsType;
     detail: InscriptionDetail;
+}
+
+export interface SettingItem {
+    id: number;
+    title: string;
+    subtitle: string;
+    isSelected: boolean;
+}
+
+export enum InsType {
+    TEXT,
+    IMAGE,
+    GIF,
+    AUDIO,
+    VIDEO,
+    DOMAIN,
+    OTHER,
 }
 
 export const Links = {
