@@ -61,7 +61,7 @@ import { Links } from "../router/type";
     }
 
     .footer-links-view {
-        width: 100%;
+        /* width: 100%; */
         min-width: 40%;
         margin-left: 10px;
     }

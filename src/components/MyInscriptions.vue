@@ -63,6 +63,7 @@ function load() {
 }
 
 function sendAction(item: InscriptionItem) {
+    stat.selectedItem = item
     stat.isSendInsShow = true
 }
 
@@ -207,22 +208,12 @@ onMounted(() => {
         <el-dialog v-model="stat.isSendInsShow" :show-close="true" :align-center="true" :width="400">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
-                    <h4 :id="titleId" :class="titleClass">Setting</h4>
+                    <h4 :id="titleId" :class="titleClass">Send #{{stat.selectedItem.number}}</h4>
                 </div>
             </template>
 
             <div>
-                <div class="dia-id-view">Inscription #{{ stat.selectedItem.number }}</div>
-                <div class="set-as-view" v-for="(item, index) in stat.setItems" :key="index"
-                    :class="item.isSelected ? 'isSelect-view' : 'normal-view'">
-                    <div>
-                        <div class="dia-til-view">{{ item.title }}</div>
-                        <div class="dia-sub-view">{{ item.subtitle }}</div>
-                    </div>
-                    <img v-if="item.isSelected" src="../assets/icon_check_full@2x.png" alt="" width="16" height="16">
-                </div>
-                <br>
-                <div class="ok-btn" @click="settingOkAction">OK</div>
+                xxx
             </div>
         </el-dialog>
     </div>

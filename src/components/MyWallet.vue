@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElMessage } from "element-plus";
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import useClipboard from "vue-clipboard3";
 import FooterView from "../components/Footer.vue";
 import HeaderView from "../components/Header.vue";
@@ -15,14 +15,14 @@ const headerRef = ref();
 
 let state = reactive({
     pinfo: {
-        id: 1,
-        inscribeId: "fasdfsdf",
-        address: "bc1puv6k8ht73ddwze0dmm9m8m6k44cnre7lzyxq84qlw9hkcjr5qv6sjqdjnc",
-        contentUrl: "xxxx",
-        contentType: "json",
-        domain: "www.btc.domain",
-        createTime: "xxxxx",
-        updateTime: "yyyy",
+        id: 0,
+        inscribeId: "",
+        address: "",
+        contentUrl: "",
+        contentType: "",
+        domain: "",
+        createTime: "",
+        updateTime: "",
     } as PersonInfo, activeName: 'inscription', isReceiveShow: false,
 })
 
@@ -38,9 +38,6 @@ function sendAction() {
     if (addr) {
         signAsync(addr).then((val) => {
             console.log("sign ret: " + val)
-            service.avatarSet('01a22903bf8ba76d68edd1d1cd344178591713ffc7ce718a12704e1135da5126i0', addr!, '1111.btc', val).then((ret) => {
-                console.log("avatar set: " + ret)
-            })
         })
     }
 }
@@ -67,6 +64,16 @@ function disconnectAction() {
     headerRef.value.doDisconnect()
     router.push({ name: 'home' })
 }
+
+onMounted(() => {
+    let addr = localStorage.getItem('bitcoin_address')
+    console.log(addr)
+    if (addr) {
+        service.avatarGet(addr).then(val => {
+            console.log(val)
+        })
+    }
+})
 
 </script>
 
