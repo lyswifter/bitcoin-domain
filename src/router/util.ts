@@ -27,3 +27,7 @@ function assemble2DimArr(inputArr: []) {
     }
     return res
 }
+
+export function shortenAddr(addr: string, subSLen: number) {
+    return addr.substring(0, subSLen) + '...' + addr.substring(addr.length - subSLen, addr.length)
+}

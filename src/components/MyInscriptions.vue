@@ -26,7 +26,7 @@ function load() {
     service.queryInsWith(stat.addr).then((val) => {
         console.log(val.data.result)
 
-        val.data.result.forEach(element => {
+        val.data.result.forEach((element: InscriptionItem) => {
             if (element.domain) {
                 element.type = InsType.DOMAIN; // MAINDOMAIN
             } else {
@@ -205,10 +205,10 @@ onMounted(() => {
             </div>
         </el-dialog>
 
-        <el-dialog v-model="stat.isSendInsShow" :show-close="true" :align-center="true" :width="400">
+        <el-dialog v-model="stat.isSendInsShow" :show-close="true" :align-center="true" class="send-dialogue-view">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
-                    <h4 :id="titleId" :class="titleClass">Send #{{stat.selectedItem.number}}</h4>
+                    <h4 :id="titleId" :class="titleClass">Send #{{ stat.selectedItem.number }}</h4>
                 </div>
             </template>
 
@@ -389,5 +389,19 @@ onMounted(() => {
     line-height: 50px;
     text-align: center;
     cursor: pointer;
+}
+</style>
+
+<style scoped>
+@media screen and (max-width: 767px) {
+    .send-dialogue-view {
+        width: 200px;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .send-dialogue-view {
+        width: 550px;
+    }
 }
 </style>

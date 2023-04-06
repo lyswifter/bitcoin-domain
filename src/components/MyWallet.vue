@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElMessage } from "element-plus";
-import { onMounted, reactive, ref } from 'vue';
+import { onBeforeMount, onMounted, reactive, ref } from 'vue';
 import useClipboard from "vue-clipboard3";
 import FooterView from "../components/Footer.vue";
 import HeaderView from "../components/Header.vue";
@@ -10,25 +10,18 @@ import { signAsync } from "../crypto/sign";
 import router from "../router/index";
 import service from "../router/service";
 import { PersonInfo } from "../router/type";
+import { shortenAddr } from "../router/util";
 
 const headerRef = ref();
+const subSLen = 8;
 
-let state = reactive({
-    pinfo: {
-        id: 0,
-        inscribeId: "",
-        address: "",
-        contentUrl: "",
-        contentType: "",
-        domain: "",
-        createTime: "",
-        updateTime: "",
-    } as PersonInfo, activeName: 'inscription', isReceiveShow: false,
+let stat = reactive({
+    pinfo: {} as PersonInfo, activeName: 'inscription', isReceiveShow: false,
 })
 
 function copyAction() {
     const toClipboard = useClipboard();
-    toClipboard.toClipboard(state.pinfo.address).then((val) => {
+    toClipboard.toClipboard(stat.pinfo.address).then((val) => {
         ElMessage.info("copied")
     })
 }
@@ -43,18 +36,18 @@ function sendAction() {
 }
 
 function receiveAction() {
-    state.isReceiveShow = true
+    stat.isReceiveShow = true
 }
 
 function copyReveiveAddr() {
     const toClipboard = useClipboard();
-    toClipboard.toClipboard(state.pinfo.address).then((val) => {
+    toClipboard.toClipboard(stat.pinfo.address).then((val) => {
         ElMessage.info("copied")
     })
 }
 
 function showQrCodeAction() {
-    state.isReceiveShow = true
+    stat.isReceiveShow = true
 }
 
 function handleClick() {
@@ -65,12 +58,17 @@ function disconnectAction() {
     router.push({ name: 'home' })
 }
 
+onBeforeMount(() => {
+})
+
 onMounted(() => {
     let addr = localStorage.getItem('bitcoin_address')
     console.log(addr)
     if (addr) {
         service.avatarGet(addr).then(val => {
             console.log(val)
+            stat.pinfo = val.data[0]
+            stat.pinfo.short_addr = shortenAddr(stat.pinfo.address, subSLen)
         })
     }
 })
@@ -87,8 +85,8 @@ onMounted(() => {
                     <div class="topwarp-view">
                         <img class="avatar-view" src="../assets/icon_btc@2x.png" alt="">
                         <div class="nick-addr-view">
-                            <div class="nickname-view">btcdoamin.btc</div>
-                            <div class="addrname-view">bc1puz…344ne0<img src="../assets/icon_copy_white@2x.png"
+                            <div class="nickname-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
+                            <div class="addrname-view">{{ stat.pinfo.short_addr }}<img src="../assets/icon_copy_white@2x.png"
                                     style="width: 24px;height: 24px;cursor: pointer;margin-left: 10px;" alt=""
                                     @click="copyAction"><img src="../assets/icon_qrcode@2x.png"
                                     style="width: 24px;height: 24px;cursor: pointer;;margin-left: 10px;" alt=""
@@ -122,9 +120,9 @@ onMounted(() => {
         </div>
 
         <div class="mid-content-view">
-            <el-tabs v-model="state.activeName" class="mywallet-tabs" @tab-click="handleClick">
+            <el-tabs v-model="stat.activeName" class="mywallet-tabs" @tab-click="handleClick">
                 <el-tab-pane label="Inscription" name="inscription">
-                    <InscriptionView :ref="state.pinfo.address" />
+                    <InscriptionView :ref="stat.pinfo.address" />
                 </el-tab-pane>
                 <el-tab-pane label="History" name="history">
                     <HistoryView />
@@ -134,7 +132,7 @@ onMounted(() => {
 
         <FooterView class="footer-view" />
 
-        <el-dialog v-model="state.isReceiveShow" :show-close="true" :align-center="true" :width="440">
+        <el-dialog v-model="stat.isReceiveShow" :show-close="true" :align-center="true" :width="440">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">Receive BTC</h4>
@@ -142,10 +140,10 @@ onMounted(() => {
             </template>
 
             <div style="text-align: center;">
-                <vue-qrcode :value="state.pinfo.address" :options="{ width: 200 }"></vue-qrcode>
+                <vue-qrcode :value="stat.pinfo.address" :options="{ width: 200 }"></vue-qrcode>
                 <br>
                 <div style="display: flex;">
-                    <div style="max-width: 356px;word-break: break-all;text-align: left;">{{ state.pinfo.address }}</div>
+                    <div style="max-width: 356px;word-break: break-all;text-align: left;">{{ stat.pinfo.address }}</div>
                     <img src="../assets/icon_copy_black@2x.png" style="cursor: pointer;" alt="" width="24" height="24"
                         @click="copyReveiveAddr">
                 </div>
@@ -201,7 +199,6 @@ onMounted(() => {
 }
 
 .addrname-view {
-    width: 257px;
     height: 28px;
     padding-left: 10px;
     padding-right: 10px;

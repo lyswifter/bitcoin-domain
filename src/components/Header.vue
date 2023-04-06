@@ -7,6 +7,7 @@ import { ElMessage } from 'element-plus';
 import { ethers } from "ethers";
 import { onMounted, reactive } from "vue";
 import { GivingMsg, Links } from "../router/type";
+import { shortenAddr } from "../router/util";
 
 const defaultPath = "m/86'/0'/0'/0/0";
 const subSLen = 8;
@@ -19,9 +20,6 @@ const bip32 = BIP32Factory(ecc);
 
 const toXOnly = (pubKey: Buffer) =>
   pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
-
-const shortenAddr = (addr: string) =>
-  addr.substring(0, subSLen) + '...' + addr.substring(addr.length - subSLen, addr.length)
 
 let state = reactive({ isExpand: false, account: '', bitcoinAddr: '', shortAddr: '' })
 
@@ -94,6 +92,8 @@ async function generateBitcoinAddr() {
 
   const taprootChild = root.derivePath(defaultPath);
 
+  const privKey = taprootChild.privateKey?.toString('hex')
+
   const pubKey = toXOnly(taprootChild.publicKey)
 
   const { address: taprootAddress } = bitcoin.payments.p2tr({
@@ -103,9 +103,10 @@ async function generateBitcoinAddr() {
   if (taprootAddress) {
     console.log("taprootChild: " + taprootChild)
     console.log("address: " + taprootAddress)
+    console.log("private key:" + privKey)
 
     state.bitcoinAddr = taprootAddress
-    state.shortAddr = shortenAddr(state.bitcoinAddr);
+    state.shortAddr = shortenAddr(state.bitcoinAddr, subSLen);
 
     localStorage.setItem('bitcoin_address', taprootAddress)
     localStorage.setItem('public_key', pubKey.toString('hex'))
@@ -126,7 +127,7 @@ onMounted(() => {
   if (localStorage.getItem('bitcoin_address')) {
     let localAddr = localStorage.getItem('bitcoin_address')!;
     state.bitcoinAddr = localAddr;
-    state.shortAddr = shortenAddr(localAddr);
+    state.shortAddr = shortenAddr(localAddr, subSLen);
   }
 })
 </script>

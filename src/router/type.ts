@@ -29,14 +29,15 @@ export interface DomainHistory {
 }
 
 export interface PersonInfo {
-    id: number;
-    inscribeId: string;
+    s_id: number;
     address: string;
-    contentUrl: string;
-    contentType: string;
+    short_addr: string;
+    content_type: string;
+    content_url: string;
     domain: string;
-    createTime: string;
-    updateTime: string;
+    inscribe_id: string;
+    create_time: string;
+    update_time: string;
 }
 
 export const Types = {
