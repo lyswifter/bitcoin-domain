@@ -1,7 +1,6 @@
 import axios from "axios";
-import { Apis } from "./domain";
-
 import { ElMessage } from "element-plus";
+import { Apis } from "./domain";
 
 export default {
     async queryDomain(domain: string) {
@@ -10,7 +9,7 @@ export default {
         })
 
         if (ret.status == 200) {
-            return ret.data   
+            return ret.data
         } else {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
@@ -23,20 +22,21 @@ export default {
         })
 
         if (ret.status == 200) {
-            return ret.data   
+            return ret.data
         } else {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
         }
     },
-    //queryWallet
     async queryWallet(domain: string) {
+        //queryWallet
+        //
         let ret = await axios.post(Apis.queryWallet, {
             'domain': domain,
         })
 
         if (ret.status == 200) {
-            return ret.data   
+            return ret.data
         } else {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
@@ -48,7 +48,7 @@ export default {
         })
 
         if (ret.status == 200) {
-            return ret.data   
+            return ret.data
         } else {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
@@ -65,7 +65,7 @@ export default {
         })
 
         if (ret.status == 200) {
-            return ret.data   
+            return ret.data
         } else {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
@@ -81,7 +81,7 @@ export default {
         })
 
         if (ret.status == 200) {
-            return ret.data   
+            return ret.data
         } else {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
@@ -95,7 +95,7 @@ export default {
         })
 
         if (ret.status == 200) {
-            return ret.data   
+            return ret.data
         } else {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
@@ -115,7 +115,7 @@ export default {
         })
 
         if (ret.status == 200) {
-            return ret.data   
+            return ret.data
         } else {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
@@ -130,7 +130,7 @@ export default {
         })
 
         if (ret.status == 200) {
-            return ret.data   
+            return ret.data
         } else {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
@@ -138,10 +138,12 @@ export default {
     },
 
     async queryInsWith(address: string) {
+        // queryInsWith
+        //
         let ret = await axios.get(Apis.queryInscriptions + address)
-        
+
         if (ret.status == 200) {
-            return ret.data   
+            return ret.data
         } else {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return

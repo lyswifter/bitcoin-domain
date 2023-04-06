@@ -31,3 +31,6 @@ function assemble2DimArr(inputArr: []) {
 export function shortenAddr(addr: string, subSLen: number) {
     return addr.substring(0, subSLen) + '...' + addr.substring(addr.length - subSLen, addr.length)
 }
+
+export const toXOnly = (pubKey: Buffer) =>
+  pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);

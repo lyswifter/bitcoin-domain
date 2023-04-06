@@ -7,7 +7,10 @@ import { ElMessage } from 'element-plus';
 import { ethers } from "ethers";
 import { onMounted, reactive } from "vue";
 import { GivingMsg, Links } from "../router/type";
-import { shortenAddr } from "../router/util";
+import { shortenAddr, toXOnly } from "../router/util";
+
+import keyring from "../crypto/keyring";
+import { AddressType } from "../shared/types";
 
 const defaultPath = "m/86'/0'/0'/0/0";
 const subSLen = 8;
@@ -17,9 +20,6 @@ const closeIcon = '../../src/assets/icon_close_nav@2x.png';
 
 bitcoin.initEccLib(ecc);
 const bip32 = BIP32Factory(ecc);
-
-const toXOnly = (pubKey: Buffer) =>
-  pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
 
 let state = reactive({ isExpand: false, account: '', bitcoinAddr: '', shortAddr: '' })
 
@@ -54,10 +54,8 @@ async function generateBitcoinAddr() {
 
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
   const account = accounts[0];
-  console.log(account)
-
   state.account = account
-
+  
   let network = new ethers.Network('Ethereum Mainnet', 1)
 
   // Connect to the MetaMask EIP-1193 object. This is a standard
@@ -78,11 +76,7 @@ async function generateBitcoinAddr() {
 
   let sig = await signer.signMessage(GivingMsg);
 
-  console.log(sig)
-
-  let isVerify = ethers.verifyMessage(GivingMsg, sig)
-
-  console.log(isVerify)
+  // let isVerify = ethers.verifyMessage(GivingMsg, sig)
 
   const seed = ethers.toUtf8Bytes(
     ethers.keccak256(ethers.toUtf8Bytes(sig))
@@ -93,23 +87,26 @@ async function generateBitcoinAddr() {
   const taprootChild = root.derivePath(defaultPath);
 
   const privKey = taprootChild.privateKey?.toString('hex')
-
-  const pubKey = toXOnly(taprootChild.publicKey)
+  const pubKey = taprootChild.publicKey;
 
   const { address: taprootAddress } = bitcoin.payments.p2tr({
-    internalPubkey: pubKey,
+    internalPubkey: toXOnly(pubKey),
   });
 
   if (taprootAddress) {
     console.log("taprootChild: " + taprootChild)
     console.log("address: " + taprootAddress)
     console.log("private key:" + privKey)
+    console.log("public key:" + pubKey.toString('hex'))
 
     state.bitcoinAddr = taprootAddress
     state.shortAddr = shortenAddr(state.bitcoinAddr, subSLen);
 
     localStorage.setItem('bitcoin_address', taprootAddress)
     localStorage.setItem('public_key', pubKey.toString('hex'))
+
+    const kring = await keyring.importPrivateKey(privKey!, AddressType.P2TR)
+    keyring.keyrings.push(kring)
   } else {
     ElMessage.error("generate your bitcoin address failed, please retry.")
   }

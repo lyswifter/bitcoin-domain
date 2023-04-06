@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ElMessage } from "element-plus";
 import { onBeforeMount, onMounted, reactive } from "vue";
+import openapi from "../crypto/openapi";
 import { signAsync } from "../crypto/sign";
 import service from "../router/service";
 import { InsType, InscriptionItem, SettingItem } from "../router/type";
+import { FeeSummary } from "../shared/types";
 
 const props = defineProps({
     address: String,
@@ -15,11 +17,14 @@ let stat = reactive({
     addr: '',
     isSetVisiable: false,
     selectedItem: {} as InscriptionItem,
-
     setItems: [] as SettingItem[],
     setType: '',
-
-    isSendInsShow: false,
+    sendIns: {
+        isSendInsShow: false,
+        toAddr: '',
+        feeSums: {} as FeeSummary,
+        customFee: '0',
+    }
 })
 
 function load() {
@@ -64,7 +69,12 @@ function load() {
 
 function sendAction(item: InscriptionItem) {
     stat.selectedItem = item
-    stat.isSendInsShow = true
+    stat.sendIns.isSendInsShow = true
+
+    openapi.getFeeSummary().then(feeRet => {
+        console.log(feeRet)
+        stat.sendIns.feeSums = feeRet
+    })
 }
 
 function setAction(item: InscriptionItem) {
@@ -115,6 +125,10 @@ function settingOkAction() {
 }
 
 function loadmoreAction() {
+
+}
+
+function sendInscriptionAction() {
 
 }
 
@@ -205,15 +219,40 @@ onMounted(() => {
             </div>
         </el-dialog>
 
-        <el-dialog v-model="stat.isSendInsShow" :show-close="true" :align-center="true" class="send-dialogue-view">
+        <el-dialog v-model="stat.sendIns.isSendInsShow" :show-close="true" :align-center="true" class="send-dialogue-view">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">Send #{{ stat.selectedItem.number }}</h4>
                 </div>
             </template>
 
-            <div>
-                xxx
+            <div style="padding-left: 30px;padding-right: 30px;">
+                <div class="fee-tit-view">To</div>
+                <div>
+                    <el-input v-model="stat.sendIns.toAddr" placeholder="Received Bitcoin address or .btc domain name"
+                    class="to-addr-input" />
+                </div>
+                <br>
+                <div class="fee-tit-view">Select the network fee you want to pay:</div>
+                <div class="fee-summary-view">
+                    <div class="fee-card-view" v-for="(item, idx) in stat.sendIns.feeSums.list" :key="idx"
+                        style="text-align: center;">
+                        <div class="fee-title-view">{{ item.title }}</div>
+                        <div class="fee-rate-view">{{ item.feeRate }}sats/vByte</div>
+                        <br>
+                        <div class="fee-desc-view">{{ item.desc }}</div>
+                    </div>
+                    <div class="fee-card-view">
+                        <div class="fee-title-view">Customize Sats</div>
+                        <div class="fee-rate-view">{{ stat.sendIns.customFee }}sats/vByte</div>
+                        <br>
+                        <div>
+                            <el-input v-model="stat.sendIns.customFee" placeholder="0.00" class="customize-input" />
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="send-btn-view" @click="sendInscriptionAction">Send</div>
             </div>
         </el-dialog>
     </div>
@@ -403,5 +442,80 @@ onMounted(() => {
     .send-dialogue-view {
         width: 550px;
     }
+}
+</style>
+
+<style scoped>
+.fee-tit-view {
+    height: 20px;
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #A7A9BE;
+    line-height: 20px;
+}
+
+.to-addr-input {
+    width: 100%;
+    height: 48px;
+}
+
+.fee-summary-view {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.fee-card-view {
+    padding: 20px;
+    width: 180px;
+    height: 148px;
+    background: #FFFFFF;
+    border-radius: 4px;
+    border: 1px solid #A7A9BE;
+    text-align: center;
+}
+
+.fee-title-view {
+    height: 25px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2E2F3E;
+    line-height: 25px;
+}
+
+.fee-rate-view {
+    height: 22px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #A7A9BE;
+    line-height: 22px;
+}
+
+.fee-desc-view {
+    height: 22px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #4540D6;
+    line-height: 22px;
+}
+
+.customize-input {
+    width: 100%;
+    height: 48px;
+    background: #FFFFFF;
+}
+
+.send-btn-view {
+    margin: 0 auto;
+    width: 80%;
+    height: 50px;
+    background: #2E2F3E;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #FFFFFF;
+    line-height: 50px;
+    text-align: center;
 }
 </style>

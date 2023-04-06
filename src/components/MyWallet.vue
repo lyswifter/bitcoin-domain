@@ -12,11 +12,21 @@ import service from "../router/service";
 import { PersonInfo } from "../router/type";
 import { shortenAddr } from "../router/util";
 
+import openapi from "../crypto/openapi";
+import { KEYRING_TYPE } from "../shared/constant";
+import { Account, BitcoinBalance } from "../shared/types";
+
 const headerRef = ref();
 const subSLen = 8;
 
+const defaultAvatar = '../../src/assets/icon_btc@2x.png';
+
 let stat = reactive({
-    pinfo: {} as PersonInfo, activeName: 'inscription', isReceiveShow: false,
+    pinfo: {} as PersonInfo,
+    winfo: {} as BitcoinBalance,
+    account: {} as Account,
+    activeName: 'inscription',
+    isReceiveShow: false,
 })
 
 function copyAction() {
@@ -61,15 +71,22 @@ function disconnectAction() {
 onBeforeMount(() => {
 })
 
-onMounted(() => {
+onMounted(async () => {
     let addr = localStorage.getItem('bitcoin_address')
-    console.log(addr)
+    let pubKey = localStorage.getItem('public_key')
     if (addr) {
-        service.avatarGet(addr).then(val => {
-            console.log(val)
-            stat.pinfo = val.data[0]
-            stat.pinfo.short_addr = shortenAddr(stat.pinfo.address, subSLen)
-        })
+        let avatarRet = await service.avatarGet(addr);
+        stat.pinfo = avatarRet.data[0]
+        stat.pinfo.short_addr = shortenAddr(stat.pinfo.address, subSLen)
+
+        let balance = await openapi.getAddressBalance(addr);
+        stat.winfo = balance
+
+        stat.account = {
+            type: KEYRING_TYPE.WalletConnectKeyring,
+            pubkey: pubKey,
+            address: addr,
+        } as Account
     }
 })
 
@@ -83,10 +100,12 @@ onMounted(() => {
             <div class="top-inner-view">
                 <div class="info-view">
                     <div class="topwarp-view">
-                        <img class="avatar-view" src="../assets/icon_btc@2x.png" alt="">
+                        <img class="avatar-view" :src="stat.pinfo.content_url ? stat.pinfo.content_url : defaultAvatar"
+                            alt="">
                         <div class="nick-addr-view">
                             <div class="nickname-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
-                            <div class="addrname-view">{{ stat.pinfo.short_addr }}<img src="../assets/icon_copy_white@2x.png"
+                            <div class="addrname-view">{{ stat.pinfo.short_addr }}<img
+                                    src="../assets/icon_copy_white@2x.png"
                                     style="width: 24px;height: 24px;cursor: pointer;margin-left: 10px;" alt=""
                                     @click="copyAction"><img src="../assets/icon_qrcode@2x.png"
                                     style="width: 24px;height: 24px;cursor: pointer;;margin-left: 10px;" alt=""
@@ -103,8 +122,8 @@ onMounted(() => {
                     <div class="nums-view">
                         <img class="money-view" src="../assets/icon_btc@2x.png" alt="" width="32" height="32">
                         <div style="margin-left: 10px;">
-                            <div class="btc-view">0.00093834 BTC <img src="../assets/icon_q@2x.png" alt="" width="24"
-                                    height="24"></div>
+                            <div class="btc-view">{{ stat.winfo.amount }} BTC <img src="../assets/icon_q@2x.png" alt=""
+                                    width="24" height="24"></div>
                             <div class="usdt-view">≈ 25.4323 USDT</div>
                         </div>
                     </div>
