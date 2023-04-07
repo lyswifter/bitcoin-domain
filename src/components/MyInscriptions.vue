@@ -20,12 +20,14 @@ let stat = reactive({
     selectedItem: {} as InscriptionItem,
     setItems: [] as SettingItem[],
     setType: '',
-    sendIns: {
-        isSendInsShow: false,
+    sendInsOrBtc: {
+        target: '',
+        isSendInsOrBtcShow: false,
         toAddr: 'bc1pkt5rxgyz9zaydan4qa9fg4fs5kjuzy273czsdvpzr2aztuk9pcgqw6s75d',
         feeSums: {} as FeeSummary,
         customFee: 0,
         curIdx: 2,
+        amount: 0,
     }
 })
 
@@ -66,16 +68,6 @@ function load() {
         });
 
         stat.items = val.data.result;
-    })
-}
-
-async function sendAction(item: InscriptionItem) {
-    stat.selectedItem = item
-    stat.sendIns.isSendInsShow = true
-
-    openapi.getFeeSummary().then(feeRet => {
-        console.log(feeRet)
-        stat.sendIns.feeSums = feeRet
     })
 }
 
@@ -129,12 +121,23 @@ function settingOkAction() {
 function loadmoreAction() {
 }
 
-async function sendInsAction(item: InscriptionItem) {
+async function sendInssAction(item: InscriptionItem) {
+    stat.sendInsOrBtc.target = 'INS'
+    stat.selectedItem = item
+    stat.sendInsOrBtc.isSendInsOrBtcShow = true
+
+    openapi.getFeeSummary().then(feeRet => {
+        console.log(feeRet)
+        stat.sendInsOrBtc.feeSums = feeRet
+    })
+}
+
+async function submitInsTxAction(item: InscriptionItem) {
     let feeRate = 0
-    if (stat.sendIns.customFee != 0) {
-        feeRate = stat.sendIns.customFee
+    if (stat.sendInsOrBtc.customFee != 0) {
+        feeRate = stat.sendInsOrBtc.customFee
     } else {
-        feeRate = stat.sendIns.feeSums.list[stat.sendIns.curIdx].feeRate
+        feeRate = stat.sendInsOrBtc.feeSums.list[stat.sendInsOrBtc.curIdx].feeRate
     }
 
     if (feeRate == 0) {
@@ -157,7 +160,7 @@ async function sendInsAction(item: InscriptionItem) {
         utxos: gutxos,
         inscriptions: insOutPut,
         inscriptionID: item.id,
-        receiver: stat.sendIns.toAddr,
+        receiver: stat.sendInsOrBtc.toAddr,
         feeRate: feeRate,
     }
 
@@ -170,7 +173,7 @@ async function sendInsAction(item: InscriptionItem) {
 }
 
 function clickFeeCardAction(idx: any) {
-    stat.sendIns.curIdx = idx
+    stat.sendInsOrBtc.curIdx = idx
 }
 
 onBeforeMount(() => {
@@ -204,7 +207,6 @@ onMounted(() => {
         <ul class="infinite-list">
             <li v-for="(item, i) in stat.items" :key="i" class="infinite-list-item">
                 <div class="card-item">
-
                     <img class="pic-view" v-if="item.type == InsType.IMAGE" :src="item.detail.content" alt=""
                         loading="lazy">
                     <img class="pic-view" v-else-if="item.type == InsType.TEXT" src="../assets/pic_txt@2x.png" alt=""
@@ -223,7 +225,7 @@ onMounted(() => {
                     </div>
 
                     <div class="flex-view">
-                        <div class="send-view" @click="sendAction(item)">Send</div>
+                        <div class="send-view" @click="sendInssAction(item)">Send</div>
                         <div class="set-view" v-if="item.type == InsType.DOMAIN || item.type == InsType.IMAGE"
                             @click="setAction(item)">
                             <img src="../assets/icon_set@2x.png" alt="" width="16" height="16"> Set
@@ -257,7 +259,7 @@ onMounted(() => {
             </div>
         </el-dialog>
 
-        <el-dialog v-model="stat.sendIns.isSendInsShow" :show-close="true" :align-center="true" class="send-dialogue-view">
+        <el-dialog v-model="stat.sendInsOrBtc.isSendInsOrBtcShow" :show-close="true" :align-center="true" class="send-dialogue-view">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">Send #{{ stat.selectedItem.number }}</h4>
@@ -265,16 +267,16 @@ onMounted(() => {
             </template>
 
             <div style="padding-left: 30px;padding-right: 30px;">
-                <div class="fee-tit-view">To</div>
-                <div>
-                    <el-input v-model="stat.sendIns.toAddr" placeholder="Received Bitcoin address or .btc domain name"
+                <div class="to-view">
+                    <div class="fee-tit-view">To</div>
+                    <el-input v-model="stat.sendInsOrBtc.toAddr" placeholder="Received Bitcoin address or .btc domain name"
                         class="to-addr-input" />
                 </div>
                 <br>
                 <div class="fee-tit-view">Select the network fee you want to pay:</div>
                 <div class="fee-summary-view">
-                    <div class="fee-card-view" v-for="(item, idx) in stat.sendIns.feeSums.list" :key="idx"
-                        :class="stat.sendIns.curIdx == idx ? 'fee-card-view-selected' : 'fee-card-view-normal'"
+                    <div class="fee-card-view" v-for="(item, idx) in stat.sendInsOrBtc.feeSums.list" :key="idx"
+                        :class="stat.sendInsOrBtc.curIdx == idx ? 'fee-card-view-selected' : 'fee-card-view-normal'"
                         @click="clickFeeCardAction(idx)">
                         <div class="fee-title-view">{{ item.title }}</div>
                         <div class="fee-rate-view">{{ item.feeRate }}sats/vByte</div>
@@ -283,16 +285,16 @@ onMounted(() => {
                     </div>
                     <div class="fee-card-view">
                         <div class="fee-title-view">Customize Sats</div>
-                        <div class="fee-rate-view">{{ stat.sendIns.customFee }}sats/vByte</div>
+                        <div class="fee-rate-view">{{ stat.sendInsOrBtc.customFee }}sats/vByte</div>
                         <br>
                         <div>
-                            <el-input v-model="stat.sendIns.customFee" placeholder="0" class="customize-input"
+                            <el-input v-model="stat.sendInsOrBtc.customFee" placeholder="0" class="customize-input"
                                 type="number" />
                         </div>
                     </div>
                 </div>
                 <br>
-                <div class="send-btn-view" @click="sendInsAction(stat.selectedItem)">Send</div>
+                <div class="send-btn-view" @click="submitInsTxAction(stat.selectedItem)">Send</div>
             </div>
         </el-dialog>
     </div>
