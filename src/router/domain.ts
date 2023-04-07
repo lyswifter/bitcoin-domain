@@ -35,4 +35,6 @@ export const Apis = {
 
 export const ExtApi = {
     walletInfo: domain.extUrl + '/api/wallet/wallet-info?address=',
+
+    submitTx: domain.extUrl + '/wallet/submit-tx',
 }

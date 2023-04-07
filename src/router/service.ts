@@ -2,6 +2,10 @@ import axios from "axios";
 import { ElMessage } from "element-plus";
 import { Apis, ExtApi } from "./domain";
 
+export interface IReqSubmitTxs {
+    [key: string]: string;
+  }
+
 export default {
     async queryDomain(domain: string) {
         let ret = await axios.post(Apis.queryDomainUrl, {
@@ -159,5 +163,20 @@ export default {
             ElMessage.error("Bad request[code=" + ret.status + "]")
             return
         }
-    }
+    },
+
+    async submitTx(tx: IReqSubmitTxs) {
+        // submitTx
+        //
+        let ret = await axios.post(ExtApi.submitTx, JSON.stringify(tx))
+
+        console.log(ret)
+
+        if (ret.status == 200) {
+            return ret.data
+        } else {
+            ElMessage.error("Bad request[code=" + ret.status + "]")
+            return
+        }
+    },
 }

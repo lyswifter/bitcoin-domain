@@ -130,7 +130,6 @@ function loadmoreAction() {
 }
 
 async function sendInsAction(item: InscriptionItem) {
-    console.log("item:" + JSON.stringify(item))
     let feeRate = 0
     if (stat.sendIns.customFee != 0) {
         feeRate = stat.sendIns.customFee
@@ -144,7 +143,6 @@ async function sendInsAction(item: InscriptionItem) {
 
     const retOut = await service.queryExtIns(item.detail.address);
     const waltOut: ICollectedUTXOResp = retOut.data;
-    console.log(waltOut)
 
     const privKey = await generateBitcoinAddr()
     if (!privKey) {
@@ -163,10 +161,12 @@ async function sendInsAction(item: InscriptionItem) {
         feeRate: feeRate,
     }
 
-    SDK.sendInsTransaction(sInsResq).then(val => {
-        //////
-        console.log(val)
-    })
+    const { txID, txHex } = await SDK.sendInsTransaction(sInsResq);
+    console.log('txID: ' + txID)
+    console.log('txHex: ' + txHex)
+
+    const subRet = await openapi.pushTx(txHex)
+    console.log(subRet)
 }
 
 function clickFeeCardAction(idx: any) {
@@ -179,9 +179,6 @@ onBeforeMount(() => {
 
 onMounted(() => {
     let localAddr = localStorage.getItem('bitcoin_address');
-    // localAddr = 'bc1phcsyla7gd2jjgtkj5rz2e3j0m8xunppnx5ff8tqhmm92gy54u7dsu4h478';
-    // bc1phcsyla7gd2jjgtkj5rz2e3j0m8xunppnx5ff8tqhmm92gy54u7dsu4h478 
-    // bc1pghl3vvk6ln7zl2u46gn8jvgghpkm93y837fclk3putmf3lrmf87sld3ehl
     if (localAddr) {
         stat.addr = localAddr
     }
