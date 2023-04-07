@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ElMessage } from "element-plus";
-import { Apis } from "./domain";
+import { Apis, ExtApi } from "./domain";
 
 export default {
     async queryDomain(domain: string) {
@@ -141,6 +141,17 @@ export default {
         // queryInsWith
         //
         let ret = await axios.get(Apis.queryInscriptions + address)
+
+        if (ret.status == 200) {
+            return ret.data
+        } else {
+            ElMessage.error("Bad request[code=" + ret.status + "]")
+            return
+        }
+    },
+
+    async queryExtIns(address: string) {
+        let ret = await axios.get(ExtApi.walletInfo + address)
 
         if (ret.status == 200) {
             return ret.data

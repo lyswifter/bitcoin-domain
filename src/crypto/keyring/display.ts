@@ -1,52 +1,54 @@
-import KeyringService, { Keyring } from './index';
+export { };
 
-class DisplayKeyring {
-  accounts: string[] = [];
-  type = '';
-  hdPath = '';
+// import KeyringService, { Keyring } from './index';
 
-  constructor(keyring: Keyring) {
-    this.accounts = keyring.accounts || [];
-    this.type = keyring.type;
-    this.hdPath = (keyring as any).hdPath;
-  }
+// class DisplayKeyring {
+//   accounts: string[] = [];
+//   type = '';
+//   hdPath = '';
 
-  unlock = async (): Promise<void> => {
-    const keyring = await KeyringService.getKeyringForAccount(this.accounts[0], this.type);
-    if (keyring.unlock) await keyring.unlock();
-  };
+//   constructor(keyring: Keyring) {
+//     this.accounts = keyring.accounts || [];
+//     this.type = keyring.type;
+//     this.hdPath = (keyring as any).hdPath;
+//   }
 
-  getFirstPage = async () => {
-    const keyring = await KeyringService.getKeyringForAccount(this.accounts[0], this.type);
-    if (keyring.getFirstPage) {
-      return await keyring.getFirstPage();
-    } else {
-      return [];
-    }
-  };
+//   unlock = async (): Promise<void> => {
+//     const keyring = await KeyringService.getKeyringForAccount(this.accounts[0], this.type);
+//     if (keyring.unlock) await keyring.unlock();
+//   };
 
-  getNextPage = async () => {
-    const keyring = await KeyringService.getKeyringForAccount(this.accounts[0], this.type);
-    if (keyring.getNextPage) {
-      return await keyring.getNextPage();
-    } else {
-      return [];
-    }
-  };
+//   getFirstPage = async () => {
+//     const keyring = await KeyringService.getKeyringForAccount(this.accounts[0], this.type);
+//     if (keyring.getFirstPage) {
+//       return await keyring.getFirstPage();
+//     } else {
+//       return [];
+//     }
+//   };
 
-  getAccounts = async () => {
-    const keyring = await KeyringService.getKeyringForAccount(this.accounts[0], this.type);
-    return await keyring.getAccounts();
-  };
+//   getNextPage = async () => {
+//     const keyring = await KeyringService.getKeyringForAccount(this.accounts[0], this.type);
+//     if (keyring.getNextPage) {
+//       return await keyring.getNextPage();
+//     } else {
+//       return [];
+//     }
+//   };
 
-  activeAccounts = async (indexes: number[]): Promise<string[]> => {
-    const keyring = await KeyringService.getKeyringForAccount(this.accounts[0], this.type);
-    if (keyring.activeAccounts) {
-      return keyring.activeAccounts(indexes);
-    } else {
-      return [];
-    }
-  };
-}
+//   getAccounts = async () => {
+//     const keyring = await KeyringService.getKeyringForAccount(this.accounts[0], this.type);
+//     return await keyring.getAccounts();
+//   };
 
-export default DisplayKeyring;
+//   activeAccounts = async (indexes: number[]): Promise<string[]> => {
+//     const keyring = await KeyringService.getKeyringForAccount(this.accounts[0], this.type);
+//     if (keyring.activeAccounts) {
+//       return keyring.activeAccounts(indexes);
+//     } else {
+//       return [];
+//     }
+//   };
+// }
+
+// export default DisplayKeyring;

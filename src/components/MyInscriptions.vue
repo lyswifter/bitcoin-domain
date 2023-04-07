@@ -2,7 +2,8 @@
 import { ElMessage } from "element-plus";
 import { onBeforeMount, onMounted, reactive } from "vue";
 import openapi from "../crypto/openapi";
-import { signAsync } from "../crypto/sign";
+import SDK, { ICollectedUTXOResp } from "../crypto/sdk/sdk";
+import { generateBitcoinAddr, signAsync } from "../crypto/sign";
 import service from "../router/service";
 import { InsType, InscriptionItem, SettingItem } from "../router/type";
 import { FeeSummary } from "../shared/types";
@@ -21,9 +22,10 @@ let stat = reactive({
     setType: '',
     sendIns: {
         isSendInsShow: false,
-        toAddr: '',
+        toAddr: 'bc1pkt5rxgyz9zaydan4qa9fg4fs5kjuzy273czsdvpzr2aztuk9pcgqw6s75d',
         feeSums: {} as FeeSummary,
-        customFee: '0',
+        customFee: 0,
+        curIdx: 2,
     }
 })
 
@@ -67,7 +69,7 @@ function load() {
     })
 }
 
-function sendAction(item: InscriptionItem) {
+async function sendAction(item: InscriptionItem) {
     stat.selectedItem = item
     stat.sendIns.isSendInsShow = true
 
@@ -125,11 +127,50 @@ function settingOkAction() {
 }
 
 function loadmoreAction() {
-
 }
 
-function sendInscriptionAction() {
+async function sendInsAction(item: InscriptionItem) {
+    console.log("item:" + JSON.stringify(item))
+    let feeRate = 0
+    if (stat.sendIns.customFee != 0) {
+        feeRate = stat.sendIns.customFee
+    } else {
+        feeRate = stat.sendIns.feeSums.list[stat.sendIns.curIdx].feeRate
+    }
 
+    if (feeRate == 0) {
+        return
+    }
+
+    const retOut = await service.queryExtIns(item.detail.address);
+    const waltOut: ICollectedUTXOResp = retOut.data;
+    console.log(waltOut)
+
+    const privKey = await generateBitcoinAddr()
+    if (!privKey) {
+        return
+    }
+
+    let gutxos = SDK.formatUTXOs(waltOut.txrefs);
+    let insOutPut = SDK.formatInscriptions(waltOut.inscriptions_by_outputs);
+
+    let sInsResq = {
+        privateKey: privKey,
+        utxos: gutxos,
+        inscriptions: insOutPut,
+        inscriptionID: item.id,
+        receiver: stat.sendIns.toAddr,
+        feeRate: feeRate,
+    }
+
+    SDK.sendInsTransaction(sInsResq).then(val => {
+        //////
+        console.log(val)
+    })
+}
+
+function clickFeeCardAction(idx: any) {
+    stat.sendIns.curIdx = idx
 }
 
 onBeforeMount(() => {
@@ -139,8 +180,8 @@ onBeforeMount(() => {
 onMounted(() => {
     let localAddr = localStorage.getItem('bitcoin_address');
     // localAddr = 'bc1phcsyla7gd2jjgtkj5rz2e3j0m8xunppnx5ff8tqhmm92gy54u7dsu4h478';
-    //bc1phcsyla7gd2jjgtkj5rz2e3j0m8xunppnx5ff8tqhmm92gy54u7dsu4h478 
-    //bc1pghl3vvk6ln7zl2u46gn8jvgghpkm93y837fclk3putmf3lrmf87sld3ehl
+    // bc1phcsyla7gd2jjgtkj5rz2e3j0m8xunppnx5ff8tqhmm92gy54u7dsu4h478 
+    // bc1pghl3vvk6ln7zl2u46gn8jvgghpkm93y837fclk3putmf3lrmf87sld3ehl
     if (localAddr) {
         stat.addr = localAddr
     }
@@ -230,13 +271,14 @@ onMounted(() => {
                 <div class="fee-tit-view">To</div>
                 <div>
                     <el-input v-model="stat.sendIns.toAddr" placeholder="Received Bitcoin address or .btc domain name"
-                    class="to-addr-input" />
+                        class="to-addr-input" />
                 </div>
                 <br>
                 <div class="fee-tit-view">Select the network fee you want to pay:</div>
                 <div class="fee-summary-view">
                     <div class="fee-card-view" v-for="(item, idx) in stat.sendIns.feeSums.list" :key="idx"
-                        style="text-align: center;">
+                        :class="stat.sendIns.curIdx == idx ? 'fee-card-view-selected' : 'fee-card-view-normal'"
+                        @click="clickFeeCardAction(idx)">
                         <div class="fee-title-view">{{ item.title }}</div>
                         <div class="fee-rate-view">{{ item.feeRate }}sats/vByte</div>
                         <br>
@@ -247,12 +289,13 @@ onMounted(() => {
                         <div class="fee-rate-view">{{ stat.sendIns.customFee }}sats/vByte</div>
                         <br>
                         <div>
-                            <el-input v-model="stat.sendIns.customFee" placeholder="0.00" class="customize-input" />
+                            <el-input v-model="stat.sendIns.customFee" placeholder="0" class="customize-input"
+                                type="number" />
                         </div>
                     </div>
                 </div>
                 <br>
-                <div class="send-btn-view" @click="sendInscriptionAction">Send</div>
+                <div class="send-btn-view" @click="sendInsAction(stat.selectedItem)">Send</div>
             </div>
         </el-dialog>
     </div>
@@ -472,8 +515,16 @@ onMounted(() => {
     height: 148px;
     background: #FFFFFF;
     border-radius: 4px;
-    border: 1px solid #A7A9BE;
     text-align: center;
+    cursor: pointer;
+}
+
+.fee-card-view-normal {
+    border: 1px solid #A7A9BE;
+}
+
+.fee-card-view-selected {
+    border: 2px solid #4540D6;
 }
 
 .fee-title-view {
@@ -517,5 +568,6 @@ onMounted(() => {
     color: #FFFFFF;
     line-height: 50px;
     text-align: center;
+    cursor: pointer;
 }
 </style>

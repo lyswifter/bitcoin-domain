@@ -9,8 +9,7 @@ import { onMounted, reactive } from "vue";
 import { GivingMsg, Links } from "../router/type";
 import { shortenAddr, toXOnly } from "../router/util";
 
-import keyring from "../crypto/keyring";
-import { AddressType } from "../shared/types";
+// import keyring from "../crypto/keyring";
 
 const defaultPath = "m/86'/0'/0'/0/0";
 const subSLen = 8;
@@ -104,9 +103,6 @@ async function generateBitcoinAddr() {
 
     localStorage.setItem('bitcoin_address', taprootAddress)
     localStorage.setItem('public_key', pubKey.toString('hex'))
-
-    const kring = await keyring.importPrivateKey(privKey!, AddressType.P2TR)
-    keyring.keyrings.push(kring)
   } else {
     ElMessage.error("generate your bitcoin address failed, please retry.")
   }
