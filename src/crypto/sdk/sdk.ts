@@ -27,8 +27,8 @@ export type ISendInsReq = {
 };
 
 // Send BTC
-type ISendBTCResp = ICreateTxResp;
-interface ISendBTCReq {
+export type ISendBTCResp = ICreateTxResp;
+export interface ISendBTCReq {
   privateKey: Buffer;
   utxos: UTXO[];
   inscriptions: IInscriptionByOutput;

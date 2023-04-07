@@ -133,6 +133,14 @@ async function sendInssAction(item: InscriptionItem) {
 }
 
 async function submitInsTxAction(item: InscriptionItem) {
+
+    // to address
+
+    if (!stat.sendInsOrBtc.toAddr) {
+        ElMessage.warning("to address must not be empty")
+        return
+    }
+
     let feeRate = 0
     if (stat.sendInsOrBtc.customFee != 0) {
         feeRate = stat.sendInsOrBtc.customFee
@@ -141,16 +149,18 @@ async function submitInsTxAction(item: InscriptionItem) {
     }
 
     if (feeRate == 0) {
+        ElMessage.warning("fee rate must not be empty")
+        return
+    }
+
+    const privKey = await generateBitcoinAddr()
+    if (!privKey) {
+        ElMessage.warning("private key must not be empty")
         return
     }
 
     const retOut = await service.queryExtIns(item.detail.address);
     const waltOut: ICollectedUTXOResp = retOut.data;
-
-    const privKey = await generateBitcoinAddr()
-    if (!privKey) {
-        return
-    }
 
     let gutxos = SDK.formatUTXOs(waltOut.txrefs);
     let insOutPut = SDK.formatInscriptions(waltOut.inscriptions_by_outputs);
@@ -170,6 +180,8 @@ async function submitInsTxAction(item: InscriptionItem) {
 
     const subRet = await openapi.pushTx(txHex)
     console.log(subRet)
+
+    ElMessage.info("tx:" + subRet + " has been publiced")
 }
 
 function clickFeeCardAction(idx: any) {
@@ -259,7 +271,8 @@ onMounted(() => {
             </div>
         </el-dialog>
 
-        <el-dialog v-model="stat.sendInsOrBtc.isSendInsOrBtcShow" :show-close="true" :align-center="true" class="send-dialogue-view">
+        <el-dialog v-model="stat.sendInsOrBtc.isSendInsOrBtcShow" :show-close="true" :align-center="true"
+            class="send-dialogue-view">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">Send #{{ stat.selectedItem.number }}</h4>
@@ -283,7 +296,7 @@ onMounted(() => {
                         <br>
                         <div class="fee-desc-view">{{ item.desc }}</div>
                     </div>
-                    <div class="fee-card-view">
+                    <div class="fee-card-view fee-card-view-normal">
                         <div class="fee-title-view">Customize Sats</div>
                         <div class="fee-rate-view">{{ stat.sendInsOrBtc.customFee }}sats/vByte</div>
                         <br>
@@ -510,6 +523,7 @@ onMounted(() => {
 
 .fee-card-view {
     padding: 20px;
+    margin-top: 10px;
     width: 180px;
     height: 148px;
     background: #FFFFFF;

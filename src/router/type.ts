@@ -87,6 +87,11 @@ export enum InsType {
     OTHER,
 }
 
+export interface Ratio {
+    price: string;
+    symbol: string;
+}
+
 export const Links = {
     doc: "https://docs.btcdomains.io",
     openOrdex: "https://btcdomains.click/openordex-open-2f8217",

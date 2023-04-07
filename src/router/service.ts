@@ -179,4 +179,16 @@ export default {
             return
         }
     },
+
+    async queryRatio(symbol: string) {
+        //binanceApi
+        let ret = await axios.get(ExtApi.binanceApi + symbol)
+
+        if (ret.status == 200) {
+            return ret.data
+        } else {
+            ElMessage.error("Bad request[code=" + ret.status + "]")
+            return
+        }
+    }
 }

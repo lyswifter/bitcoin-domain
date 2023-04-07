@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BigNumber from "bignumber.js";
 import { ElMessage } from "element-plus";
 import { onBeforeMount, onMounted, reactive, ref } from 'vue';
 import useClipboard from "vue-clipboard3";
@@ -6,20 +7,18 @@ import FooterView from "../components/Footer.vue";
 import HeaderView from "../components/Header.vue";
 import HistoryView from "../components/History.vue";
 import InscriptionView from "../components/MyInscriptions.vue";
+import openapi from "../crypto/openapi";
+import SDK, { ICollectedUTXOResp, ISendBTCReq } from "../crypto/sdk/sdk";
+import { generateBitcoinAddr } from "../crypto/sign";
 import router from "../router/index";
 import service from "../router/service";
-import { PersonInfo } from "../router/type";
+import { PersonInfo, Ratio } from "../router/type";
 import { shortenAddr } from "../router/util";
+import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 
-import openapi from "../crypto/openapi";
-import { KEYRING_TYPE } from "../shared/constant";
-import { Account, BitcoinBalance } from "../shared/types";
-
-import { FeeSummary } from "../shared/types";
-
+const rate = 100000000;
 const headerRef = ref();
 const subSLen = 8;
-
 const defaultAvatar = '../../src/assets/icon_btc@2x.png';
 
 let stat = reactive({
@@ -36,6 +35,7 @@ let stat = reactive({
         customFee: 0,
         curIdx: 2,
         amount: 0,
+        availBal: '',
     }
 })
 
@@ -47,11 +47,35 @@ function copyAction() {
 }
 
 async function sendBtcsAction() {
+
+    // from address
+
     let addr = localStorage.getItem('bitcoin_address')
+    if (!addr) {
+        ElMessage.warning("from address must not be empty")
+        return
+    }
+
 
     stat.sendInsOrBtc.target = 'BTC'
-    // stat.selectedItem = item
     stat.sendInsOrBtc.isSendInsOrBtcShow = true
+
+    // determine how much btc are available to transfer
+    let inscriptions = await openapi.getAddressInscriptions(addr);
+    console.log(inscriptions)
+
+    let totalSatoshi = new BigNumber(0)
+    inscriptions.forEach(element => {
+        if (element.detail) {
+            let tmp = new BigNumber(element.detail.output_value)
+            totalSatoshi = totalSatoshi.plus(tmp)
+        }
+    });
+    let amout_tmp = new BigNumber(stat.winfo.amount);
+    let amount_sat = amout_tmp.multipliedBy(rate);
+    let available_sat = amount_sat.minus(totalSatoshi);
+    let availBtcStr = available_sat.div(rate).toPrecision(8).toString();
+    stat.sendInsOrBtc.availBal = availBtcStr;
 
     openapi.getFeeSummary().then(feeRet => {
         console.log(feeRet)
@@ -64,7 +88,73 @@ function clickFeeCardAction(idx: any) {
 }
 
 async function submitBtcTxAction() {
+    let addr = localStorage.getItem('bitcoin_address')
+    if (!addr) {
+        ElMessage.warning("from address must not be empty")
+        return
+    }
 
+    // to address
+
+    if (!stat.sendInsOrBtc.toAddr) {
+        ElMessage.warning("to address must not be empty")
+        return
+    }
+
+    // amount
+
+    if (!stat.sendInsOrBtc.amount) {
+        ElMessage.warning("amount must not be empty")
+        return
+    }
+
+    // feeRate
+
+    let feeRate = 0
+    if (stat.sendInsOrBtc.customFee != 0) {
+        feeRate = stat.sendInsOrBtc.customFee
+    } else {
+        feeRate = stat.sendInsOrBtc.feeSums.list[stat.sendInsOrBtc.curIdx].feeRate
+    }
+
+    if (feeRate == 0) {
+        ElMessage.warning("fee rate must not be empty")
+        return
+    }
+
+    const privKey = await generateBitcoinAddr()
+    if (!privKey) {
+        ElMessage.warning("private key must not be empty")
+        return
+    }
+
+    // assembly
+
+    const retOut = await service.queryExtIns(addr);
+    const waltOut: ICollectedUTXOResp = retOut.data;
+
+    let gutxos = SDK.formatUTXOs(waltOut.txrefs);
+    let insOutPut = SDK.formatInscriptions(waltOut.inscriptions_by_outputs);
+
+    let sBtcResq = {
+        privateKey: privKey,
+        utxos: gutxos,
+        inscriptions: insOutPut,
+        receiver: stat.sendInsOrBtc.toAddr,
+        amount: stat.sendInsOrBtc.amount,
+        feeRate: feeRate,
+    } as ISendBTCReq
+
+    const { txID, txHex } = await SDK.sendBTCTransaction(sBtcResq)
+    console.log('txID: ' + txID)
+    console.log('txHex: ' + txHex)
+
+    // submit
+
+    const subRet = await openapi.pushTx(txHex)
+    console.log(subRet)
+
+    ElMessage.info("tx:" + subRet + " has been publiced")
 }
 
 function receiveAction() {
@@ -95,7 +185,6 @@ onBeforeMount(() => {
 
 onMounted(async () => {
     let addr = localStorage.getItem('bitcoin_address')
-    let pubKey = localStorage.getItem('public_key')
     if (addr) {
         let avatarRet = await service.avatarGet(addr);
         stat.pinfo = avatarRet.data[0]
@@ -103,13 +192,15 @@ onMounted(async () => {
 
         let balance = await openapi.getAddressBalance(addr);
         stat.winfo = balance
-
-        stat.account = {
-            type: KEYRING_TYPE.WalletConnectKeyring,
-            pubkey: pubKey,
-            address: addr,
-        } as Account
     }
+    
+    let ratio : Ratio = await service.queryRatio('BTCUSDT');
+    console.log(ratio)
+
+    let ratioNum = new BigNumber(ratio.price);
+    let btcNum = new BigNumber(stat.winfo.amount);
+    let usdtNum = ratioNum.multipliedBy(btcNum);
+    stat.winfo.usd_value = usdtNum.toString();
 })
 
 </script>
@@ -146,7 +237,7 @@ onMounted(async () => {
                         <div style="margin-left: 10px;">
                             <div class="btc-view">{{ stat.winfo.amount }} BTC <img src="../assets/icon_q@2x.png" alt=""
                                     width="24" height="24"></div>
-                            <div class="usdt-view">≈ 25.4323 USDT</div>
+                            <div class="usdt-view">≈ {{stat.winfo.usd_value}} USDT</div>
                         </div>
                     </div>
 
@@ -191,7 +282,8 @@ onMounted(async () => {
             </div>
         </el-dialog>
 
-        <el-dialog v-model="stat.sendInsOrBtc.isSendInsOrBtcShow" :show-close="true" :align-center="true" class="send-dialogue-view">
+        <el-dialog v-model="stat.sendInsOrBtc.isSendInsOrBtcShow" :show-close="true" :align-center="true"
+            class="send-dialogue-view">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">Send BTC</h4>
@@ -204,10 +296,13 @@ onMounted(async () => {
                     <el-input v-model="stat.sendInsOrBtc.toAddr" placeholder="Received Bitcoin address or .btc domain name"
                         class="to-addr-input" />
                 </div>
+                <br>
                 <div class="amount-view">
-                    <div class="fee-tit-view">To</div>
-                    <el-input v-model="stat.sendInsOrBtc.amount" placeholder="Received Bitcoin address or .btc domain name"
-                        class="to-addr-input" />
+                    <div style="display: flex;justify-content: space-between;flex-wrap: wrap;">
+                        <div class="fee-tit-view">Amount</div>
+                        <div class="cash-tit-view">Available Balance: {{ stat.sendInsOrBtc.availBal }}BTC</div>
+                    </div>
+                    <el-input v-model="stat.sendInsOrBtc.amount" placeholder="0" class="to-addr-input" />
                 </div>
                 <br>
                 <div class="fee-tit-view">Select the network fee you want to pay:</div>
@@ -220,7 +315,7 @@ onMounted(async () => {
                         <br>
                         <div class="fee-desc-view">{{ item.desc }}</div>
                     </div>
-                    <div class="fee-card-view">
+                    <div class="fee-card-view fee-card-view-normal fee-card-mid">
                         <div class="fee-title-view">Customize Sats</div>
                         <div class="fee-rate-view">{{ stat.sendInsOrBtc.customFee }}sats/vByte</div>
                         <br>
@@ -432,6 +527,14 @@ onMounted(async () => {
     line-height: 20px;
 }
 
+.cash-tit-view {
+    height: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #2E2F3E;
+    line-height: 20px;
+}
+
 .to-addr-input {
     width: 100%;
     height: 48px;
@@ -443,8 +546,17 @@ onMounted(async () => {
     justify-content: space-between;
 }
 
+@media screen and (max-width: 767px) {
+    /* .fee-card-mid {
+        margin: 0 auto;
+    } */
+}
+
+@media screen and (min-width: 768px) {}
+
 .fee-card-view {
     padding: 20px;
+    margin-top: 10px;
     width: 180px;
     height: 148px;
     background: #FFFFFF;
