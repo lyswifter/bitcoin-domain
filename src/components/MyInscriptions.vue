@@ -181,7 +181,7 @@ async function submitInsTxAction(item: InscriptionItem) {
     const subRet = await openapi.pushTx(txHex)
     console.log(subRet)
 
-    ElMessage.info("tx:" + subRet + " has been publiced")
+    ElMessage.info("tx: " + subRet + " has been publiced")
 }
 
 function clickFeeCardAction(idx: any) {

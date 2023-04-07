@@ -104,3 +104,5 @@ export const Links = {
 }
 
 export const GivingMsg = "Signing this to get a bitcoin key-pair --";
+
+export const MinSats = 1000;

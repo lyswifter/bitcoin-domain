@@ -12,7 +12,7 @@ import SDK, { ICollectedUTXOResp, ISendBTCReq } from "../crypto/sdk/sdk";
 import { generateBitcoinAddr } from "../crypto/sign";
 import router from "../router/index";
 import service from "../router/service";
-import { PersonInfo, Ratio } from "../router/type";
+import { MinSats, PersonInfo, Ratio } from "../router/type";
 import { shortenAddr } from "../router/util";
 import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 
@@ -108,6 +108,13 @@ async function submitBtcTxAction() {
         return
     }
 
+    let one = new BigNumber(stat.sendInsOrBtc.amount)
+    let targetSat = one.multipliedBy(rate)
+    if (targetSat.lt(new BigNumber(MinSats))) {
+        ElMessage.warning("min sat you must transfer is" + MinSats)
+        return
+    }
+
     // feeRate
 
     let feeRate = 0
@@ -141,7 +148,7 @@ async function submitBtcTxAction() {
         utxos: gutxos,
         inscriptions: insOutPut,
         receiver: stat.sendInsOrBtc.toAddr,
-        amount: stat.sendInsOrBtc.amount,
+        amount: targetSat.toNumber(),
         feeRate: feeRate,
     } as ISendBTCReq
 
@@ -154,7 +161,7 @@ async function submitBtcTxAction() {
     const subRet = await openapi.pushTx(txHex)
     console.log(subRet)
 
-    ElMessage.info("tx:" + subRet + " has been publiced")
+    ElMessage.info("tx: " + subRet + " has been publiced")
 }
 
 function receiveAction() {
