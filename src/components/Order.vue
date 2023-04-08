@@ -23,7 +23,7 @@ let state = reactive({
     info: {
         name: '',
         isAvailable: false,
-        addr: '',
+        addr: 'bc1puv6k8ht73ddwze0dmm9m8m6k44cnre7lzyxq84qlw9hkcjr5qv6sjqdjnc',
         midAddr: '',
         gasFee: '',
         serviceFee: '',
@@ -193,7 +193,8 @@ onMounted(() => {
 
             <el-row justify="space-between">
                 <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3"><span class="t-name">{{ state.info.name }}</span></el-col>
-                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Unavailable'
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="t-name">{{ state.info.isAvailable ? 'Available'
+                    : 'Unavailable'
                 }}</span></el-col>
             </el-row>
         </div>
@@ -215,11 +216,10 @@ onMounted(() => {
             <!-- STEP 1 -->
             <div class="step-title-view">STEP 1: Receive address</div>
             <div style="margin: 0 auto;">
-                <div class="step-desc-view">Type your address to receive nft here(Note:this is an <a href="https://ordinals.com" target="_blank">Ordinals</a> address)</div>
-
-                <el-autocomplete class="addr-input-view" v-model="state.info.addr" :fetch-suggestions="querySearch"
-                    trigger-on-focus="true" clearable placeholder="Type your address to receive the nft here, like: bc1p..."
-                    @select="handleSelect" />
+                <div class="step-desc-view">Type your address to receive nft here(Note:this is an <a
+                        href="https://ordinals.com" target="_blank">Ordinals</a> address)</div>
+                <el-input v-model="state.info.addr"
+                    placeholder="Type your address to receive the nft here, like: bc1p..." />
 
             </div>
 
@@ -410,9 +410,9 @@ onMounted(() => {
 }
 </style>
 
-<style scoped>
+<!-- <style scoped>
 :deep(.addr-input-view .el-input .el-input__wrapper) {
     max-width: 1120px;
     min-width: 350px;
 }
-</style>
+</style> -->

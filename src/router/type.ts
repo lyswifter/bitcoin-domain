@@ -101,6 +101,40 @@ export interface History {
     txid: string;
 }
 
+export interface PaymentMethod {
+    name: string;
+    icon: string;
+    desc: string;
+}
+
+export interface PayParams {
+    fromCurrency: string;
+    toCurrency: string;
+    fromAmount: string;
+    toAmount: string;
+    fromNetwork: string;
+    toNetwork: string;
+    receive_address: string;
+}
+
+export interface PayinParams {
+    flow: string;
+    fromAmount: string;
+    fromCurrency: string;
+    fromNetwork: string;
+    id: string;
+    payinAddress: string;
+    payoutAddress: string;
+    payoutExtraId: string;
+    refundAddress: string;
+    refundExtraId: string;
+    toAmount: string;
+    toCurrency: string;
+    toNetwork: string;
+    type: string;
+    validUntil: string;
+}
+
 export const Links = {
     doc: "https://docs.btcdomains.io",
     openOrdex: "https://btcdomains.click/openordex-open-2f8217",

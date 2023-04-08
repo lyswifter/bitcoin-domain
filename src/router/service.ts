@@ -1,5 +1,6 @@
 import axios from "axios";
 import { ElMessage } from "element-plus";
+import { PayParams } from "../router/type";
 import { Apis, ExtApi } from "./domain";
 
 export interface IReqSubmitTxs {
@@ -154,7 +155,23 @@ export default {
         }
     },
 
+    async exchangeWith(params: PayParams) {
+        // exchange
+        //
+        let ret = await axios.post(Apis.exchange, params)
+
+        if (ret.status == 200) {
+            return ret.data
+        } else {
+            ElMessage.error("Bad request[code=" + ret.status + "]")
+            return
+        }
+    },
+    
+
     async queryExtIns(address: string) {
+        // walletInfo
+        //
         let ret = await axios.get(ExtApi.walletInfo + address)
 
         if (ret.status == 200) {

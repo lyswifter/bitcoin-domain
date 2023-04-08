@@ -17,6 +17,7 @@ export const Apis = {
     avatarSet: domain.domainUrl + '/api/head/set',
     avatarGet: domain.domainUrl + '/api/head/get',
     queryInscriptions: domain.domainUrl + '/api/address/',
+    exchange: domain.domainUrl + '/api/exchange',
 }
 
 export const ExtApi = {
