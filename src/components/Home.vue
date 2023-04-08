@@ -1,11 +1,7 @@
 <script setup lang="ts">
+import { ElLoading, ElMessage } from 'element-plus';
 import { onMounted, reactive } from 'vue';
-
 import { event, pageview } from "vue-gtag";
-
-import service from "../router/service";
-import { DomainHistory, GasInfo } from "../router/type";
-
 import EmptyView from "../components/Empty.vue";
 import FooterView from "../components/Footer.vue";
 import HeaderView from "../components/Header.vue";
@@ -14,17 +10,29 @@ import OrderView from "../components/Order.vue";
 import PayView from "../components/Pay.vue";
 import RegisteriedView from "../components/Registered.vue";
 import RegisteringView from "../components/Registering.vue";
+import SearchInsView from "../components/SearchIns.vue";
 import StartView from "../components/Start.vue";
+import service from "../router/service";
+import { DomainHistory, GasInfo } from "../router/type";
 
-import { ElLoading, ElMessage } from 'element-plus';
+import { validate } from 'bitcoin-address-validation';
 
 import router from "../router/index";
 
-let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 'start', gasInfo: {} as GasInfo, headerHeight: '338px', history: {} as DomainHistory })
+let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 'start', gasInfo: {} as GasInfo, history: {} as DomainHistory })
 
-// '', start, hist, order, pay, registered, registering
+// '', start, hist, order, pay, registered, registering, searchIns
 
 function searchAction() {
+  // btc address
+  if (validate(state.input)) {
+    state.stage = 'searchIns'
+  } else { // ilegel btc address
+    queryDomain()
+  }
+}
+
+function queryDomain() {
   let loadingInstance = ElLoading.service({ fullscreen: true });
 
   if (state.inputAppend != '') {
@@ -119,7 +127,7 @@ function toProcessing(info: GasInfo) {
 
 function connectParentAction(addr: string) {
   console.log('connectAction: ' + addr)
-  router.push({ name: 'wallet', params: { addr: addr }})
+  router.push({ name: 'wallet', params: { addr: addr } })
 }
 
 onMounted(() => {
@@ -139,18 +147,19 @@ onMounted(() => {
 <template>
   <div class="main-view">
 
-    <HeaderView class="header-view" @connect-parent-action="connectParentAction"/>
+    <HeaderView class="header-view" @connect-parent-action="connectParentAction" />
 
     <div class="slogon-view">
       <img class="solgon-title-view" src="../assets/logo@2x.png" alt="">
-      <div class="solgon-content-view">Discover the Future of BTC Doamin. Search, Register and Trade your .btc Domain Name</div>
+      <div class="solgon-content-view">Discover the Future of BTC Doamin. Search, Register and Trade your .btc Domain Name
+      </div>
     </div>
 
     <div class="search-view">
-      <el-input class="input-class" v-model="state.input" placeholder="Search name or address" maxlength="32"
+      <el-input class="input-class" v-model="state.input" placeholder="Search name or address" maxlength="100"
         minlength="4" @keyup.enter.native="searchAction" />
-      <a class="search-a" :class="state.input ? 'search-a-enable' : 'search-a-disable'" style="text-decoration: none;" href="javascript:void(0)"
-        @click="searchAction"> Search </a>
+      <a class="search-a" :class="state.input ? 'search-a-enable' : 'search-a-disable'" style="text-decoration: none;"
+        href="javascript:void(0)" @click="searchAction"> Search </a>
     </div>
 
     <EmptyView v-if="state.stage == ''" />
@@ -170,6 +179,8 @@ onMounted(() => {
 
     <RegisteringView v-else-if="state.stage == 'registering'" :ref="state.stage" class="registering-view"
       :domain-name="state.inputAppend" :is-available="state.isAvailable" :gas-info="state.gasInfo" />
+
+    <SearchInsView v-else-if="state.stage == 'searchIns'" :address="state.input" />
 
     <FooterView class="footer-view" />
   </div>

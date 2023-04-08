@@ -194,11 +194,6 @@ function showQrCodeAction() {
 }
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
-    console.log(tab.paneName)
-    console.log(tab.active)
-    console.log(tab.index)
-    console.log(tab.props.label)
-
     switch (tab.paneName) {
         case 'inscription':
             insRef.value.updateInnerValue()
@@ -225,7 +220,11 @@ onMounted(() => {
     let addr = localStorage.getItem('bitcoin_address')
     if (addr) {
         service.avatarGet(addr).then(avatarRet => {
-            stat.pinfo = avatarRet.data[0]
+            if (avatarRet.data.length > 0) {
+                stat.pinfo = avatarRet.data[0]
+            } else {
+                stat.pinfo.address = addr!
+            }
             stat.pinfo.short_addr = shortenAddr(stat.pinfo.address, subSLen)
         });
 
@@ -294,7 +293,7 @@ onMounted(() => {
         <div class="mid-content-view">
             <el-tabs v-model="stat.activeName" class="mywallet-tabs" @tab-click="handleClick">
                 <el-tab-pane label="Inscription" name="inscription">
-                    <InscriptionView ref="insRef" :address="stat.pinfo.address"  />
+                    <InscriptionView ref="insRef" :address="stat.pinfo.address" />
                 </el-tab-pane>
                 <el-tab-pane label="History" name="history">
                     <HistoryView :address="stat.pinfo.address" ref="historyRef" />

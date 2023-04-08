@@ -322,8 +322,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.ins-container-view {}
-
 .infinite-list {
     margin: 0 auto;
     width: 100%;
