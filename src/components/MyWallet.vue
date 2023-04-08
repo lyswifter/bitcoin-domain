@@ -44,7 +44,7 @@ let stat = reactive({
     sendInsOrBtc: {
         target: '',
         isSendInsOrBtcShow: false,
-        toAddr: 'bc1pkt5rxgyz9zaydan4qa9fg4fs5kjuzy273czsdvpzr2aztuk9pcgqw6s75d',
+        toAddr: '',
         feeSums: {} as FeeSummary,
         customFee: 0,
         curIdx: 2,
@@ -213,21 +213,25 @@ function disconnectAction() {
     router.push({ name: 'home' })
 }
 
-onBeforeMount(() => {
-})
-
-onMounted(() => {
+function loadavatar() {
     let addr = localStorage.getItem('bitcoin_address')
     if (addr) {
+        stat.pinfo.address = addr!
+        stat.pinfo.short_addr = shortenAddr(stat.pinfo.address, subSLen)
+
         service.avatarGet(addr).then(avatarRet => {
+            console.log(avatarRet)
             if (avatarRet.data.length > 0) {
                 stat.pinfo = avatarRet.data[0]
-            } else {
-                stat.pinfo.address = addr!
+                stat.pinfo.short_addr = shortenAddr(stat.pinfo.address, subSLen)
             }
-            stat.pinfo.short_addr = shortenAddr(stat.pinfo.address, subSLen)
         });
+    }
+}
 
+function loadBalance() {
+    let addr = localStorage.getItem('bitcoin_address')
+    if (addr) {
         openapi.getAddressBalance(addr).then(balance => {
             stat.winfo = balance
 
@@ -240,6 +244,14 @@ onMounted(() => {
             });
         });
     }
+}
+
+onBeforeMount(() => {
+})
+
+onMounted(() => {
+    loadavatar()
+    loadBalance()
 })
 
 </script>
@@ -293,7 +305,7 @@ onMounted(() => {
         <div class="mid-content-view">
             <el-tabs v-model="stat.activeName" class="mywallet-tabs" @tab-click="handleClick">
                 <el-tab-pane label="Inscription" name="inscription">
-                    <InscriptionView ref="insRef" :address="stat.pinfo.address" />
+                    <InscriptionView ref="insRef" :address="stat.pinfo.address" @reload-avatar="loadavatar"/>
                 </el-tab-pane>
                 <el-tab-pane label="History" name="history">
                     <HistoryView :address="stat.pinfo.address" ref="historyRef" />

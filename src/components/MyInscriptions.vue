@@ -12,6 +12,10 @@ const props = defineProps({
     address: String,
 })
 
+const emit = defineEmits({
+    reloadAvatar() {}
+})
+
 let stat = reactive({
     count: 0,
     items: [] as InscriptionItem[],
@@ -103,12 +107,26 @@ function settingOkAction() {
             case InsType.DOMAIN:
                 service.avatarSet('', selectAddr, stat.selectedItem.domain, val, selectPubKey!).then(ret => {
                     console.log(ret)
+                    stat.isSetVisiable = false
+                    if (ret.code == 0) {
+                        ElMessage.info("set domain name ok")
+                        emit('reloadAvatar')
+                    } else {
+                        ElMessage.error("set domain name error")
+                    }
                 })
                 break;
 
             case InsType.IMAGE:
-                service.avatarSet(stat.selectedItem.number.toString(), selectAddr, '', val, selectPubKey!).then(ret => {
+                service.avatarSet(stat.selectedItem.id, selectAddr, '', val, selectPubKey!).then(ret => {
+                    stat.isSetVisiable = false
                     console.log(ret)
+                    if (ret.code == 0) {
+                        ElMessage.info("set avatar ok")
+                        emit('reloadAvatar')
+                    } else {
+                        ElMessage.error("set avatar error")
+                    }
                 })
                 break;
 

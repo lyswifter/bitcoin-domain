@@ -32,6 +32,8 @@ let state = reactive({
         balance: '',
         total: '',
         years: 1,
+        switchAddr: '',
+        switchCurr: '',
     } as GasInfo,
     isPaymentVisiable: false,
     payment: {
@@ -114,7 +116,13 @@ async function tiggerMetamaskAction() {
 async function switchPayMethod(idx: number) {
     state.payment.curIdx = idx
 
-    state.info.midAddr = 'bc1puv6k8ht73ddwze0dmm9m8m6k44cnre7lzyxq84qlw9hkcjr5qv6sjqdjnc'
+    if (idx == 0) {
+        state.info.switchAddr = state.info.midAddr
+        state.info.switchCurr = 'BTC'
+        return
+    }
+
+    // state.info.midAddr = 'bc1puv6k8ht73ddwze0dmm9m8m6k44cnre7lzyxq84qlw9hkcjr5qv6sjqdjnc'
 
     // exchangeWith
     let params = {
@@ -130,7 +138,8 @@ async function switchPayMethod(idx: number) {
     let retData = await service.exchangeWith(params);
     state.payment.exchangeRet = JSON.parse(retData.data)
 
-    state.payment.exchangeRet.fromCurrency = state.payment.exchangeRet.fromCurrency.toUpperCase()
+    state.info.switchAddr = state.payment.exchangeRet.payinAddress;
+    state.info.switchCurr = state.payment.exchangeRet.fromCurrency.toUpperCase();
 
     console.log(state.payment.exchangeRet)
 }
@@ -154,6 +163,9 @@ onMounted(() => {
         icon: '../../src/assets/eth@2x.png',
         desc: 'About 3% of exchange fees'
     }] as PaymentMethod[]
+
+    state.info.switchAddr = state.info.midAddr
+    state.info.switchCurr = 'BTC'
 
     useRequest(updateBalance, {
         pollingInterval: Types.queryBalInterval,
@@ -266,16 +278,17 @@ function updateBalance() {
                 <div class="thin-title-view">You Will Pay:</div>
                 <div v-if="state.payment.curIdx == 0" class="pay-value-view">{{ state.info.total }} <span>BTC</span></div>
                 <div v-else class="pay-value-view">{{ state.payment.exchangeRet.fromAmount }}
-                    <span>{{ state.payment.exchangeRet.fromCurrency }}</span></div>
+                    <span>{{ state.payment.exchangeRet.fromCurrency }}</span>
+                </div>
             </div>
 
             <div class="qrcode-view">
                 <div>Send the funds to this address</div>
-                <vue-qrcode :value="state.info.midAddr" :options="{ width: 200 }"></vue-qrcode>
+                <vue-qrcode :value="state.info.switchAddr" :options="{ width: 200 }"></vue-qrcode>
 
                 <div style="display: flex;justify-content: start;width: 100%;">
                     <div style="color: #2E2F3E;word-wrap: break-word;text-align: left;max-width: 80%;">{{
-                        state.info.midAddr }} </div>
+                        state.info.switchAddr }} </div>
                     <img src="../assets/icon_copy@2x.png" style="width: 32px;height: 32px;cursor: pointer;" alt=""
                         @click="copyAction">
                 </div>

@@ -11,6 +11,8 @@ export interface GasInfo {
     balance: string;
     total: string;
     years: number;
+    switchCurr: string;
+    switchAddr: string;
 }
 
 export interface DomainInfo {
