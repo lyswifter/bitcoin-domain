@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onBeforeMount, onMounted, reactive } from "vue";
-import service from "../router/service";
 import { InsType, InscriptionItem } from "../router/type";
 
 const props = defineProps({
     address: String,
+    itemss: {},
 })
 
 let stat = reactive({
@@ -13,10 +13,7 @@ let stat = reactive({
 })
 
 function load() {
-    service.queryInsWith(stat.addr).then((val) => {
-        console.log(val.data.result)
-
-        val.data.result.forEach((element: InscriptionItem) => {
+    stat.items.forEach((element: InscriptionItem) => {
             if (element.domain) {
                 element.type = InsType.DOMAIN; // MAINDOMAIN
             } else {
@@ -47,9 +44,6 @@ function load() {
                 }
             }
         });
-
-        stat.items = val.data.result;
-    })
 }
 
 function updateInnerValue() {
@@ -62,6 +56,7 @@ defineExpose({
 
 onBeforeMount(() => {
     stat.addr = props.address ? props.address : '';
+    stat.items = props.itemss ? props.itemss as InscriptionItem[] : []
 })
 
 onMounted(() => {

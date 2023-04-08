@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { validate } from 'bitcoin-address-validation';
 import { ElLoading, ElMessage } from 'element-plus';
 import { onMounted, reactive } from 'vue';
 import { event, pageview } from "vue-gtag";
@@ -12,24 +13,28 @@ import RegisteriedView from "../components/Registered.vue";
 import RegisteringView from "../components/Registering.vue";
 import SearchInsView from "../components/SearchIns.vue";
 import StartView from "../components/Start.vue";
-import service from "../router/service";
-import { DomainHistory, GasInfo } from "../router/type";
-
-import { validate } from 'bitcoin-address-validation';
-
 import router from "../router/index";
+import service from "../router/service";
+import { DomainHistory, GasInfo, InscriptionItem } from "../router/type";
 
-let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 'start', gasInfo: {} as GasInfo, history: {} as DomainHistory })
+let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 'start', gasInfo: {} as GasInfo, history: {} as DomainHistory, searchItem: [] as InscriptionItem[] })
 
 // '', start, hist, order, pay, registered, registering, searchIns
 
 function searchAction() {
-  // btc address
   if (validate(state.input)) {
-    state.stage = 'searchIns'
+    searchAddr()
   } else { // ilegel btc address
     queryDomain()
   }
+}
+
+function searchAddr() {
+  state.stage = ''
+  service.queryInsWith(state.input).then((val) => {
+    state.searchItem = val.data.result
+    state.stage = 'searchIns'
+  })
 }
 
 function queryDomain() {
@@ -126,7 +131,6 @@ function toProcessing(info: GasInfo) {
 }
 
 function connectParentAction(addr: string) {
-  console.log('connectAction: ' + addr)
   router.push({ name: 'wallet', params: { addr: addr } })
 }
 
@@ -180,7 +184,7 @@ onMounted(() => {
     <RegisteringView v-else-if="state.stage == 'registering'" :ref="state.stage" class="registering-view"
       :domain-name="state.inputAppend" :is-available="state.isAvailable" :gas-info="state.gasInfo" />
 
-    <SearchInsView v-else-if="state.stage == 'searchIns'" :address="state.input" />
+    <SearchInsView v-else-if="state.stage == 'searchIns'" :address="state.input" :itemss="state.searchItem" />
 
     <FooterView class="footer-view" />
   </div>
