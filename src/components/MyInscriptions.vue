@@ -188,6 +188,14 @@ function clickFeeCardAction(idx: any) {
     stat.sendInsOrBtc.curIdx = idx
 }
 
+function updateInnerValue() {
+    load()
+}
+
+defineExpose({
+    updateInnerValue,
+})
+
 onBeforeMount(() => {
     stat.addr = props.address ? props.address : '';
 })

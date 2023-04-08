@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import BigNumber from "bignumber.js";
+import type { TabsPaneContext } from 'element-plus';
 import { ElMessage } from "element-plus";
 import { onBeforeMount, onMounted, reactive, ref } from 'vue';
 import useClipboard from "vue-clipboard3";
 import FooterView from "../components/Footer.vue";
 import HeaderView from "../components/Header.vue";
-import HistoryView from "../components/History.vue";
+import HistoryView from "../components/MyHistory.vue";
 import InscriptionView from "../components/MyInscriptions.vue";
 import openapi from "../crypto/openapi";
 import SDK, { ICollectedUTXOResp, ISendBTCReq } from "../crypto/sdk/sdk";
@@ -17,12 +18,25 @@ import { shortenAddr } from "../router/util";
 import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 
 const rate = 100000000;
-const headerRef = ref();
 const subSLen = 8;
 const defaultAvatar = '../../src/assets/icon_btc@2x.png';
 
+const headerRef = ref();
+const insRef = ref();
+const historyRef = ref();
+
 let stat = reactive({
-    pinfo: {} as PersonInfo,
+    pinfo: {
+        s_id: 0,
+        address: '',
+        short_addr: '',
+        content_type: '',
+        content_url: '',
+        domain: '',
+        inscribe_id: '',
+        create_time: '',
+        update_time: '',
+    } as PersonInfo,
     winfo: {} as BitcoinBalance,
     account: {} as Account,
     activeName: 'inscription',
@@ -179,7 +193,24 @@ function showQrCodeAction() {
     stat.isReceiveShow = true
 }
 
-function handleClick() {
+const handleClick = (tab: TabsPaneContext, event: Event) => {
+    console.log(tab.paneName)
+    console.log(tab.active)
+    console.log(tab.index)
+    console.log(tab.props.label)
+
+    switch (tab.paneName) {
+        case 'inscription':
+            insRef.value.updateInnerValue()
+            break;
+
+        case 'history':
+            historyRef.value.updateInnerValue()
+            break;
+
+        default:
+            break;
+    }
 }
 
 function disconnectAction() {
@@ -190,24 +221,26 @@ function disconnectAction() {
 onBeforeMount(() => {
 })
 
-onMounted(async () => {
+onMounted(() => {
     let addr = localStorage.getItem('bitcoin_address')
     if (addr) {
-        let avatarRet = await service.avatarGet(addr);
-        stat.pinfo = avatarRet.data[0]
-        stat.pinfo.short_addr = shortenAddr(stat.pinfo.address, subSLen)
+        service.avatarGet(addr).then(avatarRet => {
+            stat.pinfo = avatarRet.data[0]
+            stat.pinfo.short_addr = shortenAddr(stat.pinfo.address, subSLen)
+        });
 
-        let balance = await openapi.getAddressBalance(addr);
-        stat.winfo = balance
+        openapi.getAddressBalance(addr).then(balance => {
+            stat.winfo = balance
+
+            service.queryRatio('BTCUSDT').then((ratio: Ratio) => {
+                console.log(ratio)
+                let ratioNum = new BigNumber(ratio.price);
+                let btcNum = new BigNumber(stat.winfo.amount);
+                let usdtNum = ratioNum.multipliedBy(btcNum);
+                stat.winfo.usd_value = usdtNum.toString();
+            });
+        });
     }
-    
-    let ratio : Ratio = await service.queryRatio('BTCUSDT');
-    console.log(ratio)
-
-    let ratioNum = new BigNumber(ratio.price);
-    let btcNum = new BigNumber(stat.winfo.amount);
-    let usdtNum = ratioNum.multipliedBy(btcNum);
-    stat.winfo.usd_value = usdtNum.toString();
 })
 
 </script>
@@ -244,7 +277,7 @@ onMounted(async () => {
                         <div style="margin-left: 10px;">
                             <div class="btc-view">{{ stat.winfo.amount }} BTC <img src="../assets/icon_q@2x.png" alt=""
                                     width="24" height="24"></div>
-                            <div class="usdt-view">≈ {{stat.winfo.usd_value}} USDT</div>
+                            <div class="usdt-view">≈ {{ stat.winfo.usd_value }} USDT</div>
                         </div>
                     </div>
 
@@ -261,10 +294,10 @@ onMounted(async () => {
         <div class="mid-content-view">
             <el-tabs v-model="stat.activeName" class="mywallet-tabs" @tab-click="handleClick">
                 <el-tab-pane label="Inscription" name="inscription">
-                    <InscriptionView :ref="stat.pinfo.address" />
+                    <InscriptionView ref="insRef" :address="stat.pinfo.address"  />
                 </el-tab-pane>
                 <el-tab-pane label="History" name="history">
-                    <HistoryView />
+                    <HistoryView :address="stat.pinfo.address" ref="historyRef" />
                 </el-tab-pane>
             </el-tabs>
         </div>

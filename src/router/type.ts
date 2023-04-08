@@ -92,6 +92,15 @@ export interface Ratio {
     symbol: string;
 }
 
+export interface History {
+    address: string;
+    amount: string;
+    date: string;
+    symbol: string;
+    time: number;
+    txid: string;
+}
+
 export const Links = {
     doc: "https://docs.btcdomains.io",
     openOrdex: "https://btcdomains.click/openordex-open-2f8217",
