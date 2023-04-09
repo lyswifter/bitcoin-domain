@@ -206,7 +206,7 @@ async function submitInsTxAction(item: InscriptionItem) {
 
     ElMessage.info("tx: " + subRet + " has been publiced")
 
-    stat.sendInsOrBtc.isSendInsOrBtcShow = true
+    stat.sendInsOrBtc.isSendInsOrBtcShow = false
 }
 
 async function addressChange() {
@@ -242,7 +242,7 @@ onMounted(() => {
     let localAddr = localStorage.getItem('bitcoin_address');
     if (localAddr) {
         stat.addr = localAddr
-        
+
         loadavatar(localAddr)
         load()
     }
@@ -280,18 +280,24 @@ onMounted(() => {
 
                     <div class="flex-view">
                         <div class="name-view">{{ item.domain }}</div>
-                        <div class="id-view"><a style="color: #A7A9BE;" :href="item.detail.content" target="_blank">INS #{{ item.number }}</a></div>
+                        <div class="id-view"><a style="color: #A7A9BE;" :href="item.detail.content" target="_blank">INS #{{
+                            item.number }}</a></div>
                     </div>
 
                     <div class="flex-view">
-                        <div class="send-view" @click="sendInssAction(item)">Send</div>
-                        <div class="primary-view" v-if="(stat.primaryIns && item.id === stat.primaryIns) || (stat.primaryDomain && item.domain === stat.primaryDomain)">
-                            <img src="../assets/icon_check@2x.png" alt="" width="16" height="16"> Primary
-                        </div>
-                        <div v-else>
-                            <div class="set-view" v-if="item.type == InsType.DOMAIN || item.type == InsType.IMAGE"
-                                @click="setAction(item)">
-                                <img src="../assets/icon_set@2x.png" alt="" width="16" height="16"> Set
+                        <div class="send-view" v-if="item.state == '0'" @click="sendInssAction(item)">Send</div>
+                        <div class="padding-view" v-else>Padding...</div>
+
+                        <div v-if="item.state == '0'">
+                            <div class="primary-view"
+                                v-if="(stat.primaryIns && item.id === stat.primaryIns) || (stat.primaryDomain && item.domain === stat.primaryDomain)">
+                                <img src="../assets/icon_check@2x.png" alt="" width="16" height="16"> Primary
+                            </div>
+                            <div v-else>
+                                <div class="set-view" v-if="item.type == InsType.DOMAIN || item.type == InsType.IMAGE"
+                                    @click="setAction(item)">
+                                    <img src="../assets/icon_set@2x.png" alt="" width="16" height="16"> Set
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -406,6 +412,14 @@ onMounted(() => {
     line-height: 36px;
     text-align: center;
     cursor: pointer;
+}
+
+.padding-view {
+    height: 36px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #A7A9BE;
+    line-height: 40px;
 }
 
 .primary-view {

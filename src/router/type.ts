@@ -71,6 +71,7 @@ export interface InscriptionItem {
     domain_img: string;
     num: number;
     number: number;
+    state: string;
     type: InsType;
     detail: InscriptionDetail;
 }
