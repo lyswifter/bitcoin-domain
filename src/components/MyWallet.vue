@@ -18,9 +18,11 @@ import { MinSats, PersonInfo, Ratio } from "../router/type";
 import { shortenAddr } from "../router/util";
 import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 
+import { domain } from "../router/domain";
+
 const rate = 100000000;
 const subSLen = 8;
-const defaultAvatar = '../../src/assets/icon_btc@2x.png';
+const defaultAvatar = domain.domainImgUrl + 'assets/icon_btc@2x.png';
 
 const headerRef = ref();
 const insRef = ref();

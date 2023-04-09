@@ -10,12 +10,14 @@ import service from "../router/service";
 import { GivingMsg, Links } from "../router/type";
 import { shortenAddr, toXOnly } from "../router/util";
 
+import { domain } from "../router/domain";
+
 const defaultPath = "m/86'/0'/0'/0/0";
 const subSLen = 8;
 
-const menuIcon = '../../src/assets/icon_menu@2x.png';
-const closeIcon = '../../src/assets/icon_close_nav@2x.png';
-const avatarIcon = '../../src/assets/icon_btc@2x.png';
+const menuIcon = domain.domainImgUrl + 'assets/icon_menu@2x.png';
+const closeIcon = domain.domainImgUrl + 'assets/icon_close_nav@2x.png';
+const avatarIcon = domain.domainImgUrl + 'assets/icon_btc@2x.png';
 
 bitcoin.initEccLib(ecc);
 const bip32 = BIP32Factory(ecc);

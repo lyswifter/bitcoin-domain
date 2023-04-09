@@ -3,6 +3,7 @@ export const domain = {
     // domainUrl: "http://137.184.180.14:80",
     domainUrl: "https://btcdomains.io",
     domainImageUrl: "https://btcdomains.io/images/static-files/",
+    domainImgUrl: "https://btcdomains.io/images/",
     extUrl: 'https://devnet.generative.xyz/generative',
 }
 
