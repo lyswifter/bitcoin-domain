@@ -382,8 +382,7 @@ function updateBalance() {
     <el-dialog v-model="state.isPaymentVisiable" :show-close="true" align-center="true" :width="440">
         <div style="text-align: center;">
             <img src="../assets/icon_oops@2x.png" style="width: 220px;height: 220px;" alt="">
-            <div style="font-size: 18px;font-weight: 600;color: #A7A9BE;line-height: 25px;text-align: center;">No payment
-                detected</div>
+            <div style="font-size: 18px;font-weight: 600;color: #A7A9BE;line-height: 25px;text-align: center;">No payment has been detected. When paying with ETH, kindly allow 5-10 minutes for the conversion of your ETH to BTC.</div>
             <br>
             <div style="width: 400px;height: 50px;background: #2E2F3E;border-radius: 8px;font-size: 16px;font-weight: 600;color: white;line-height: 50px;text-align: center;cursor: pointer;"
                 @click="dismissAction">OK</div>
