@@ -217,6 +217,7 @@ onMounted(() => {
             let b_fee = new Decimal(val1.data.mine.trusted)
             let u_fee = new Decimal(val1.data.mine.untrusted_pending)
             let t_fee = Decimal.add(b_fee, u_fee)
+            state.info.balance = t_fee.toPrecision(Types.precision).toString()
             state.info.total = Decimal.sub(s_fee, t_fee).toPrecision(Types.precision).toString();
         }
     });

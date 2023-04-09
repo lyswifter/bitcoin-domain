@@ -27,6 +27,7 @@ const insRef = ref();
 const historyRef = ref();
 
 let stat = reactive({
+    dialogueWidth: '50%',
     pinfo: {
         s_id: 0,
         address: '',
@@ -295,6 +296,12 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
+    if (window.innerWidth < 767) {
+        stat.dialogueWidth = '96%';
+    } else {
+        stat.dialogueWidth = '50%';
+    }
+    
     loadavatar()
     loadBalance()
 })
@@ -360,7 +367,7 @@ onMounted(() => {
 
         <FooterView class="footer-view" />
 
-        <el-dialog v-model="stat.isReceiveShow" :show-close="true" :align-center="true" :width="440">
+        <el-dialog v-model="stat.isReceiveShow" :show-close="true" :align-center="true" :width="stat.dialogueWidth">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">Receive BTC</h4>
@@ -378,7 +385,7 @@ onMounted(() => {
             </div>
         </el-dialog>
 
-        <el-dialog v-model="stat.sendInsOrBtc.isSendInsOrBtcShow" :show-close="true" :align-center="true"
+        <el-dialog v-model="stat.sendInsOrBtc.isSendInsOrBtcShow" :show-close="true" :align-center="true" :width="stat.dialogueWidth"
             class="send-dialogue-view">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
@@ -404,7 +411,7 @@ onMounted(() => {
                 <br>
                 <div class="fee-tit-view">Select the network fee you want to pay:</div>
                 <div class="fee-summary-view">
-                    <div class="fee-card-view" v-for="(item, idx) in stat.sendInsOrBtc.feeSums.list" :key="idx"
+                    <div class="fee-card-view fee-card-dif-view" v-for="(item, idx) in stat.sendInsOrBtc.feeSums.list" :key="idx"
                         :class="stat.sendInsOrBtc.curIdx == idx ? 'fee-card-view-selected' : 'fee-card-view-normal'"
                         @click="clickFeeCardAction(idx)">
                         <div class="fee-title-view">{{ item.title }}</div>
@@ -639,18 +646,20 @@ onMounted(() => {
 }
 
 @media screen and (max-width: 767px) {
-    /* .fee-card-mid {
-        margin: 0 auto;
-    } */
+    .fee-card-dif-view {
+        width: 132px;
+    }
 }
 
-@media screen and (min-width: 768px) {}
+@media screen and (min-width: 768px) {
+    .fee-card-dif-view {
+        width: 180px;
+    }
+}
 
 .fee-card-view {
     padding: 20px;
     margin-top: 10px;
-    width: 180px;
-    height: 148px;
     background: #FFFFFF;
     border-radius: 4px;
     text-align: center;
@@ -666,7 +675,6 @@ onMounted(() => {
 }
 
 .fee-title-view {
-    height: 25px;
     font-size: 18px;
     font-weight: 600;
     color: #2E2F3E;
@@ -674,7 +682,6 @@ onMounted(() => {
 }
 
 .fee-rate-view {
-    height: 22px;
     font-size: 16px;
     font-weight: 400;
     color: #A7A9BE;
@@ -682,7 +689,6 @@ onMounted(() => {
 }
 
 .fee-desc-view {
-    height: 22px;
     font-size: 16px;
     font-weight: 600;
     color: #4540D6;

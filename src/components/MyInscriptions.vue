@@ -46,7 +46,8 @@ let stat = reactive({
         customFee: 0,
         curIdx: 2,
         amount: 0,
-    }
+    },
+    dialogueWidth: '96%',
 })
 
 function load() {
@@ -258,6 +259,12 @@ onMounted(() => {
         subtitle: 'After setting up, your name will appear as your primary domain name instead of your wallet address.',
         isSelected: false,
     }]
+
+    if (window.innerWidth < 767) {
+        stat.dialogueWidth = '96%';
+    } else {
+        stat.dialogueWidth = '50%';
+    }
 })
 </script>
 
@@ -307,7 +314,7 @@ onMounted(() => {
 
         <!-- <div class="loadmore-view" @click="loadmoreAction">load more</div> -->
 
-        <el-dialog v-model="stat.isSetVisiable" :show-close="true" :align-center="true" :width="400">
+        <el-dialog v-model="stat.isSetVisiable" :show-close="true" :align-center="true" :width="stat.dialogueWidth">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">Setting</h4>
@@ -330,7 +337,7 @@ onMounted(() => {
         </el-dialog>
 
         <el-dialog v-model="stat.sendInsOrBtc.isSendInsOrBtcShow" :show-close="true" :align-center="true"
-            class="send-dialogue-view">
+            :width="stat.dialogueWidth" class="send-dialogue-view">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">Send #{{ stat.selectedItem.number }}</h4>
@@ -347,7 +354,8 @@ onMounted(() => {
                 <br>
                 <div class="fee-tit-view">Select the network fee you want to pay:</div>
                 <div class="fee-summary-view">
-                    <div class="fee-card-view" v-for="(item, idx) in stat.sendInsOrBtc.feeSums.list" :key="idx"
+                    <div class="fee-card-view fee-card-dif-view" v-for="(item, idx) in stat.sendInsOrBtc.feeSums.list"
+                        :key="idx"
                         :class="stat.sendInsOrBtc.curIdx == idx ? 'fee-card-view-selected' : 'fee-card-view-normal'"
                         @click="clickFeeCardAction(idx)">
                         <div class="fee-title-view">{{ item.title }}</div>
@@ -461,7 +469,6 @@ onMounted(() => {
 @media screen and (max-width: 767px) {
     .infinite-list-item {
         margin: 0 auto;
-        /* width: 95%; */
     }
 
     .card-item {
@@ -553,20 +560,6 @@ onMounted(() => {
 </style>
 
 <style scoped>
-@media screen and (max-width: 767px) {
-    .send-dialogue-view {
-        width: 200px;
-    }
-}
-
-@media screen and (min-width: 768px) {
-    .send-dialogue-view {
-        width: 550px;
-    }
-}
-</style>
-
-<style scoped>
 .fee-tit-view {
     height: 20px;
     margin-bottom: 4px;
@@ -590,8 +583,6 @@ onMounted(() => {
 .fee-card-view {
     padding: 20px;
     margin-top: 10px;
-    width: 180px;
-    height: 148px;
     background: #FFFFFF;
     border-radius: 4px;
     text-align: center;
@@ -606,8 +597,19 @@ onMounted(() => {
     border: 2px solid #4540D6;
 }
 
+@media screen and (max-width: 767px) {
+    .fee-card-dif-view {
+        width: 132px;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .send-dialogue-view {
+        width: 900px;
+    }
+}
+
 .fee-title-view {
-    height: 25px;
     font-size: 18px;
     font-weight: 600;
     color: #2E2F3E;
