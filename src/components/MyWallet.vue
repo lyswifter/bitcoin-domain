@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BigNumber from "bignumber.js";
+import { validate } from 'bitcoin-address-validation';
 import type { TabsPaneContext } from 'element-plus';
 import { ElMessage } from "element-plus";
 import { onBeforeMount, onMounted, reactive, ref } from 'vue';
@@ -45,6 +46,7 @@ let stat = reactive({
         target: '',
         isSendInsOrBtcShow: false,
         toAddr: '',
+        realAddr: '',
         feeSums: {} as FeeSummary,
         customFee: 0,
         curIdx: 2,
@@ -113,8 +115,31 @@ async function submitBtcTxAction() {
     }
 
     // to address
-
+    let tempAddr = ''
     if (!stat.sendInsOrBtc.toAddr) {
+        ElMessage.warning("to address must not be empty")
+        return
+    }
+
+    if (stat.sendInsOrBtc.toAddr.endsWith('.btc')) {
+        if (!stat.sendInsOrBtc.realAddr) {
+            ElMessage.warning("to address must not be empty")
+            return
+        }
+        if (!validate(stat.sendInsOrBtc.realAddr)) {
+            ElMessage.warning("to address is not valid")
+            return
+        }
+        tempAddr = stat.sendInsOrBtc.realAddr
+    } else {
+        if (!validate(stat.sendInsOrBtc.toAddr)) {
+            ElMessage.warning("to address is not valid")
+            return
+        }
+        tempAddr = stat.sendInsOrBtc.toAddr
+    }
+
+    if (!tempAddr) {
         ElMessage.warning("to address must not be empty")
         return
     }
@@ -130,6 +155,13 @@ async function submitBtcTxAction() {
     let targetSat = one.multipliedBy(rate)
     if (targetSat.lt(new BigNumber(MinSats))) {
         ElMessage.warning("min sat you must transfer is" + MinSats)
+        return
+    }
+
+    // availBal
+    let avail = new BigNumber(stat.sendInsOrBtc.availBal)
+    if (one.gte(avail)) {
+        ElMessage.warning("max value you must transfer is" + stat.sendInsOrBtc.availBal + 'btc')
         return
     }
 
@@ -165,7 +197,7 @@ async function submitBtcTxAction() {
         privateKey: privKey,
         utxos: gutxos,
         inscriptions: insOutPut,
-        receiver: stat.sendInsOrBtc.toAddr,
+        receiver: tempAddr,
         amount: targetSat.toNumber(),
         feeRate: feeRate,
     } as ISendBTCReq
@@ -175,11 +207,22 @@ async function submitBtcTxAction() {
     console.log('txHex: ' + txHex)
 
     // submit
-
     const subRet = await openapi.pushTx(txHex)
     console.log(subRet)
 
     ElMessage.info("tx: " + subRet + " has been publiced")
+}
+
+async function addressChange() {
+    if (stat.sendInsOrBtc.toAddr.endsWith('.btc')) {
+        let ret = await service.queryDomain(stat.sendInsOrBtc.toAddr);
+        if (ret.code == 0) {
+            let doaminInfo = ret.data;
+            stat.sendInsOrBtc.realAddr = doaminInfo.owner_address
+        }
+    } else {
+        stat.sendInsOrBtc.realAddr = ''
+    }
 }
 
 function receiveAction() {
@@ -262,7 +305,7 @@ onMounted(() => {
 
 <template>
     <div class="wallet-container">
-        <HeaderView class="header-view" ref="headerRef" />
+        <HeaderView class="header-view" ref="headerRef" :avatar-addr="stat.pinfo.address" />
 
         <div class="top-information-view">
             <div class="top-inner-view">
@@ -349,7 +392,8 @@ onMounted(() => {
                 <div class="to-view">
                     <div class="fee-tit-view">To</div>
                     <el-input v-model="stat.sendInsOrBtc.toAddr" placeholder="Received Bitcoin address or .btc domain name"
-                        class="to-addr-input" />
+                        class="to-addr-input" @input="addressChange"/>
+                    <div v-if="stat.sendInsOrBtc.realAddr">{{ stat.sendInsOrBtc.realAddr }}</div>
                 </div>
                 <br>
                 <div class="amount-view">
@@ -357,7 +401,7 @@ onMounted(() => {
                         <div class="fee-tit-view">Amount</div>
                         <div class="cash-tit-view">Available Balance: {{ stat.sendInsOrBtc.availBal }}BTC</div>
                     </div>
-                    <el-input v-model="stat.sendInsOrBtc.amount" placeholder="0" class="to-addr-input" />
+                    <el-input v-model="stat.sendInsOrBtc.amount" type="number" placeholder="0" class="to-addr-input" />
                 </div>
                 <br>
                 <div class="fee-tit-view">Select the network fee you want to pay:</div>

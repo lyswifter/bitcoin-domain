@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { validate } from 'bitcoin-address-validation';
 import { ElMessage } from "element-plus";
 import { onBeforeMount, onMounted, reactive } from "vue";
 import openapi from "../crypto/openapi";
@@ -27,7 +28,8 @@ let stat = reactive({
     sendInsOrBtc: {
         target: '',
         isSendInsOrBtcShow: false,
-        toAddr: 'bc1pkt5rxgyz9zaydan4qa9fg4fs5kjuzy273czsdvpzr2aztuk9pcgqw6s75d',
+        toAddr: '',
+        realAddr: '',
         feeSums: {} as FeeSummary,
         customFee: 0,
         curIdx: 2,
@@ -136,9 +138,6 @@ function settingOkAction() {
     })
 }
 
-function loadmoreAction() {
-}
-
 async function sendInssAction(item: InscriptionItem) {
     stat.sendInsOrBtc.target = 'INS'
     stat.selectedItem = item
@@ -157,8 +156,31 @@ async function sendInssAction(item: InscriptionItem) {
 async function submitInsTxAction(item: InscriptionItem) {
 
     // to address
-
+    let tempAddr = ''
     if (!stat.sendInsOrBtc.toAddr) {
+        ElMessage.warning("to address must not be empty")
+        return
+    }
+
+    if (stat.sendInsOrBtc.toAddr.endsWith('.btc')) {
+        if (!stat.sendInsOrBtc.realAddr) {
+            ElMessage.warning("to address must not be empty")
+            return
+        }
+        if (!validate(stat.sendInsOrBtc.realAddr)) {
+            ElMessage.warning("to address is not valid")
+            return
+        }
+        tempAddr = stat.sendInsOrBtc.realAddr
+    } else {
+        if (!validate(stat.sendInsOrBtc.toAddr)) {
+            ElMessage.warning("to address is not valid")
+            return
+        }
+        tempAddr = stat.sendInsOrBtc.toAddr
+    }
+
+    if (!tempAddr) {
         ElMessage.warning("to address must not be empty")
         return
     }
@@ -192,7 +214,7 @@ async function submitInsTxAction(item: InscriptionItem) {
         utxos: gutxos,
         inscriptions: insOutPut,
         inscriptionID: item.id,
-        receiver: stat.sendInsOrBtc.toAddr,
+        receiver: tempAddr,
         feeRate: feeRate,
     }
 
@@ -206,6 +228,18 @@ async function submitInsTxAction(item: InscriptionItem) {
     ElMessage.info("tx: " + subRet + " has been publiced")
 
     stat.sendInsOrBtc.isSendInsOrBtcShow = true
+}
+
+async function addressChange() {
+    if (stat.sendInsOrBtc.toAddr.endsWith('.btc')) {
+        let ret = await service.queryDomain(stat.sendInsOrBtc.toAddr);
+        if (ret.code == 0) {
+            let doaminInfo = ret.data;
+            stat.sendInsOrBtc.realAddr = doaminInfo.owner_address
+        }
+    } else {
+        stat.sendInsOrBtc.realAddr = ''
+    }
 }
 
 function clickFeeCardAction(idx: any) {
@@ -315,7 +349,8 @@ onMounted(() => {
                 <div class="to-view">
                     <div class="fee-tit-view">To</div>
                     <el-input v-model="stat.sendInsOrBtc.toAddr" placeholder="Received Bitcoin address or .btc domain name"
-                        class="to-addr-input" />
+                        class="to-addr-input" @input="addressChange" />
+                    <div v-if="stat.sendInsOrBtc.realAddr">{{ stat.sendInsOrBtc.realAddr }}</div>
                 </div>
                 <br>
                 <div class="fee-tit-view">Select the network fee you want to pay:</div>

@@ -5,7 +5,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import { Buffer } from 'buffer';
 import { ElMessage } from 'element-plus';
 import { ethers } from "ethers";
-import { onMounted, reactive } from "vue";
+import { onBeforeMount, onMounted, reactive } from "vue";
 import service from "../router/service";
 import { GivingMsg, Links } from "../router/type";
 import { shortenAddr, toXOnly } from "../router/util";
@@ -19,6 +19,10 @@ const avatarIcon = '../../src/assets/icon_btc@2x.png';
 
 bitcoin.initEccLib(ecc);
 const bip32 = BIP32Factory(ecc);
+
+const props = defineProps({
+    avatarAddr: String,
+})
 
 let state = reactive({ isExpand: false, account: '', bitcoinAddr: '', shortAddr: '', avatar: '' })
 
@@ -122,11 +126,17 @@ function loadavatar(addr: string) {
   });
 }
 
+onBeforeMount(() => {
+  state.avatar = props.avatarAddr ? props.avatarAddr : avatarIcon
+})
+
 onMounted(() => {
   let addr = localStorage.getItem('bitcoin_address')
   if (addr) {
     state.bitcoinAddr = addr;
     state.shortAddr = shortenAddr(addr, subSLen);
+
+    loadavatar(addr)
   }
 })
 </script>
@@ -197,6 +207,8 @@ onMounted(() => {
 .connect-btn {
   height: 40px;
   border-radius: 20px;
+  padding-left: 5px;
+  padding-right: 5px;
   line-height: 40px;
   text-align: center;
   cursor: pointer;
@@ -205,19 +217,19 @@ onMounted(() => {
 }
 
 .connect-btn-normal-mobile {
-  width: 66px;
+  /* width: 66px; */
   background: #FFFFFF;
   color: #4540D6;
 }
 
 .connect-btn-normal {
-  width: 132px;
+  /* width: 132px; */
   background: #FFFFFF;
   color: #4540D6;
 }
 
 .connect-btn-selected {
-  width: 170px;
+  /* width: 170px; */
   background: rgba(255, 255, 255, 0.3);
   border: 1px solid #FFFFFF;
   color: #FFFFFF;
