@@ -40,6 +40,10 @@ let state = reactive({
         methods: [] as PaymentMethod[],
         curIdx: 0,
         exchangeRet: {} as PayinParams,
+        countDown: 1200,
+        countText: '20:00',
+        timer1: 0,
+        timer2: 0,
     }
 })
 
@@ -119,15 +123,35 @@ async function switchPayMethod(idx: number) {
     if (idx == 0) {
         state.info.switchAddr = state.info.midAddr
         state.info.switchCurr = 'BTC'
+        clearInterval(state.payment.timer1)
+        clearInterval(state.payment.timer2)
         return
     }
 
     state.info.switchAddr = ''
     state.info.switchCurr = ''
+    state.payment.countText = '20:00'
+    state.payment.countDown = 1200
 
-    // state.info.midAddr = 'bc1puv6k8ht73ddwze0dmm9m8m6k44cnre7lzyxq84qlw9hkcjr5qv6sjqdjnc'
+    await startRatio();
 
-    // exchangeWith
+    state.payment.timer1 = window.setInterval(
+        resetRatio, Types.resetRatioInterval
+    )
+    state.payment.timer2 = window.setInterval(
+        decreaseOne, Types.countDownInterval
+    )
+}
+
+function decreaseOne() {
+    state.payment.countDown--;
+    let count = state.payment.countDown
+    let minus = count / 60 - 1;
+    let seconds = count % 60;
+    state.payment.countText = minus.toFixed(0) + ':' + seconds
+}
+
+async function startRatio() {
     let params = {
         fromCurrency: 'eth',
         toCurrency: 'btc',
@@ -138,13 +162,28 @@ async function switchPayMethod(idx: number) {
         receive_address: state.info.midAddr,
     } as PayParams;
 
-    let retData = await service.exchangeWith(params);
+    let retData = await service.exchangeWith(params)
     state.payment.exchangeRet = JSON.parse(retData.data)
-
     state.info.switchAddr = state.payment.exchangeRet.payinAddress;
     state.info.switchCurr = state.payment.exchangeRet.fromCurrency.toUpperCase();
-
     console.log(state.payment.exchangeRet)
+}
+
+function resetRatio() {
+    let params = {
+        fromCurrency: 'eth',
+        toCurrency: 'btc',
+        fromAmount: '0',
+        toAmount: state.info.total,
+        fromNetwork: 'eth',
+        toNetwork: 'btc',
+        receive_address: state.info.midAddr,
+    } as PayParams;
+    service.exchangeWith(params).then(val => {
+        state.payment.exchangeRet = JSON.parse(val.data)
+    state.info.switchAddr = state.payment.exchangeRet.payinAddress;
+    state.info.switchCurr = state.payment.exchangeRet.fromCurrency.toUpperCase();
+    })
 }
 
 onBeforeMount(() => {
@@ -284,6 +323,14 @@ function updateBalance() {
                 <div v-if="state.payment.curIdx == 0" class="pay-value-view">{{ state.info.total }} <span>BTC</span></div>
                 <div v-else class="pay-value-view">{{ state.payment.exchangeRet.fromAmount }}
                     <span>{{ state.info.switchCurr }}</span>
+                </div>
+
+                <div v-if="state.payment.curIdx != 0" style="display: flex;margin-top: 10px;">
+                    <div class="thin-title-view">The rate will be updated in</div>
+                    <div
+                        style="background: #A7A9BE;padding-left: 4px;margin-left: 4px;padding-right: 4px;color: white;border-radius: 2px;">
+                        <img src="../assets/time@2x.png" alt="" width="15" height="15">{{ state.payment.countText }}
+                    </div>
                 </div>
             </div>
 
@@ -467,11 +514,11 @@ function updateBalance() {
 }
 
 .thin-title-view {
-    height: 17px;
+    height: 20px;
     font-size: 17px;
     font-weight: 400;
     color: #2E2F3E;
-    line-height: 17px;
+    line-height: 20px;
 }
 
 .pay-value-view {
