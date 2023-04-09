@@ -6,6 +6,7 @@ import { onBeforeMount, onMounted, onUnmounted, reactive } from 'vue';
 import useClipboard from "vue-clipboard3";
 import { event } from "vue-gtag";
 import { useRequest } from 'vue-request';
+import { domain } from "../router/domain";
 import service from "../router/service";
 import { GasInfo, PayParams, PayinParams, PaymentMethod, Types } from "../router/type";
 
@@ -198,11 +199,11 @@ function unload(e: Event) {
 onMounted(() => {
     state.payment.methods = [{
         name: 'BTC',
-        icon: '../../src/assets/icon_btc@2x.png',
+        icon: domain.domainImgUrl + 'assets/icon_btc@2x.png',
         desc: ''
     }, {
         name: 'ETH',
-        icon: '../../src/assets/eth@2x.png',
+        icon: domain.domainImgUrl + 'assets/eth@2x.png',
         desc: 'About 3% of exchange fees'
     }] as PaymentMethod[]
 

@@ -25,4 +25,5 @@ export const ExtApi = {
     walletInfo: domain.extUrl + '/api/wallet/wallet-info?address=',
     submitTx: domain.extUrl + '/wallet/submit-tx',
     binanceApi: 'https://api.binance.com/api/v3/ticker/price?symbol=',
+    ordinalIns: 'https://ordinals.com/inscription/',
 }

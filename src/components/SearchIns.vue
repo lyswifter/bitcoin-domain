@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeMount, onMounted, reactive } from "vue";
+import { ExtApi } from "../router/domain";
 import { InsType, InscriptionItem } from "../router/type";
 import { classifiyImageWith } from "../router/util";
 
@@ -58,7 +59,7 @@ onMounted(() => {
 
                     <div class="flex-view">
                         <div class="name-view">{{ item.domain }}</div>
-                        <div class="id-view"><a style="color: #A7A9BE;" :href="item.detail.content" target="_blank">INS #{{
+                        <div class="id-view"><a style="color: #A7A9BE;" :href="ExtApi.ordinalIns + item.id" target="_blank">INS #{{
                             item.number }}</a></div>
                     </div>
                 </div>

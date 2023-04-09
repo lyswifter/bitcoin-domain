@@ -6,6 +6,7 @@ import { onBeforeMount, onMounted, reactive } from "vue";
 import openapi from "../crypto/openapi";
 import SDK, { ICollectedUTXOResp } from "../crypto/sdk/sdk";
 import { generateBitcoinAddr, signAsync } from "../crypto/sign";
+import { ExtApi } from "../router/domain";
 import service from "../router/service";
 import { InsType, InscriptionItem, SettingItem } from "../router/type";
 import { classifiyImageWith } from "../router/util";
@@ -287,7 +288,7 @@ onMounted(() => {
 
                     <div class="flex-view">
                         <div class="name-view">{{ item.domain }}</div>
-                        <div class="id-view"><a style="color: #A7A9BE;" :href="item.detail.content" target="_blank">INS #{{
+                        <div class="id-view"><a style="color: #A7A9BE;" :href="ExtApi.ordinalIns + item.id" target="_blank">INS #{{
                             item.number }}</a></div>
                     </div>
 
