@@ -22,6 +22,10 @@ let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 's
 // '', start, hist, order, pay, registered, registering, searchIns
 
 function searchAction() {
+  if (!state.input) {
+    return  
+  }
+  
   if (validate(state.input)) {
     searchAddr()
   } else { // ilegel btc address
@@ -161,7 +165,7 @@ onMounted(() => {
 
     <div class="search-view">
       <el-input class="input-class" v-model="state.input" placeholder="Search name or address" maxlength="100"
-        minlength="4" @keyup.enter.native="searchAction" />
+        minlength="4" @keyup.enter.native="searchAction"/>
       <a class="search-a" :class="state.input ? 'search-a-enable' : 'search-a-disable'" style="text-decoration: none;"
         href="javascript:void(0)" @click="searchAction"> Search </a>
     </div>

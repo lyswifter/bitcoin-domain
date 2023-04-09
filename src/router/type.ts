@@ -8,6 +8,7 @@ export interface GasInfo {
     gasFee: string;
     registerFee: string;
     serviceFee: string;
+    origin_service_fee: string;
     balance: string;
     total: string;
     years: number;

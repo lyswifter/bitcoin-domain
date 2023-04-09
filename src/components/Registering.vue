@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue';
-
+import { domain } from "../router/domain";
 import service from "../router/service";
 import { DomainInfo, GasInfo } from "../router/type";
-
-import { domain } from "../router/domain";
 
 const props = defineProps({
     domainName: String,
@@ -45,7 +43,7 @@ onMounted(() => {
         index: 2,
         link: waitingUrl,
     }, {
-        title: 'Inscripting',
+        title: 'Inscribing',
         subTitle: 'This may take 20 minutes',
         index: 3,
         link: waitingUrl,

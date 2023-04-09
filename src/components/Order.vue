@@ -173,6 +173,7 @@ onMounted(() => {
         onSuccess: val1 => {
             state.info.gasFee = val1.data.gas_fee.toPrecision(Types.precision);
             state.info.serviceFee = val1.data.service_fee.toPrecision(Types.precision);
+            state.info.origin_service_fee = val1.data.origin_service_fee.toPrecision(Types.precision);
 
             let g_fee = new Decimal(state.info.gasFee);
             let s_fee = new Decimal(state.info.serviceFee)
@@ -246,6 +247,17 @@ onMounted(() => {
                     <el-row justify="space-between">
                         <el-col :xs="12" :sm="12" :md="10" :lg="10" :xl="10">
                             <div class="list-t-view">Service Fee</div>
+                        </el-col>
+                        <el-col :xs="12" :sm="10" :md="8" :lg="5" :xl="5" style="text-align: right;">
+                            <div class="owner-view">{{ state.info.origin_service_fee + " BTC" }}</div>
+                        </el-col>
+                    </el-row>
+
+                    <el-row justify="space-between">
+                        <el-col :xs="12" :sm="12" :md="10" :lg="10" :xl="10">
+                            <div>
+                                <img src="../assets/sale@2x.png" alt="" width="162" height="28" style="margin-left: 20px;margin-top: 15px;">
+                            </div>
                         </el-col>
                         <el-col :xs="12" :sm="10" :md="8" :lg="5" :xl="5" style="text-align: right;">
                             <div class="owner-view">{{ state.info.serviceFee + " BTC" }}</div>
