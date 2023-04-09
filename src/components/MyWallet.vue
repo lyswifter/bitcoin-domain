@@ -28,6 +28,7 @@ const historyRef = ref();
 
 let stat = reactive({
     dialogueWidth: '50%',
+    receiveddiaW: '20%',
     pinfo: {
         s_id: 0,
         address: '',
@@ -298,8 +299,10 @@ onBeforeMount(() => {
 onMounted(() => {
     if (window.innerWidth < 767) {
         stat.dialogueWidth = '96%';
+        stat.receiveddiaW = '96%';
     } else {
         stat.dialogueWidth = '50%';
+        stat.receiveddiaW = '30%';
     }
     
     loadavatar()
@@ -367,7 +370,7 @@ onMounted(() => {
 
         <FooterView class="footer-view" />
 
-        <el-dialog v-model="stat.isReceiveShow" :show-close="true" :align-center="true" :width="stat.dialogueWidth">
+        <el-dialog v-model="stat.isReceiveShow" :show-close="true" :align-center="true" :width="stat.receiveddiaW">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">Receive BTC</h4>
@@ -378,7 +381,7 @@ onMounted(() => {
                 <vue-qrcode :value="stat.pinfo.address" :options="{ width: 200 }"></vue-qrcode>
                 <br>
                 <div style="display: flex;">
-                    <div style="max-width: 356px;word-break: break-all;text-align: left;">{{ stat.pinfo.address }}</div>
+                    <div style="word-break: break-all;text-align: left;">{{ stat.pinfo.address }}</div>
                     <img src="../assets/icon_copy_black@2x.png" style="cursor: pointer;" alt="" width="24" height="24"
                         @click="copyReveiveAddr">
                 </div>

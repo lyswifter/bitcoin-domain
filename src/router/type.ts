@@ -147,11 +147,11 @@ export const Links = {
     magicEden: "https://magiceden.io/ordinals/marketplace/btcdomain",
 
     twitter: "http://twitter.com/btcdomain_btc",
-    trees: "http://twitter.com/btcdomain_btc",
+    trees: "https://linktr.ee/btcdomain",
     github: "https://github.com/btcdomain",
     medium: "http://medium.com/@btcdomain",
 }
 
-export const GivingMsg = "Signing this to get a bitcoin key-pair --";
+export const GivingMsg = "Welcome to the secure sites, btcdomains.io and btcwallet.network! Please ensure you are visiting the correct URLs: btcdomains.io and btcwallet.network. Engaging in transactions or signing activities outside of these official sites may expose your private key and put your security at risk.";
 
 export const MinSats = 1000;

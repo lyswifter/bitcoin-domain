@@ -18,7 +18,7 @@ import { Links } from "../router/type";
                     <img class="link-icon" src="../assets/gitbook@2x.png" alt="">
                 </a>
 
-                <a :href="Links.twitter" target="_blank">
+                <a :href="Links.trees" target="_blank">
                     <img class="link-icon" src="../assets/linktree@2x.png" alt="">
                 </a>
 

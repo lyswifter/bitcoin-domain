@@ -21,7 +21,7 @@ bitcoin.initEccLib(ecc);
 const bip32 = BIP32Factory(ecc);
 
 const props = defineProps({
-    avatarAddr: String,
+  avatarAddr: String,
 })
 
 let state = reactive({ isExpand: false, account: '', bitcoinAddr: '', shortAddr: '', avatar: '' })
@@ -155,8 +155,8 @@ onMounted(() => {
       </a>
 
       <div class="avatar-icon-view">
-        <img v-if="state.bitcoinAddr" :src="state.avatar ? state.avatar : avatarIcon" style="margin-right: 10px;border-radius: 15px;" alt="" width="30"
-          height="30" @click="connectAction">
+        <img v-if="state.bitcoinAddr" :src="state.avatar ? state.avatar : avatarIcon"
+          style="margin-right: 10px;border-radius: 15px;" alt="" width="30" height="30" @click="connectAction">
         <div v-else class="connect-btn connect-btn-normal-mobile" @click="connectAction">Wallet</div>
       </div>
 
@@ -164,17 +164,18 @@ onMounted(() => {
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" style="color: white;" :href="Links.doc">Document</a>
+              <a class="nav-link" aria-current="page" style="color: white;" :href="Links.doc" target="_blank">Document</a>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" style="color: white;" :href="Links.magicEden">Exchange</a>
+              <a class="nav-link" style="color: white;" :href="Links.trees" target="_blank">Exchange</a>
             </li>
           </ul>
 
           <div class="connect-btn" :class="state.bitcoinAddr ? 'connect-btn-selected' : 'connect-btn-normal'"
             @click="connectAction">
-            <img v-if="state.bitcoinAddr" :src="state.avatar ? state.avatar : avatarIcon" alt="" style="border-radius: 15px;" width="30" height="30">
+            <img v-if="state.bitcoinAddr" :src="state.avatar ? state.avatar : avatarIcon" alt=""
+              style="border-radius: 15px;" width="30" height="30">
             {{ state.shortAddr ? state.shortAddr : "Connect Wallet" }}
           </div>
         </div>
@@ -217,19 +218,16 @@ onMounted(() => {
 }
 
 .connect-btn-normal-mobile {
-  /* width: 66px; */
   background: #FFFFFF;
   color: #4540D6;
 }
 
 .connect-btn-normal {
-  /* width: 132px; */
   background: #FFFFFF;
   color: #4540D6;
 }
 
 .connect-btn-selected {
-  /* width: 170px; */
   background: rgba(255, 255, 255, 0.3);
   border: 1px solid #FFFFFF;
   color: #FFFFFF;
