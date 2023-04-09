@@ -213,7 +213,6 @@ onMounted(() => {
 }
 
 .solgon-content-view {
-  height: 25px;
   font-size: 18px;
   font-weight: 400;
   color: #FFFFFF;

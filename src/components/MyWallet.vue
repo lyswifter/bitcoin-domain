@@ -414,6 +414,7 @@ onMounted(() => {
     height: 140px;
     margin-top: 20px;
     margin-left: 20px;
+    border-radius: 70px;
 }
 
 .nick-addr-view {

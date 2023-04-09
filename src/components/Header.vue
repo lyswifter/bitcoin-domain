@@ -6,21 +6,21 @@ import { Buffer } from 'buffer';
 import { ElMessage } from 'element-plus';
 import { ethers } from "ethers";
 import { onMounted, reactive } from "vue";
+import service from "../router/service";
 import { GivingMsg, Links } from "../router/type";
 import { shortenAddr, toXOnly } from "../router/util";
-
-// import keyring from "../crypto/keyring";
 
 const defaultPath = "m/86'/0'/0'/0/0";
 const subSLen = 8;
 
 const menuIcon = '../../src/assets/icon_menu@2x.png';
 const closeIcon = '../../src/assets/icon_close_nav@2x.png';
+const avatarIcon = '../../src/assets/icon_btc@2x.png';
 
 bitcoin.initEccLib(ecc);
 const bip32 = BIP32Factory(ecc);
 
-let state = reactive({ isExpand: false, account: '', bitcoinAddr: '', shortAddr: '' })
+let state = reactive({ isExpand: false, account: '', bitcoinAddr: '', shortAddr: '', avatar: '' })
 
 const emit = defineEmits({
   connectParentAction(addr: string) { },
@@ -54,7 +54,7 @@ async function generateBitcoinAddr() {
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
   const account = accounts[0];
   state.account = account
-  
+
   let network = new ethers.Network('Ethereum Mainnet', 1)
 
   // Connect to the MetaMask EIP-1193 object. This is a standard
@@ -93,16 +93,13 @@ async function generateBitcoinAddr() {
   });
 
   if (taprootAddress) {
-    console.log("taprootChild: " + taprootChild)
-    console.log("address: " + taprootAddress)
-    console.log("private key:" + privKey)
-    console.log("public key:" + pubKey.toString('hex'))
-
     state.bitcoinAddr = taprootAddress
     state.shortAddr = shortenAddr(state.bitcoinAddr, subSLen);
 
     localStorage.setItem('bitcoin_address', taprootAddress)
     localStorage.setItem('public_key', pubKey.toString('hex'))
+
+    loadavatar(taprootAddress)
   } else {
     ElMessage.error("generate your bitcoin address failed, please retry.")
   }
@@ -116,11 +113,20 @@ function connectAction() {
   }
 }
 
+function loadavatar(addr: string) {
+  service.avatarGet(addr).then(avatarRet => {
+    console.log(avatarRet)
+    if (avatarRet.data.length > 0) {
+      state.avatar = avatarRet.data[0].content_url
+    }
+  });
+}
+
 onMounted(() => {
-  if (localStorage.getItem('bitcoin_address')) {
-    let localAddr = localStorage.getItem('bitcoin_address')!;
-    state.bitcoinAddr = localAddr;
-    state.shortAddr = shortenAddr(localAddr, subSLen);
+  let addr = localStorage.getItem('bitcoin_address')
+  if (addr) {
+    state.bitcoinAddr = addr;
+    state.shortAddr = shortenAddr(addr, subSLen);
   }
 })
 </script>
@@ -139,7 +145,7 @@ onMounted(() => {
       </a>
 
       <div class="avatar-icon-view">
-        <img v-if="state.bitcoinAddr" src="../assets/icon_btc@2x.png" style="margin-right: 10px;" alt="" width="30"
+        <img v-if="state.bitcoinAddr" :src="state.avatar ? state.avatar : avatarIcon" style="margin-right: 10px;border-radius: 15px;" alt="" width="30"
           height="30" @click="connectAction">
         <div v-else class="connect-btn connect-btn-normal-mobile" @click="connectAction">Wallet</div>
       </div>
@@ -158,7 +164,7 @@ onMounted(() => {
 
           <div class="connect-btn" :class="state.bitcoinAddr ? 'connect-btn-selected' : 'connect-btn-normal'"
             @click="connectAction">
-            <img v-if="state.bitcoinAddr" src="../assets/icon_btc@2x.png" alt="" width="30" height="30">
+            <img v-if="state.bitcoinAddr" :src="state.avatar ? state.avatar : avatarIcon" alt="" style="border-radius: 15px;" width="30" height="30">
             {{ state.shortAddr ? state.shortAddr : "Connect Wallet" }}
           </div>
         </div>
