@@ -92,8 +92,12 @@ async function sendBtcsAction() {
     stat.sendInsOrBtc.availBal = availBtcStr;
 
     openapi.getFeeSummary().then(feeRet => {
-        console.log(feeRet)
         stat.sendInsOrBtc.feeSums = feeRet
+        stat.sendInsOrBtc.feeSums.list.push({
+            title: 'Customize Sats',
+            desc: '',
+            feeRate: 0,
+        })
     })
 }
 
@@ -305,7 +309,7 @@ onMounted(() => {
         <div class="mid-content-view">
             <el-tabs v-model="stat.activeName" class="mywallet-tabs" @tab-click="handleClick">
                 <el-tab-pane label="Inscription" name="inscription">
-                    <InscriptionView ref="insRef" :address="stat.pinfo.address" @reload-avatar="loadavatar"/>
+                    <InscriptionView ref="insRef" :address="stat.pinfo.address" @reload-avatar="loadavatar" />
                 </el-tab-pane>
                 <el-tab-pane label="History" name="history">
                     <HistoryView :address="stat.pinfo.address" ref="historyRef" />
@@ -364,15 +368,9 @@ onMounted(() => {
                         <div class="fee-title-view">{{ item.title }}</div>
                         <div class="fee-rate-view">{{ item.feeRate }}sats/vByte</div>
                         <br>
-                        <div class="fee-desc-view">{{ item.desc }}</div>
-                    </div>
-                    <div class="fee-card-view fee-card-view-normal fee-card-mid">
-                        <div class="fee-title-view">Customize Sats</div>
-                        <div class="fee-rate-view">{{ stat.sendInsOrBtc.customFee }}sats/vByte</div>
-                        <br>
-                        <div>
-                            <el-input v-model="stat.sendInsOrBtc.customFee" placeholder="0" class="customize-input"
-                                type="number" />
+                        <div v-if="item.desc" class="fee-desc-view">{{ item.desc }}</div>
+                        <div v-else>
+                            <el-input v-model="item.feeRate" placeholder="0" class="customize-input" type="number" />
                         </div>
                     </div>
                 </div>

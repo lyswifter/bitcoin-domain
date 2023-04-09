@@ -13,7 +13,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits({
-    reloadAvatar() {}
+    reloadAvatar() { }
 })
 
 let stat = reactive({
@@ -145,8 +145,12 @@ async function sendInssAction(item: InscriptionItem) {
     stat.sendInsOrBtc.isSendInsOrBtcShow = true
 
     openapi.getFeeSummary().then(feeRet => {
-        console.log(feeRet)
         stat.sendInsOrBtc.feeSums = feeRet
+        stat.sendInsOrBtc.feeSums.list.push({
+            title: 'Customize Sats',
+            desc: '',
+            feeRate: 0,
+        })
     })
 }
 
@@ -200,6 +204,8 @@ async function submitInsTxAction(item: InscriptionItem) {
     console.log(subRet)
 
     ElMessage.info("tx: " + subRet + " has been publiced")
+
+    stat.sendInsOrBtc.isSendInsOrBtcShow = true
 }
 
 function clickFeeCardAction(idx: any) {
@@ -273,7 +279,7 @@ onMounted(() => {
             </li>
         </ul>
 
-        <div class="loadmore-view" @click="loadmoreAction">load more</div>
+        <!-- <div class="loadmore-view" @click="loadmoreAction">load more</div> -->
 
         <el-dialog v-model="stat.isSetVisiable" :show-close="true" :align-center="true" :width="400">
             <template #header="{ close, titleId, titleClass }">
@@ -320,15 +326,9 @@ onMounted(() => {
                         <div class="fee-title-view">{{ item.title }}</div>
                         <div class="fee-rate-view">{{ item.feeRate }}sats/vByte</div>
                         <br>
-                        <div class="fee-desc-view">{{ item.desc }}</div>
-                    </div>
-                    <div class="fee-card-view fee-card-view-normal">
-                        <div class="fee-title-view">Customize Sats</div>
-                        <div class="fee-rate-view">{{ stat.sendInsOrBtc.customFee }}sats/vByte</div>
-                        <br>
-                        <div>
-                            <el-input v-model="stat.sendInsOrBtc.customFee" placeholder="0" class="customize-input"
-                                type="number" />
+                        <div v-if="item.desc" class="fee-desc-view">{{ item.desc }}</div>
+                        <div v-else>
+                            <el-input v-model="item.feeRate" placeholder="0" class="customize-input" type="number" />
                         </div>
                     </div>
                 </div>
