@@ -23,7 +23,7 @@ let state = reactive({
     info: {
         name: '',
         isAvailable: false,
-        addr: 'bc1puv6k8ht73ddwze0dmm9m8m6k44cnre7lzyxq84qlw9hkcjr5qv6sjqdjnc',
+        addr: '',
         midAddr: '',
         gasFee: '',
         serviceFee: '',
@@ -58,7 +58,6 @@ function nextStepAction() {
         return
     }
 
-    // bitcoinjs
     if (!validate(state.info.addr)) {
         ElMessage.error("Receive bitcoin address is not valid")
         return
@@ -167,6 +166,11 @@ onMounted(() => {
         histories.value = history.split(',')
     }
 
+    let addr = localStorage.getItem('bitcoin_address')
+    if (addr) {
+        state.info.addr = addr
+    }
+
     useRequest(queryAction, {
         pollingInterval: Types.queryBalInterval,
         pollingWhenHidden: false,
@@ -249,7 +253,7 @@ onMounted(() => {
                             <div class="list-t-view">Service Fee</div>
                         </el-col>
                         <el-col :xs="12" :sm="10" :md="8" :lg="5" :xl="5" style="text-align: right;">
-                            <div class="owner-view">{{ state.info.origin_service_fee + " BTC" }}</div>
+                            <div class="owner-view" style="text-decoration: line-through;">{{ state.info.origin_service_fee + " BTC" }}</div>
                         </el-col>
                     </el-row>
 

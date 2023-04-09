@@ -8,6 +8,7 @@ import SDK, { ICollectedUTXOResp } from "../crypto/sdk/sdk";
 import { generateBitcoinAddr, signAsync } from "../crypto/sign";
 import service from "../router/service";
 import { InsType, InscriptionItem, SettingItem } from "../router/type";
+import { classifiyImageWith } from "../router/util";
 import { FeeSummary } from "../shared/types";
 
 const props = defineProps({
@@ -50,40 +51,9 @@ let stat = reactive({
 
 function load() {
     service.queryInsWith(stat.addr).then((val) => {
-        console.log(val.data.result)
-
         val.data.result.forEach((element: InscriptionItem) => {
-            if (element.domain) {
-                element.type = InsType.DOMAIN; // MAINDOMAIN
-            } else {
-                switch (element.detail.content_type) {
-                    case 'image/png' || 'image/webp' || 'image/jpeg' || 'image/jpg': // AVATAR
-                        element.type = InsType.IMAGE
-                        break;
-
-                    case 'image/gif':
-                        element.type = InsType.GIF
-                        break;
-
-                    case 'text/plain' || 'application/json':
-                        element.type = InsType.TEXT;
-                        break;
-
-                    case 'mp3':
-                        element.type = InsType.AUDIO;
-                        break;
-
-                    case 'mp4':
-                        element.type = InsType.VIDEO;
-                        break;
-
-                    default:
-                        element.type = InsType.OTHER;
-                        break;
-                }
-            }
+            element = classifiyImageWith(element)
         });
-
         stat.items = val.data.result;
     })
 }
@@ -272,8 +242,9 @@ onMounted(() => {
     let localAddr = localStorage.getItem('bitcoin_address');
     if (localAddr) {
         stat.addr = localAddr
-
+        
         loadavatar(localAddr)
+        load()
     }
 
     stat.setItems = [{
@@ -287,8 +258,6 @@ onMounted(() => {
         subtitle: 'After setting up, your name will appear as your primary domain name instead of your wallet address.',
         isSelected: false,
     }]
-
-    load()
 })
 </script>
 
@@ -311,15 +280,14 @@ onMounted(() => {
 
                     <div class="flex-view">
                         <div class="name-view">{{ item.domain }}</div>
-                        <div class="id-view"><a :href="item.detail.content" target="_blank">INS #{{ item.number }}</a></div>
+                        <div class="id-view"><a style="color: #A7A9BE;" :href="item.detail.content" target="_blank">INS #{{ item.number }}</a></div>
                     </div>
 
                     <div class="flex-view">
                         <div class="send-view" @click="sendInssAction(item)">Send</div>
-                        <div class="primary-view" v-if="item.id == stat.primaryIns || item.domain == stat.primaryDomain">
+                        <div class="primary-view" v-if="(stat.primaryIns && item.id === stat.primaryIns) || (stat.primaryDomain && item.domain === stat.primaryDomain)">
                             <img src="../assets/icon_check@2x.png" alt="" width="16" height="16"> Primary
                         </div>
-
                         <div v-else>
                             <div class="set-view" v-if="item.type == InsType.DOMAIN || item.type == InsType.IMAGE"
                                 @click="setAction(item)">
@@ -479,7 +447,7 @@ onMounted(() => {
 @media screen and (max-width: 767px) {
     .infinite-list-item {
         margin: 0 auto;
-        width: 95%;
+        /* width: 95%; */
     }
 
     .card-item {
@@ -510,7 +478,6 @@ onMounted(() => {
 
 <style scoped>
 .dia-id-view {
-    width: 153px;
     height: 22px;
     font-size: 16px;
     font-weight: 600;

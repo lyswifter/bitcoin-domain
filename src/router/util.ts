@@ -1,3 +1,5 @@
+import { InscriptionItem, InsType } from "../router/type";
+
 export function getTime(date: string, type: string) {
     let time = new Date(date);
     let Y = time.getFullYear();
@@ -33,4 +35,45 @@ export function shortenAddr(addr: string, subSLen: number) {
 }
 
 export const toXOnly = (pubKey: Buffer) =>
-  pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
+    pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
+
+export function classifiyImageWith(element: InscriptionItem) {
+    if (element.domain) {
+        element.type = InsType.DOMAIN; // MAINDOMAIN
+    } else {
+        switch (element.detail.content_type) {
+            case 'image/png' || 'image/jpeg' || 'image/jpg':
+                element.type = InsType.IMAGE
+                break;
+
+            case 'image/webp':
+                element.type = InsType.IMAGE
+                break;
+
+            case 'image/svg+xml':
+                element.type = InsType.IMAGE
+                break;
+
+            case 'image/gif':
+                element.type = InsType.GIF
+                break;
+
+            case 'text/plain;charset=utf-8' || 'application/json':
+                element.type = InsType.TEXT;
+                break;
+
+            case 'mp3':
+                element.type = InsType.AUDIO;
+                break;
+
+            case 'mp4':
+                element.type = InsType.VIDEO;
+                break;
+
+            default:
+                element.type = InsType.OTHER;
+                break;
+        }
+    }
+    return element
+}

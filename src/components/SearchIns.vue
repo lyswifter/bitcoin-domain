@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount, onMounted, reactive } from "vue";
 import { InsType, InscriptionItem } from "../router/type";
+import { classifiyImageWith } from "../router/util";
 
 const props = defineProps({
     address: String,
@@ -14,36 +15,8 @@ let stat = reactive({
 
 function load() {
     stat.items.forEach((element: InscriptionItem) => {
-            if (element.domain) {
-                element.type = InsType.DOMAIN; // MAINDOMAIN
-            } else {
-                switch (element.detail.content_type) {
-                    case 'image/png' || 'image/webp' || 'image/jpeg' || 'image/jpg': // AVATAR
-                        element.type = InsType.IMAGE
-                        break;
-
-                    case 'image/gif':
-                        element.type = InsType.GIF
-                        break;
-
-                    case 'text/plain' || 'application/json':
-                        element.type = InsType.TEXT;
-                        break;
-
-                    case 'mp3':
-                        element.type = InsType.AUDIO;
-                        break;
-
-                    case 'mp4':
-                        element.type = InsType.VIDEO;
-                        break;
-
-                    default:
-                        element.type = InsType.OTHER;
-                        break;
-                }
-            }
-        });
+        element = classifiyImageWith(element)
+    });
 }
 
 function updateInnerValue() {
@@ -57,6 +30,7 @@ defineExpose({
 onBeforeMount(() => {
     stat.addr = props.address ? props.address : '';
     stat.items = props.itemss ? props.itemss as InscriptionItem[] : []
+    console.log(stat.items)
 })
 
 onMounted(() => {
@@ -68,6 +42,7 @@ onMounted(() => {
     <div class="ins-container-view">
         <div class="infinite-list infinite-list-flow">
             <div v-for="(item, i) in stat.items" :key="i" class="infinite-list-item">
+
                 <div class="card-item">
                     <img class="pic-view" v-if="item.type == InsType.IMAGE" :src="item.detail.content" alt=""
                         loading="lazy">
@@ -83,7 +58,8 @@ onMounted(() => {
 
                     <div class="flex-view">
                         <div class="name-view">{{ item.domain }}</div>
-                        <div class="id-view">INS #{{ item.number }}</div>
+                        <div class="id-view"><a style="color: #A7A9BE;" :href="item.detail.content" target="_blank">INS #{{
+                            item.number }}</a></div>
                     </div>
                 </div>
             </div>
@@ -109,8 +85,10 @@ onMounted(() => {
 }
 
 .pic-view {
-    width: 258px;
-    height: 258px;
+    margin: 0 auto;
+    width: 100%;
+    min-width: 258px;
+    min-height: 258px;
 }
 
 .id-view {
@@ -124,12 +102,12 @@ onMounted(() => {
 }
 
 @media screen and (max-width: 767px) {
-    .infinite-list-flow {
-        text-align: center;
+    .infinite-list-item {
+        margin: 0 auto;
     }
 
     .card-item {
-        width: 315px;
+        width: 100%;
         padding: 10px;
         margin-left: 5px;
         margin-right: 5px;

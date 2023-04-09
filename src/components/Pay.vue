@@ -122,6 +122,9 @@ async function switchPayMethod(idx: number) {
         return
     }
 
+    state.info.switchAddr = ''
+    state.info.switchCurr = ''
+
     // state.info.midAddr = 'bc1puv6k8ht73ddwze0dmm9m8m6k44cnre7lzyxq84qlw9hkcjr5qv6sjqdjnc'
 
     // exchangeWith
@@ -173,7 +176,9 @@ onMounted(() => {
         onSuccess: val1 => {
             let s_fee = new Decimal(state.info.registerFee)
             let b_fee = new Decimal(val1.data.mine.trusted)
-            state.info.total = Decimal.sub(s_fee, b_fee).toPrecision(Types.precision).toString();
+            let u_fee = new Decimal(val1.data.mine.untrusted_pending)
+            let t_fee = Decimal.add(b_fee, u_fee)
+            state.info.total = Decimal.sub(s_fee, t_fee).toPrecision(Types.precision).toString();
         }
     });
 })
@@ -278,19 +283,20 @@ function updateBalance() {
                 <div class="thin-title-view">You Will Pay:</div>
                 <div v-if="state.payment.curIdx == 0" class="pay-value-view">{{ state.info.total }} <span>BTC</span></div>
                 <div v-else class="pay-value-view">{{ state.payment.exchangeRet.fromAmount }}
-                    <span>{{ state.payment.exchangeRet.fromCurrency }}</span>
+                    <span>{{ state.info.switchCurr }}</span>
                 </div>
             </div>
 
             <div class="qrcode-view">
                 <div>Send the funds to this address</div>
-                <vue-qrcode :value="state.info.switchAddr" :options="{ width: 200 }"></vue-qrcode>
-
-                <div style="display: flex;justify-content: start;width: 100%;">
-                    <div style="color: #2E2F3E;word-wrap: break-word;text-align: left;max-width: 80%;">{{
-                        state.info.switchAddr }} </div>
-                    <img src="../assets/icon_copy@2x.png" style="width: 32px;height: 32px;cursor: pointer;" alt=""
-                        @click="copyAction">
+                <div v-if="state.info.switchAddr">
+                    <vue-qrcode :value="state.info.switchAddr" :options="{ width: 200 }"></vue-qrcode>
+                    <div style="display: flex;justify-content: start;width: 100%;">
+                        <div style="color: #2E2F3E;word-wrap: break-word;text-align: left;max-width: 80%;">{{
+                            state.info.switchAddr }} </div>
+                        <img src="../assets/icon_copy@2x.png" style="width: 32px;height: 32px;cursor: pointer;" alt=""
+                            @click="copyAction">
+                    </div>
                 </div>
             </div>
 
@@ -438,8 +444,6 @@ function updateBalance() {
 </style>
 
 <style scoped>
-.payment-view {}
-
 .pay-tit-view {
     height: 20px;
     font-size: 14px;
@@ -530,9 +534,9 @@ function updateBalance() {
 .metamask-btn {
     display: flex;
     justify-content: space-between;
-    width: 236px;
-    padding-left: 10px;
-    padding-right: 10px;
+    max-width: 246px;
+    padding-left: 5px;
+    padding-right: 5px;
     height: 44px;
     background: rgba(236, 130, 17, 0.1);
     border-radius: 8px;
