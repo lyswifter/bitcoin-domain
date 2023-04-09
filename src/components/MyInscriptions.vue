@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { validate } from 'bitcoin-address-validation';
+import { String } from 'bitcoinjs-lib/src/types';
 import { ElMessage } from "element-plus";
 import { onBeforeMount, onMounted, reactive } from "vue";
 import openapi from "../crypto/openapi";
@@ -17,10 +18,20 @@ const emit = defineEmits({
     reloadAvatar() { }
 })
 
+function updateInnerValue() {
+    load()
+}
+
+defineExpose({
+    updateInnerValue,
+})
+
 let stat = reactive({
     count: 0,
     items: [] as InscriptionItem[],
     addr: '',
+    primaryDomain: '',
+    primaryIns: '',
     isSetVisiable: false,
     selectedItem: {} as InscriptionItem,
     setItems: [] as SettingItem[],
@@ -108,7 +119,6 @@ function settingOkAction() {
         switch (stat.selectedItem.type) {
             case InsType.DOMAIN:
                 service.avatarSet('', selectAddr, stat.selectedItem.domain, val, selectPubKey!).then(ret => {
-                    console.log(ret)
                     stat.isSetVisiable = false
                     if (ret.code == 0) {
                         ElMessage.info("set domain name ok")
@@ -122,7 +132,6 @@ function settingOkAction() {
             case InsType.IMAGE:
                 service.avatarSet(stat.selectedItem.id, selectAddr, '', val, selectPubKey!).then(ret => {
                     stat.isSetVisiable = false
-                    console.log(ret)
                     if (ret.code == 0) {
                         ElMessage.info("set avatar ok")
                         emit('reloadAvatar')
@@ -246,13 +255,14 @@ function clickFeeCardAction(idx: any) {
     stat.sendInsOrBtc.curIdx = idx
 }
 
-function updateInnerValue() {
-    load()
+function loadavatar(addr: string) {
+    service.avatarGet(addr).then(avatarRet => {
+        if (avatarRet.data.length > 0) {
+            stat.primaryDomain = avatarRet.data[0].domain
+            stat.primaryIns = avatarRet.data[0].inscribe_id
+        }
+    });
 }
-
-defineExpose({
-    updateInnerValue,
-})
 
 onBeforeMount(() => {
     stat.addr = props.address ? props.address : '';
@@ -262,6 +272,8 @@ onMounted(() => {
     let localAddr = localStorage.getItem('bitcoin_address');
     if (localAddr) {
         stat.addr = localAddr
+
+        loadavatar(localAddr)
     }
 
     stat.setItems = [{
@@ -299,14 +311,20 @@ onMounted(() => {
 
                     <div class="flex-view">
                         <div class="name-view">{{ item.domain }}</div>
-                        <div class="id-view">INS #{{ item.number }}</div>
+                        <div class="id-view"><a :href="item.detail.content" target="_blank">INS #{{ item.number }}</a></div>
                     </div>
 
                     <div class="flex-view">
                         <div class="send-view" @click="sendInssAction(item)">Send</div>
-                        <div class="set-view" v-if="item.type == InsType.DOMAIN || item.type == InsType.IMAGE"
-                            @click="setAction(item)">
-                            <img src="../assets/icon_set@2x.png" alt="" width="16" height="16"> Set
+                        <div class="primary-view" v-if="item.id == stat.primaryIns || item.domain == stat.primaryDomain">
+                            <img src="../assets/icon_check@2x.png" alt="" width="16" height="16"> Primary
+                        </div>
+
+                        <div v-else>
+                            <div class="set-view" v-if="item.type == InsType.DOMAIN || item.type == InsType.IMAGE"
+                                @click="setAction(item)">
+                                <img src="../assets/icon_set@2x.png" alt="" width="16" height="16"> Set
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -420,6 +438,14 @@ onMounted(() => {
     line-height: 36px;
     text-align: center;
     cursor: pointer;
+}
+
+.primary-view {
+    height: 36px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #4540D6;
+    line-height: 36px;
 }
 
 .set-view {

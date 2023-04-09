@@ -36,7 +36,7 @@ onMounted(() => {
         title: 'Locked the dominate',
         subTitle: "Your domain name is locked. Don't worry about being preempted.",
         index: 1,
-        link: waitingUrl,
+        link: certainUrl,
     }, {
         title: 'Fund Transfer Pending',
         subTitle: 'This may take 20 minutes',

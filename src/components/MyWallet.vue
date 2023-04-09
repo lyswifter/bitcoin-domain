@@ -267,7 +267,6 @@ function loadavatar() {
         stat.pinfo.short_addr = shortenAddr(stat.pinfo.address, subSLen)
 
         service.avatarGet(addr).then(avatarRet => {
-            console.log(avatarRet)
             if (avatarRet.data.length > 0) {
                 stat.pinfo = avatarRet.data[0]
                 stat.pinfo.short_addr = shortenAddr(stat.pinfo.address, subSLen)
@@ -281,7 +280,6 @@ function loadBalance() {
     if (addr) {
         openapi.getAddressBalance(addr).then(balance => {
             stat.winfo = balance
-
             service.queryRatio('BTCUSDT').then((ratio: Ratio) => {
                 console.log(ratio)
                 let ratioNum = new BigNumber(ratio.price);
@@ -392,7 +390,7 @@ onMounted(() => {
                 <div class="to-view">
                     <div class="fee-tit-view">To</div>
                     <el-input v-model="stat.sendInsOrBtc.toAddr" placeholder="Received Bitcoin address or .btc domain name"
-                        class="to-addr-input" @input="addressChange"/>
+                        class="to-addr-input" @input="addressChange" />
                     <div v-if="stat.sendInsOrBtc.realAddr">{{ stat.sendInsOrBtc.realAddr }}</div>
                 </div>
                 <br>
