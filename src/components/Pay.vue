@@ -65,7 +65,7 @@ function copyAction() {
 }
 
 function conformAction() {
-    if (state.payment.comformSec > 0) {
+    if (state.payment.curIdx != 0 && state.payment.comformSec > 0) {
         return
     }
 

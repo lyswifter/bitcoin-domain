@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElMessage } from "element-plus";
-import { onBeforeMount, onMounted, reactive, ref } from 'vue';
+import { onBeforeMount, onMounted, reactive } from 'vue';
 import useClipboard from "vue-clipboard3";
 import SearchInsView from "../components/SearchIns.vue";
 import service from "../router/service";
@@ -11,8 +11,6 @@ const props = defineProps({
     domainName: String,
     isAvailable: Boolean,
 })
-
-const insRef = ref()
 
 let state = reactive({
     info: {} as DomainInfo,
@@ -51,7 +49,6 @@ onMounted(() => {
 
         service.queryInsWith(state.info.owner).then((val2) => {
             state.searchItem = val2.data.result
-            insRef.value.updateInnerValue(state.searchItem)
         })
     })
 })
@@ -152,7 +149,7 @@ onMounted(() => {
 
         </div>
 
-        <SearchInsView ref="insRef" :itemss="state.searchItem" />
+        <SearchInsView v-if="state.searchItem.length > 0" :itemss="state.searchItem" />
     </div>
 </template>
 

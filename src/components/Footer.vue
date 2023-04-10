@@ -33,6 +33,10 @@ import { Links } from "../router/type";
                 <a :href="Links.github" target="_blank">
                     <img class="link-icon" src="../assets/github@2x.png" alt="">
                 </a>
+
+                <a :href="Links.discord" target="_blank">
+                    <img class="link-icon" src="../assets/discord@2x.png" alt="">
+                </a>
             </div>
 
             <div class="footer-email-view ele-show">
@@ -86,7 +90,7 @@ import { Links } from "../router/type";
     }
 }
 
-@media screen and (min-width: 600px){
+@media screen and (min-width: 600px) {
     .footer-logo-view {
         margin-top: 30px;
         max-width: 15%;

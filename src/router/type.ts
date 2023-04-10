@@ -150,6 +150,7 @@ export const Links = {
     twitter: "http://twitter.com/btcdomain_btc",
     trees: "https://linktr.ee/btcdomain",
     github: "https://github.com/btcdomain",
+    discord: 'https://www.discord.gg/btcdomain',
     medium: "http://medium.com/@btcdomain",
 }
 

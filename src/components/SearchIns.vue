@@ -20,18 +20,9 @@ function load() {
     });
 }
 
-function updateInnerValue(itemss: InscriptionItem[]) {
-    stat.items = itemss
-}
-
-defineExpose({
-    updateInnerValue,
-})
-
 onBeforeMount(() => {
     stat.addr = props.address ? props.address : '';
     stat.items = props.itemss ? props.itemss as InscriptionItem[] : []
-    console.log(stat.items)
 })
 
 onMounted(() => {
