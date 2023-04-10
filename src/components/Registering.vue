@@ -65,6 +65,9 @@ onMounted(() => {
             state.current = val1.data.dom_state;
 
             for (let i = 0; i < state.rowInfo.length; i++) {
+                if (i == 0) {
+                    continue
+                }
                 var element = state.rowInfo[i];
                 if (i < state.current - 1) {
                     element.link = certainUrl

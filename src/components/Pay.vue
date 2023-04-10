@@ -12,7 +12,7 @@ import { GasInfo, PayParams, PayinParams, PaymentMethod, Types } from "../router
 import { TimeFormat } from "../router/util";
 
 const resetInterval = 1200
-const confirmInterval = 30
+const confirmInterval = 180
 
 const props = defineProps({
     domainName: String,
@@ -77,7 +77,7 @@ function conformAction() {
     }
 
     let exchangeId = ''
-    if (state.payment.curIdx) {
+    if (state.payment.curIdx == 0) {
         exchangeId = ''
     } else {
         exchangeId = state.payment.exchangeRet.id
@@ -119,8 +119,6 @@ async function tiggerMetamaskAction() {
             ],
         })
 
-    console.log(txHash)
-
     ElMessage.info("submit transaction: " + txHash)
 
     clearTimer()
@@ -130,6 +128,8 @@ async function tiggerMetamaskAction() {
             clearInterval(state.payment.conformTimer)
             window.clearInterval(state.payment.conformTimer)
             state.payment.conformTimer = 1
+
+            conformAction() // tigger conform
         }
         state.payment.comformSec--
         console.log(state.payment.comformSec)
@@ -385,6 +385,10 @@ function updateBalance() {
                 <div class="note-view">
                     The domain name will belong to the person who has the priority to complete the transfer. If the transfer
                     amount is incorrect, please contact us by email.
+                </div>
+
+                <div class="note-view">
+                    To complete an ETH payment, please allow at least 120 seconds for blockchain confirmation. The countdown will begin once the transaction message is broadcast.
                 </div>
 
                 <div v-if="state.payment.curIdx == 0" class="conform-view conform-view-able" @click="conformAction">Next

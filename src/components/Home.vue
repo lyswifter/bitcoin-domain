@@ -226,6 +226,8 @@ onMounted(() => {
 
 .search-view {
   max-width: 1200px;
+  padding-left: 10px;
+  padding-right: 10px;
   margin: 0 auto;
   margin-top: -40px;
   position: relative;
@@ -241,7 +243,7 @@ onMounted(() => {
   position: absolute;
   display: block;
   top: 8px;
-  right: 8px;
+  right: 18px;
   width: 120px;
   height: 64px;
   background: #4540D6;

@@ -312,6 +312,8 @@ onMounted(() => {
     max-width: 1200px;
     margin: 0 auto;
     margin-top: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .state-view {
