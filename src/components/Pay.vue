@@ -9,6 +9,9 @@ import { useRequest } from 'vue-request';
 import { domain } from "../router/domain";
 import service from "../router/service";
 import { GasInfo, PayParams, PayinParams, PaymentMethod, Types } from "../router/type";
+import { TimeFormat } from "../router/util";
+
+const resetInterval = 1200
 
 const props = defineProps({
     domainName: String,
@@ -41,9 +44,8 @@ let state = reactive({
         methods: [] as PaymentMethod[],
         curIdx: 0,
         exchangeRet: {} as PayinParams,
-        countDown: 1200,
-        countText: '20:00',
-        timer1: 0,
+        countDown: resetInterval,
+        countText: TimeFormat(resetInterval),
         timer2: 0,
     }
 })
@@ -124,32 +126,36 @@ async function switchPayMethod(idx: number) {
     if (idx == 0) {
         state.info.switchAddr = state.info.midAddr
         state.info.switchCurr = 'BTC'
-        clearInterval(state.payment.timer1)
         clearInterval(state.payment.timer2)
+        window.clearInterval(state.payment.timer2)
+        state.payment.timer2 = 0
+        resetTimer()
         return
     }
 
     state.info.switchAddr = ''
     state.info.switchCurr = ''
-    state.payment.countText = '20:00'
-    state.payment.countDown = 1200
 
     await startRatio();
 
-    state.payment.timer1 = window.setInterval(
-        resetRatio, Types.resetRatioInterval
-    )
     state.payment.timer2 = window.setInterval(
-        decreaseOne, Types.countDownInterval
+        countDown, Types.countDownInterval
     )
 }
 
-function decreaseOne() {
+function resetTimer() {
+    state.payment.countText = TimeFormat(resetInterval)
+    state.payment.countDown = resetInterval
+}
+
+async function countDown() {
+    if (state.payment.countDown == 0) {
+        resetTimer()
+        await startRatio()
+    }
+
     state.payment.countDown--;
-    let count = state.payment.countDown
-    let minus = count / 60 - 1;
-    let seconds = count % 60;
-    state.payment.countText = minus.toFixed(0) + ':' + seconds
+    state.payment.countText = TimeFormat(state.payment.countDown)
 }
 
 async function startRatio() {
@@ -182,8 +188,8 @@ function resetRatio() {
     } as PayParams;
     service.exchangeWith(params).then(val => {
         state.payment.exchangeRet = JSON.parse(val.data)
-    state.info.switchAddr = state.payment.exchangeRet.payinAddress;
-    state.info.switchCurr = state.payment.exchangeRet.fromCurrency.toUpperCase();
+        state.info.switchAddr = state.payment.exchangeRet.payinAddress;
+        state.info.switchCurr = state.payment.exchangeRet.fromCurrency.toUpperCase();
     })
 }
 
