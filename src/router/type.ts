@@ -129,7 +129,6 @@ export interface PayinParams {
     fromCurrency: string;
     fromNetwork: string;
     id: string;
-    exchange_id: string;
     payinAddress: string;
     payoutAddress: string;
     payoutExtraId: string;

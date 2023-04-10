@@ -2,7 +2,7 @@
 import Decimal from 'decimal.js';
 import { ElMessage } from "element-plus";
 import { ethers } from "ethers";
-import { onBeforeMount, onMounted, onUnmounted, reactive } from 'vue';
+import { onBeforeMount, onBeforeUnmount, onMounted, onUnmounted, reactive } from 'vue';
 import useClipboard from "vue-clipboard3";
 import { event } from "vue-gtag";
 import { useRequest } from 'vue-request';
@@ -12,7 +12,7 @@ import { GasInfo, PayParams, PayinParams, PaymentMethod, Types } from "../router
 import { TimeFormat } from "../router/util";
 
 const resetInterval = 1200
-const confirmInterval = 15
+const confirmInterval = 30
 
 const props = defineProps({
     domainName: String,
@@ -53,13 +53,20 @@ let state = reactive({
     }
 })
 
+onBeforeUnmount(() => {
+    clearInterval(state.payment.conformTimer)
+    clearInterval(state.payment.timer2)
+    window.clearInterval(state.payment.conformTimer)
+    window.clearInterval(state.payment.timer2)
+})
+
 function backAction() {
     emit('backAction')
 }
 
 function copyAction() {
     const toClipboard = useClipboard();
-    toClipboard.toClipboard(state.info.midAddr).then((val) => {
+    toClipboard.toClipboard(state.info.switchAddr).then((val) => {
         ElMessage.info("copied")
     })
 }
@@ -69,7 +76,14 @@ function conformAction() {
         return
     }
 
-    service.queryConfirm(state.info.name, state.info.addr, state.info.years, state.info.walletId, state.payment.exchangeRet.exchange_id).then((val) => {
+    let exchangeId = ''
+    if (state.payment.curIdx) {
+        exchangeId = ''
+    } else {
+        exchangeId = state.payment.exchangeRet.id
+    }
+
+    service.queryConfirm(state.info.name, state.info.addr, state.info.years, state.info.walletId, exchangeId).then((val) => {
         if (val.code == 0) {
             event('payment', { method: 'Google' })
             emit('toProcessing', state.info)
@@ -118,6 +132,7 @@ async function tiggerMetamaskAction() {
             state.payment.conformTimer = 1
         }
         state.payment.comformSec--
+        console.log(state.payment.comformSec)
     }, Types.countDownInterval
     )
 }

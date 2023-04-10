@@ -23,9 +23,9 @@ let state = reactive({ isAvailable: false, input: '', inputAppend: '', stage: 's
 
 function searchAction() {
   if (!state.input) {
-    return  
+    return
   }
-  
+
   if (validate(state.input)) {
     searchAddr()
   } else { // ilegel btc address
@@ -143,9 +143,11 @@ onMounted(() => {
 
   let query = router.currentRoute.value.query
   let doaminName: string = query.search as string;
-  if (doaminName && doaminName.includes('.btc')) {
+  if (doaminName && doaminName.toLowerCase().includes('.btc')) {
     state.input = doaminName.split('.')[0]
     queryDomain()
+  } else {
+    state.stage = 'start'
   }
 })
 
@@ -164,7 +166,7 @@ onMounted(() => {
 
     <div class="search-view">
       <el-input class="input-class" v-model="state.input" placeholder="Search name or address" maxlength="100"
-        minlength="4" @keyup.enter.native="searchAction"/>
+        minlength="4" @keyup.enter.native="searchAction" />
       <a class="search-a" :class="state.input ? 'search-a-enable' : 'search-a-disable'" style="text-decoration: none;"
         href="javascript:void(0)" @click="searchAction"> Search </a>
     </div>
