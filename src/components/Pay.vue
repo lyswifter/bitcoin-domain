@@ -68,7 +68,7 @@ function conformAction() {
     if (state.payment.comformSec > 0) {
         return
     }
-    
+
     service.queryConfirm(state.info.name, state.info.addr, state.info.years, state.info.walletId, state.payment.exchangeRet.exchange_id).then((val) => {
         if (val.code == 0) {
             event('payment', { method: 'Google' })
@@ -372,7 +372,9 @@ function updateBalance() {
                     amount is incorrect, please contact us by email.
                 </div>
 
-                <div class="conform-view"
+                <div v-if="state.payment.curIdx == 0" class="conform-view conform-view-able" @click="conformAction">Next
+                    Step</div>
+                <div v-else class="conform-view"
                     :class="state.payment.comformSec <= 0 ? 'conform-view-able' : 'conform-view-disable'"
                     @click="conformAction">{{ state.payment.comformSec <= 0 ? 'Next Step' : 'Next Step(' +
                         state.payment.comformSec + ')' }}</div>

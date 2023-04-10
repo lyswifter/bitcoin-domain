@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ElMessage } from "element-plus";
-import { onBeforeMount, onMounted, reactive } from 'vue';
-
-import service from "../router/service";
-import { DomainInfo } from "../router/type";
-
+import { onBeforeMount, onMounted, reactive, ref } from 'vue';
 import useClipboard from "vue-clipboard3";
-
+import SearchInsView from "../components/SearchIns.vue";
+import service from "../router/service";
+import { DomainInfo, InscriptionItem } from "../router/type";
 import { getTime } from "../router/util";
 
 const props = defineProps({
@@ -14,8 +12,11 @@ const props = defineProps({
     isAvailable: Boolean,
 })
 
+const insRef = ref()
+
 let state = reactive({
-    info: {} as DomainInfo
+    info: {} as DomainInfo,
+    searchItem: [] as InscriptionItem[],
 })
 
 const oridDomain = 'https://ordinals.com/inscription/';
@@ -47,6 +48,11 @@ onMounted(() => {
         state.info.registration = getTime(val.data.create_time, '')
         state.info.inscriptionId = val.data.inscribe_id
         state.info.owner = val.data.owner_address
+
+        service.queryInsWith(state.info.owner).then((val2) => {
+            state.searchItem = val2.data.result
+            insRef.value.updateInnerValue(state.searchItem)
+        })
     })
 })
 </script>
@@ -61,7 +67,8 @@ onMounted(() => {
 
             <el-row justify="space-between">
                 <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3"><span class="t-name">{{ state.info.name }}</span></el-col>
-                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Unavailable' }}</span></el-col>
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="t-name">{{ state.info.isAvailable ? 'Available'
+                    : 'Unavailable' }}</span></el-col>
             </el-row>
         </div>
 
@@ -131,16 +138,21 @@ onMounted(() => {
                         <span class="list-t-view">Inscription id</span>
                     </el-col>
                     <el-col :xs="12" :sm="14" :md="16" :lg="18" :xl="20">
-                        <a :href="oridDomain + state.info.inscriptionId" target="_blank" style="word-break: break-all;">{{ state.info.inscriptionId }}</a>
+                        <a :href="oridDomain + state.info.inscriptionId" target="_blank" style="word-break: break-all;">{{
+                            state.info.inscriptionId }}</a>
                         <img src="../assets/icon_copy@2x.png"
-                            style="width: 32px;height: 32px;cursor: pointer;vertical-align: middle;" alt="" @click="copyLinkAction">
+                            style="width: 32px;height: 32px;cursor: pointer;vertical-align: middle;" alt=""
+                            @click="copyLinkAction">
                     </el-col>
                 </el-row>
 
                 <br>
                 <br>
             </div>
+
         </div>
+
+        <SearchInsView ref="insRef" :itemss="state.searchItem" />
     </div>
 </template>
 
@@ -148,6 +160,7 @@ onMounted(() => {
 .t-right {
     text-align: right;
 }
+
 .registeried-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -191,5 +204,4 @@ onMounted(() => {
 .owner-view {
     color: #2E2F3E;
     word-break: break-all;
-}
-</style>
+}</style>

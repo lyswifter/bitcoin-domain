@@ -20,8 +20,8 @@ function load() {
     });
 }
 
-function updateInnerValue() {
-    load()
+function updateInnerValue(itemss: InscriptionItem[]) {
+    stat.items = itemss
 }
 
 defineExpose({
