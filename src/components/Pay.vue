@@ -71,13 +71,6 @@ function conformAction() {
     
     service.queryConfirm(state.info.name, state.info.addr, state.info.years, state.info.walletId, state.payment.exchangeRet.exchange_id).then((val) => {
         if (val.code == 0) {
-            let localHistory = localStorage.getItem("domain_history");
-            if (!localHistory) {
-                localStorage.setItem("domain_history", state.info.name)
-            } else {
-                localStorage.setItem("domain_history", localHistory + "," + state.info.name)
-            }
-
             event('payment', { method: 'Google' })
             emit('toProcessing', state.info)
         } else if (val.code == 314) {

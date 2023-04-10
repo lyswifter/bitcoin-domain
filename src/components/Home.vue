@@ -147,14 +147,6 @@ onMounted(() => {
     state.input = doaminName.split('.')[0]
     queryDomain()
   }
-  
-  let localString = localStorage.getItem('domain_history')
-  if (localString != null) {
-    let localItems = localString.split(',');
-    if (localItems.length > 0) {
-      state.stage = 'hist'
-    }
-  }
 })
 
 </script>
