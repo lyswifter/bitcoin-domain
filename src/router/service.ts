@@ -59,7 +59,7 @@ export default {
             return
         }
     },
-    async queryConfirm(domain: string, wallet: string, year: number, walletId: string) {
+    async queryConfirm(domain: string, wallet: string, year: number, walletId: string, exchangeId: string) {
         // queryConfirm
         //
         let ret = await axios.post(Apis.queryConfirm, {
@@ -67,6 +67,7 @@ export default {
             'out_wallet': wallet,
             'expire_year': year,
             'wallet_id': walletId,
+            'exchange_id': exchangeId,
         })
 
         if (ret.status == 200) {

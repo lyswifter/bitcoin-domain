@@ -93,15 +93,11 @@ export function classifiyImageWith(element: InscriptionItem) {
 export function TimeFormat(input: number) {
     let d: string | number = parseInt(String(input / 60 / 60 / 24))
     d = d < 10 ? '0' + d : d
-
     let h: string | number = parseInt(String((input / 60 / 60) % 24))
     h = h < 10 ? '0' + h : h
-
     let m: string | number = parseInt(String((input / 60) % 60))
     m = m < 10 ? '0' + m : m
-
     let s: string | number = parseInt(String(input % 60))
     s = s < 10 ? '0' + s : s
-
     return m + ':' + s
 }

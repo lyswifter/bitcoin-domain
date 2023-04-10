@@ -12,6 +12,7 @@ import { GasInfo, PayParams, PayinParams, PaymentMethod, Types } from "../router
 import { TimeFormat } from "../router/util";
 
 const resetInterval = 1200
+const confirmInterval = 15
 
 const props = defineProps({
     domainName: String,
@@ -47,6 +48,8 @@ let state = reactive({
         countDown: resetInterval,
         countText: TimeFormat(resetInterval),
         timer2: 0,
+        comformSec: confirmInterval,
+        conformTimer: 1,
     }
 })
 
@@ -62,15 +65,19 @@ function copyAction() {
 }
 
 function conformAction() {
-    service.queryConfirm(state.info.name, state.info.addr, state.info.years, state.info.walletId).then((val) => {
+    if (state.payment.comformSec > 0) {
+        return
+    }
+    
+    service.queryConfirm(state.info.name, state.info.addr, state.info.years, state.info.walletId, state.payment.exchangeRet.exchange_id).then((val) => {
         if (val.code == 0) {
-            ElMessage.info("I have transfered!");
             let localHistory = localStorage.getItem("domain_history");
             if (!localHistory) {
                 localStorage.setItem("domain_history", state.info.name)
             } else {
                 localStorage.setItem("domain_history", localHistory + "," + state.info.name)
             }
+
             event('payment', { method: 'Google' })
             emit('toProcessing', state.info)
         } else if (val.code == 314) {
@@ -87,19 +94,9 @@ function dismissAction() {
 
 async function tiggerMetamaskAction() {
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    console.log(accounts)
-
     let value = state.payment.exchangeRet.fromAmount.toString();
-    console.log(value)
-
     let weivalue = ethers.parseUnits(value, "ether");
-    console.log(weivalue)
-
-    let vvlll = ethers.parseEther(value);
-    console.log(vvlll)
-
     let weiStr = weivalue.toString(16);
-    console.log(weiStr)
 
     let txHash = await window.ethereum
         .request({
@@ -118,6 +115,18 @@ async function tiggerMetamaskAction() {
     console.log(txHash)
 
     ElMessage.info("submit transaction: " + txHash)
+
+    clearTimer()
+
+    state.payment.conformTimer = window.setInterval(() => {
+        if (state.payment.comformSec <= 0) {
+            clearInterval(state.payment.conformTimer)
+            window.clearInterval(state.payment.conformTimer)
+            state.payment.conformTimer = 1
+        }
+        state.payment.comformSec--
+    }, Types.countDownInterval
+    )
 }
 
 async function switchPayMethod(idx: number) {
@@ -126,21 +135,26 @@ async function switchPayMethod(idx: number) {
     if (idx == 0) {
         state.info.switchAddr = state.info.midAddr
         state.info.switchCurr = 'BTC'
-        clearInterval(state.payment.timer2)
-        window.clearInterval(state.payment.timer2)
-        state.payment.timer2 = 0
-        resetTimer()
+        clearTimer()
         return
     }
 
     state.info.switchAddr = ''
     state.info.switchCurr = ''
+    state.payment.comformSec = confirmInterval
 
     await startRatio();
 
     state.payment.timer2 = window.setInterval(
         countDown, Types.countDownInterval
     )
+}
+
+function clearTimer() {
+    clearInterval(state.payment.timer2)
+    window.clearInterval(state.payment.timer2)
+    state.payment.timer2 = 0
+    resetTimer()
 }
 
 function resetTimer() {
@@ -153,6 +167,8 @@ async function countDown() {
         resetTimer()
         await startRatio()
     }
+
+    console.log(state.payment.timer2)
 
     state.payment.countDown--;
     state.payment.countText = TimeFormat(state.payment.countDown)
@@ -174,23 +190,6 @@ async function startRatio() {
     state.info.switchAddr = state.payment.exchangeRet.payinAddress;
     state.info.switchCurr = state.payment.exchangeRet.fromCurrency.toUpperCase();
     console.log(state.payment.exchangeRet)
-}
-
-function resetRatio() {
-    let params = {
-        fromCurrency: 'eth',
-        toCurrency: 'btc',
-        fromAmount: '0',
-        toAmount: state.info.total,
-        fromNetwork: 'eth',
-        toNetwork: 'btc',
-        receive_address: state.info.midAddr,
-    } as PayParams;
-    service.exchangeWith(params).then(val => {
-        state.payment.exchangeRet = JSON.parse(val.data)
-        state.info.switchAddr = state.payment.exchangeRet.payinAddress;
-        state.info.switchCurr = state.payment.exchangeRet.fromCurrency.toUpperCase();
-    })
 }
 
 onBeforeMount(() => {
@@ -380,20 +379,27 @@ function updateBalance() {
                     amount is incorrect, please contact us by email.
                 </div>
 
-                <div class="conform-view" @click="conformAction">Next Step</div>
+                <div class="conform-view"
+                    :class="state.payment.comformSec <= 0 ? 'conform-view-able' : 'conform-view-disable'"
+                    @click="conformAction">{{ state.payment.comformSec <= 0 ? 'Next Step' : 'Next Step(' +
+                        state.payment.comformSec + ')' }}</div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <el-dialog v-model="state.isPaymentVisiable" :show-close="true" align-center="true" :width="440">
-        <div style="text-align: center;">
-            <img src="../assets/icon_oops@2x.png" style="width: 220px;height: 220px;" alt="">
-            <div style="font-size: 18px;font-weight: 600;color: #A7A9BE;line-height: 25px;text-align: center;">No payment has been detected. When paying with ETH, kindly allow 5-10 minutes for the conversion of your ETH to BTC.</div>
-            <br>
-            <div style="width: 400px;height: 50px;background: #2E2F3E;border-radius: 8px;font-size: 16px;font-weight: 600;color: white;line-height: 50px;text-align: center;cursor: pointer;"
-                @click="dismissAction">OK</div>
-        </div>
-    </el-dialog>
+        <el-dialog v-model="state.isPaymentVisiable" :show-close="true" align-center="true" :width="440">
+            <div style="text-align: center;">
+                <img src="../assets/icon_oops@2x.png" style="width: 220px;height: 220px;" alt="">
+                <div style="font-size: 18px;font-weight: 600;color: #A7A9BE;line-height: 25px;text-align: center;">No
+                    payment
+                    has been detected. When paying with ETH, kindly allow 5-10 minutes for the conversion of your ETH to
+                    BTC.
+                </div>
+                <br>
+                <div style="width: 400px;height: 50px;background: #2E2F3E;border-radius: 8px;font-size: 16px;font-weight: 600;color: white;line-height: 50px;text-align: center;cursor: pointer;"
+                    @click="dismissAction">OK</div>
+            </div>
+        </el-dialog>
 </template>
 
 <style scoped>
@@ -474,12 +480,20 @@ function updateBalance() {
     margin-top: 20px;
     width: 380px;
     height: 50px;
-    background: #4540D6;
     border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
     color: #FFFFFF;
     line-height: 50px;
+}
+
+.conform-view-disable {
+    background: #A7A9BE;
+    cursor: not-allowed;
+}
+
+.conform-view-able {
+    background: #4540D6;
     cursor: pointer;
 }
 

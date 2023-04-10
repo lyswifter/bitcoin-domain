@@ -7,7 +7,8 @@ const routes = [
     {
         path: '/',
         name: "home",
-        component: Home
+        component: Home,
+        props: true,
     },
     {
         path: '/wallet/:addr',

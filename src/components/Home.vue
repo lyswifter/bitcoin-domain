@@ -139,8 +139,15 @@ function connectParentAction(addr: string) {
 }
 
 onMounted(() => {
-  pageview({ page_path: '/home' })
+  pageview({ page_path: '/home' }) // collect data
 
+  let query = router.currentRoute.value.query
+  let doaminName: string = query.search as string;
+  if (doaminName && doaminName.includes('.btc')) {
+    state.input = doaminName.split('.')[0]
+    queryDomain()
+  }
+  
   let localString = localStorage.getItem('domain_history')
   if (localString != null) {
     let localItems = localString.split(',');
