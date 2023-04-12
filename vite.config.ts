@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     cors: true,
     host: "0.0.0.0",
-    port: 5173,
+    port: 5174,
   },
   build: {
     chunkSizeWarningLimit: 300,

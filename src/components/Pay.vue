@@ -387,8 +387,8 @@ function updateBalance() {
                     amount is incorrect, please contact us by email.
                 </div>
 
-                <div class="note-view">
-                    To complete an ETH payment, please allow at least 120 seconds for blockchain confirmation. The countdown will begin once the transaction message is broadcast.
+                <div class="note-view" style="font-weight: bold;">
+                    To complete an ETH payment, please allow at least 180 seconds for blockchain confirmation. The countdown will begin once the transaction message is broadcast.
                 </div>
 
                 <div v-if="state.payment.curIdx == 0" class="conform-view conform-view-able" @click="conformAction">Next
