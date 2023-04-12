@@ -315,7 +315,7 @@ function updateBalance() {
             <div class="solid-line-view"></div>
 
             <div class="payment-view">
-                <div class="tran-fee-title">Payment Method</div>
+                <div class="tran-fee-title"><span style="color: #4540D6;">&#9679; </span>Payment Method</div>
                 <br>
                 <div class="list-t-view">Select transaction currency</div>
                 <div class="payway-content-view">
@@ -334,30 +334,35 @@ function updateBalance() {
             <div class="dash-line-view"></div>
 
             <div class="rate-value-view">
-                <div class="thin-title-view">You Will Pay:</div>
-                <div v-if="state.payment.curIdx == 0" class="pay-value-view">{{ state.info.total }} <span>BTC</span></div>
-                <div v-else class="pay-value-view">{{ state.payment.exchangeRet.fromAmount }}
-                    <span>{{ state.info.switchCurr }}</span>
-                </div>
+                <div class="thin-title-view"><span style="color: #4540D6;">&#9679; </span>You Will Pay:</div>
+                <div style="padding-left: 20px;">
+                    <div v-if="state.payment.curIdx == 0" class="pay-value-view">{{ state.info.total }} <span>BTC</span>
+                    </div>
+                    <div v-else class="pay-value-view">{{ state.payment.exchangeRet.fromAmount }}
+                        <span>{{ state.info.switchCurr }}</span>
+                    </div>
 
-                <div v-if="state.payment.curIdx != 0" style="display: flex;margin-top: 10px;">
-                    <div class="thin-title-view">The rate will be updated in</div>
-                    <div
-                        style="background: #A7A9BE;padding-left: 4px;margin-left: 4px;padding-right: 4px;color: white;border-radius: 2px;">
-                        <img src="../assets/time@2x.png" alt="" width="15" height="15">{{ state.payment.countText }}
+                    <div v-if="state.payment.curIdx != 0" style="display: flex;margin-top: 10px;">
+                        <div class="thin-title-view">The rate will be updated in</div>
+                        <div
+                            style="background: #A7A9BE;padding-left: 4px;margin-left: 4px;padding-right: 4px;color: white;border-radius: 2px;">
+                            <img src="../assets/time@2x.png" alt="" width="15" height="15">{{ state.payment.countText }}
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="qrcode-view">
-                <div>Send the funds to this address</div>
-                <div v-if="state.info.switchAddr">
-                    <vue-qrcode :value="state.info.switchAddr" :options="{ width: 200 }"></vue-qrcode>
-                    <div style="display: flex;justify-content: start;width: 100%;">
-                        <div style="color: #2E2F3E;word-wrap: break-word;text-align: left;max-width: 80%;">{{
-                            state.info.switchAddr }} </div>
-                        <img src="../assets/icon_copy@2x.png" style="width: 32px;height: 32px;cursor: pointer;" alt=""
-                            @click="copyAction">
+                <div style="padding-left: 20px;">
+                    <div>Send the funds to this address</div>
+                    <div v-if="state.info.switchAddr">
+                        <vue-qrcode :value="state.info.switchAddr" :options="{ width: 200 }"></vue-qrcode>
+                        <div style="display: flex;justify-content: start;width: 100%;">
+                            <div style="color: #2E2F3E;word-wrap: break-word;text-align: left;max-width: 80%;">{{
+                                state.info.switchAddr }} </div>
+                            <img src="../assets/icon_copy@2x.png" style="width: 32px;height: 32px;cursor: pointer;" alt=""
+                                @click="copyAction">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -365,7 +370,8 @@ function updateBalance() {
             <div class="dash-line-view"></div>
 
             <div class="metamask-view" v-if="state.payment.curIdx != 0">
-                <div>OR <span>Pay with wallet connect</span></div>
+                <div style="font-weight: bold;"><span style="color: #4540D6;">&#9679; </span>OR <span
+                        style="font-weight: normal;">Pay with wallet connect</span></div>
                 <br>
                 <div class="metamask-btn" @click="tiggerMetamaskAction">
                     <img src="../assets/MetaMask_Fox@2x.png" alt="" width="26" height="26" style="margin-top: 8px;">
@@ -388,7 +394,8 @@ function updateBalance() {
                 </div>
 
                 <div class="note-view" style="font-weight: bold;">
-                    To complete an ETH payment, please allow at least 180 seconds for blockchain confirmation. The countdown will begin once the transaction message is broadcast.
+                    To complete an ETH payment, please allow at least 180 seconds for blockchain confirmation. The countdown
+                    will begin once the transaction message is broadcast.
                 </div>
 
                 <div v-if="state.payment.curIdx == 0" class="conform-view conform-view-able" @click="conformAction">Next
