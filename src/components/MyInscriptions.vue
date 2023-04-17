@@ -294,7 +294,7 @@ onMounted(() => {
 
                     <div class="flex-view">
                         <div class="send-view" v-if="item.state == '0'" @click="sendInssAction(item)">Send</div>
-                        <div class="padding-view" v-else>Padding...</div>
+                        <div class="pending-view" v-else>Pending...</div>
 
                         <div v-if="item.state == '0'">
                             <div class="primary-view"
@@ -423,7 +423,7 @@ onMounted(() => {
     cursor: pointer;
 }
 
-.padding-view {
+.pending-view {
     height: 36px;
     font-size: 14px;
     font-weight: 400;
