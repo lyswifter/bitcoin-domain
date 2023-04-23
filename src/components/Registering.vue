@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue';
-
+import { domain } from "../router/domain";
 import service from "../router/service";
 import { DomainInfo, GasInfo } from "../router/type";
-
-import { domain } from "../router/domain";
 
 const props = defineProps({
     domainName: String,
@@ -35,17 +33,17 @@ onMounted(() => {
     state.info.isAvailable = props.isAvailable!
 
     state.rowInfo = [{
-        title: 'Fund Transfer Pending',
-        subTitle: 'This may take 20 minutes',
-        index: 1,
-        link: waitingUrl,
-    }, {
         title: 'Locked the dominate',
         subTitle: "Your domain name is locked. Don't worry about being preempted.",
+        index: 1,
+        link: certainUrl,
+    }, {
+        title: 'Fund Transfer Pending',
+        subTitle: 'This may take 20 minutes',
         index: 2,
         link: waitingUrl,
     }, {
-        title: 'Inscripting',
+        title: 'Inscribing',
         subTitle: 'This may take 20 minutes',
         index: 3,
         link: waitingUrl,
@@ -67,6 +65,9 @@ onMounted(() => {
             state.current = val1.data.dom_state;
 
             for (let i = 0; i < state.rowInfo.length; i++) {
+                if (i == 0) {
+                    continue
+                }
                 var element = state.rowInfo[i];
                 if (i < state.current - 1) {
                     element.link = certainUrl

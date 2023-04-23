@@ -1,0 +1,13 @@
+diff --git a/node_modules/cipher-base/index.js b/node_modules/cipher-base/index.js
+index 6728005..7ecdccf 100644
+--- a/node_modules/cipher-base/index.js
++++ b/node_modules/cipher-base/index.js
+@@ -4,7 +4,7 @@ var StringDecoder = require('string_decoder').StringDecoder
+ var inherits = require('inherits')
+ 
+ function CipherBase (hashMode) {
+-  Transform.call(this)
++  // Transform.call(this)
+   this.hashMode = typeof hashMode === 'string'
+   if (this.hashMode) {
+     this[hashMode] = this._finalOrDigest

@@ -8,6 +8,8 @@ import { GasInfo, Types } from "../router/type";
 import Decimal from 'decimal.js';
 import { useRequest } from 'vue-request';
 
+import { validate } from 'bitcoin-address-validation';
+
 const props = defineProps({
     domainName: String,
     isAvailable: Boolean,
@@ -56,8 +58,8 @@ function nextStepAction() {
         return
     }
 
-    if (state.info.addr.indexOf(" ") != -1) {
-        ElMessage.error("Receive address format is not correct")
+    if (!validate(state.info.addr)) {
+        ElMessage.error("Receive bitcoin address is not valid")
         return
     }
 
@@ -164,12 +166,18 @@ onMounted(() => {
         histories.value = history.split(',')
     }
 
+    let addr = localStorage.getItem('bitcoin_address')
+    if (addr) {
+        state.info.addr = addr
+    }
+
     useRequest(queryAction, {
         pollingInterval: Types.queryBalInterval,
         pollingWhenHidden: false,
         onSuccess: val1 => {
             state.info.gasFee = val1.data.gas_fee.toPrecision(Types.precision);
             state.info.serviceFee = val1.data.service_fee.toPrecision(Types.precision);
+            state.info.origin_service_fee = val1.data.origin_service_fee.toPrecision(Types.precision);
 
             let g_fee = new Decimal(state.info.gasFee);
             let s_fee = new Decimal(state.info.serviceFee)
@@ -190,7 +198,8 @@ onMounted(() => {
 
             <el-row justify="space-between">
                 <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3"><span class="t-name">{{ state.info.name }}</span></el-col>
-                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="t-name">{{ state.info.isAvailable ? 'Available' : 'Unavailable'
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="t-name">{{ state.info.isAvailable ? 'Available'
+                    : 'Unavailable'
                 }}</span></el-col>
             </el-row>
         </div>
@@ -212,11 +221,10 @@ onMounted(() => {
             <!-- STEP 1 -->
             <div class="step-title-view">STEP 1: Receive address</div>
             <div style="margin: 0 auto;">
-                <div class="step-desc-view">Type your address to receive nft here(Note:this is an <a href="https://ordinals.com" target="_blank">Ordinals</a> address)</div>
-
-                <el-autocomplete class="addr-input-view" v-model="state.info.addr" :fetch-suggestions="querySearch"
-                    trigger-on-focus="true" clearable placeholder="Type your address to receive the nft here, like: bc1p..."
-                    @select="handleSelect" />
+                <div class="step-desc-view">Type your address to receive nft here(Note:this is an <a
+                        href="https://ordinals.com" target="_blank">Ordinals</a> address)</div>
+                <el-input v-model="state.info.addr"
+                    placeholder="Type your address to receive the nft here, like: bc1p..." />
 
             </div>
 
@@ -243,6 +251,17 @@ onMounted(() => {
                     <el-row justify="space-between">
                         <el-col :xs="12" :sm="12" :md="10" :lg="10" :xl="10">
                             <div class="list-t-view">Service Fee</div>
+                        </el-col>
+                        <el-col :xs="12" :sm="10" :md="8" :lg="5" :xl="5" style="text-align: right;">
+                            <div class="owner-view" style="text-decoration: line-through;">{{ state.info.origin_service_fee + " BTC" }}</div>
+                        </el-col>
+                    </el-row>
+
+                    <el-row justify="space-between">
+                        <el-col :xs="12" :sm="12" :md="10" :lg="10" :xl="10">
+                            <div>
+                                <img src="../assets/sale@2x.png" alt="" width="162" height="28" style="margin-left: 20px;margin-top: 15px;">
+                            </div>
                         </el-col>
                         <el-col :xs="12" :sm="10" :md="8" :lg="5" :xl="5" style="text-align: right;">
                             <div class="owner-view">{{ state.info.serviceFee + " BTC" }}</div>
@@ -293,6 +312,8 @@ onMounted(() => {
     max-width: 1200px;
     margin: 0 auto;
     margin-top: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .state-view {
@@ -407,9 +428,9 @@ onMounted(() => {
 }
 </style>
 
-<style scoped>
+<!-- <style scoped>
 :deep(.addr-input-view .el-input .el-input__wrapper) {
     max-width: 1120px;
     min-width: 350px;
 }
-</style>
+</style> -->

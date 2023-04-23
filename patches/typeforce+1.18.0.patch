@@ -1,0 +1,19 @@
+diff --git a/node_modules/typeforce/index.js b/node_modules/typeforce/index.js
+index f60724e..744e9a6 100644
+--- a/node_modules/typeforce/index.js
++++ b/node_modules/typeforce/index.js
+@@ -244,12 +244,12 @@ for (const typeName in NATIVE) {
+   typeforce[typeName] = NATIVE[typeName]
+ }
+ 
+-for (typeName in TYPES) {
++for (const typeName in TYPES) {
+   typeforce[typeName] = TYPES[typeName]
+ }
+ 
+ const EXTRA = require('./extra')
+-for (typeName in EXTRA) {
++for (const typeName in EXTRA) {
+   typeforce[typeName] = EXTRA[typeName]
+ }
+ 

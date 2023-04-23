@@ -1,45 +1,194 @@
 <script setup lang="ts">
+import ecc from '@bitcoinerlab/secp256k1';
+import BIP32Factory from 'bip32';
+import * as bitcoin from 'bitcoinjs-lib';
+import { Buffer } from 'buffer';
+import { ElMessage } from 'element-plus';
+import { ethers } from "ethers";
+import { onBeforeMount, onMounted, reactive } from "vue";
+import service from "../router/service";
+import { GivingMsg, Links } from "../router/type";
+import { shortenAddr, toXOnly } from "../router/util";
+
+import { domain } from "../router/domain";
+
+const defaultPath = "m/86'/0'/0'/0/0";
+const subSLen = 8;
+
+const menuIcon = domain.domainImgUrl + 'assets/icon_menu@2x.png';
+const closeIcon = domain.domainImgUrl + 'assets/icon_close_nav@2x.png';
+const avatarIcon = domain.domainImgUrl + 'assets/icon_btc@2x.png';
+
+bitcoin.initEccLib(ecc);
+const bip32 = BIP32Factory(ecc);
+
+const props = defineProps({
+  avatarAddr: String,
+})
+
+let state = reactive({ isExpand: false, account: '', bitcoinAddr: '', shortAddr: '', avatar: '' })
+
+const emit = defineEmits({
+  connectParentAction(addr: string) { },
+})
+
+function doDisconnect() {
+  localStorage.clear();
+  state.account = '';
+  state.bitcoinAddr = '';
+  state.shortAddr = '';
+}
+
+defineExpose({
+  doDisconnect,
+})
+
 function reloadPage() {
   location.reload();
 }
 
-const openOrdexLink = "https://btcdomains.click/openordex-open-2f8217";
-const magicEdenLink = "https://magiceden.io/ordinals/marketplace/btcdomain";
+function expandAction() {
+  state.isExpand = !state.isExpand
+}
 
+async function generateBitcoinAddr() {
+  if (typeof window.ethereum === 'undefined') {
+    alert("Matamask is not installed!")
+    return
+  }
+
+  const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+  const account = accounts[0];
+  state.account = account
+
+  let network = new ethers.Network('Ethereum Mainnet', 1)
+
+  // Connect to the MetaMask EIP-1193 object. This is a standard
+  // protocol that allows Ethers access to make all read-only
+  // requests through MetaMask.
+  let provider = new ethers.BrowserProvider(window.ethereum)
+  // window.provider = provider
+
+  let getNetwork = await provider.getNetwork()
+
+  if (getNetwork.chainId != network.chainId) {
+  }
+
+  // It also provides an opportunity to request access to write
+  // operations, which will be performed by the private key
+  // that MetaMask manages for the user.
+  let signer = await provider.getSigner();
+
+  let sig = await signer.signMessage(GivingMsg);
+
+  // let isVerify = ethers.verifyMessage(GivingMsg, sig)
+
+  const seed = ethers.toUtf8Bytes(
+    ethers.keccak256(ethers.toUtf8Bytes(sig))
+  );
+
+  let root = bip32.fromSeed(Buffer.from(seed.slice(2)))
+
+  const taprootChild = root.derivePath(defaultPath);
+
+  const privKey = taprootChild.privateKey?.toString('hex')
+  const pubKey = taprootChild.publicKey;
+
+  const { address: taprootAddress } = bitcoin.payments.p2tr({
+    internalPubkey: toXOnly(pubKey),
+  });
+
+  if (taprootAddress) {
+    state.bitcoinAddr = taprootAddress
+    state.shortAddr = shortenAddr(state.bitcoinAddr, subSLen);
+
+    localStorage.setItem('bitcoin_address', taprootAddress)
+    localStorage.setItem('public_key', pubKey.toString('hex'))
+
+    loadavatar(taprootAddress)
+  } else {
+    ElMessage.error("generate your bitcoin address failed, please retry.")
+  }
+}
+
+function connectAction() {
+  if (state.bitcoinAddr) {
+    emit('connectParentAction', state.bitcoinAddr)
+  } else {
+    generateBitcoinAddr()
+  }
+}
+
+function loadavatar(addr: string) {
+  service.avatarGet(addr).then(avatarRet => {
+    console.log(avatarRet)
+    if (avatarRet.data.length > 0) {
+      state.avatar = avatarRet.data[0].content_url
+    }
+  });
+}
+
+onBeforeMount(() => {
+  state.avatar = props.avatarAddr ? props.avatarAddr : avatarIcon
+})
+
+onMounted(() => {
+  let addr = localStorage.getItem('bitcoin_address')
+  if (addr) {
+    state.bitcoinAddr = addr;
+    state.shortAddr = shortenAddr(addr, subSLen);
+
+    loadavatar(addr)
+  }
+})
 </script>
 
 <template>
-  <div class="container">
-    <el-row justify="space-between">
-      <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2">
-        <img class="logo-view" src="../assets/logo_nav@2x.png" style="width: 126px;height: 24px;cursor: pointer;" alt=""
-          @click="reloadPage">
-      </el-col>
+  <div class="header-container">
+    <nav class="navbar navbar-expand-md bg-body-tertiary">
+      <button class="navbar-toggler" style="box-shadow: none;" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+        aria-label="Toggle navigation" @click="expandAction">
+        <img :src="state.isExpand ? closeIcon : menuIcon" alt="" width="24" height="24">
+      </button>
 
-      <el-col :xs="15" :sm="7" :md="6" :lg="5" :xl="3">
-        <el-row>
-          <div class="doc-link-view"><a :href="magicEdenLink" style="text-decoration: none;color: white;"
-              target="_blank">Magiceden</a></div>
+      <a class="navbar-brand brand-mobile" href="" @click="reloadPage">
+        <img src="../assets/logo_nav@2x.png" alt="bitcoin_domain" width="150" height="30">
+      </a>
 
-          <div class="doc-link-view"><a :href="openOrdexLink" style="text-decoration: none;color: white;margin-left: 10px;"
-              target="_blank">Openordex</a></div>
+      <div class="avatar-icon-view">
+        <img v-if="state.bitcoinAddr" :src="state.avatar ? state.avatar : avatarIcon"
+          style="margin-right: 10px;border-radius: 15px;" alt="" width="30" height="30" @click="connectAction">
+        <div v-else class="connect-btn connect-btn-normal-mobile" @click="connectAction">Wallet</div>
+      </div>
 
-          <div class="doc-link-view"><a href="https://docs.btcdomains.io"
-              style="text-decoration: none;color: white;margin-left: 10px;" target="_blank">Document</a></div>
-        </el-row>
-      </el-col>
-    </el-row>
+      <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" style="color: white;" :href="Links.doc" target="_blank">Document</a>
+            </li>
 
-    <div class="slogon-view">
-      <img class="solgon-title-view" src="../assets/logo@2x.png" alt="">
-      <div class="solgon-content-view">Discover the Future of BTC Domain. Search, Register and Trade your .btc Domain Name</div>
-    </div>
+            <li class="nav-item">
+              <a class="nav-link" style="color: white;" :href="Links.trees" target="_blank">Exchange</a>
+            </li>
+          </ul>
+
+          <div class="connect-btn" :class="state.bitcoinAddr ? 'connect-btn-selected' : 'connect-btn-normal'"
+            @click="connectAction">
+            <img v-if="state.bitcoinAddr" :src="state.avatar ? state.avatar : avatarIcon" alt=""
+              style="border-radius: 15px;" width="30" height="30">
+            {{ state.shortAddr ? state.shortAddr : "Connect Wallet" }}
+          </div>
+        </div>
+      </div>
+    </nav>
   </div>
 </template>
 
 <style scoped>
-.container {
-  background-image: linear-gradient(180deg, #513eff 0%, #52e5ff 100%);
+.header-container {
+  background-image: linear-gradient(180deg, #513eff 0%, #513eff 100%);
 }
 
 .logo-view {
@@ -58,22 +207,43 @@ const magicEdenLink = "https://magiceden.io/ordinals/marketplace/btcdomain";
   margin-top: 10px;
 }
 
-.slogon-view {
-  margin: 0 auto;
-  width: 100%;
+.connect-btn {
+  height: 40px;
+  border-radius: 20px;
+  padding-left: 5px;
+  padding-right: 5px;
+  line-height: 40px;
   text-align: center;
-}
-
-.solgon-title-view {
-  margin-top: 60px;
-  height: 60px;
-}
-
-.solgon-content-view {
-  height: 25px;
-  font-size: 18px;
+  cursor: pointer;
+  font-size: 14px;
   font-weight: 400;
+}
+
+.connect-btn-normal-mobile {
+  background: #FFFFFF;
+  color: #4540D6;
+}
+
+.connect-btn-normal {
+  background: #FFFFFF;
+  color: #4540D6;
+}
+
+.connect-btn-selected {
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid #FFFFFF;
   color: #FFFFFF;
-  line-height: 25px;
+}
+
+@media screen and (max-width: 767px) {
+  .navbar-web {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .avatar-icon-view {
+    display: none;
+  }
 }
 </style>
