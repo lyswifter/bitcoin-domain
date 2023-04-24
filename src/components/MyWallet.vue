@@ -3,7 +3,7 @@ import BigNumber from "bignumber.js";
 import { validate } from 'bitcoin-address-validation';
 import domtoimage from 'dom-to-image-more';
 import type { TabsPaneContext } from 'element-plus';
-import { ElMessage } from "element-plus";
+import { ElMessage, ElLoading } from "element-plus";
 import { onBeforeMount, onMounted, reactive, ref } from 'vue';
 import useClipboard from "vue-clipboard3";
 import FooterView from "../components/Footer.vue";
@@ -568,6 +568,7 @@ onMounted(() => {
     margin-top: 20px;
     margin-left: 20px;
     border-radius: 70px;
+    border: 2px solid white;
 }
 
 .nick-addr-view {

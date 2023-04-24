@@ -6,18 +6,17 @@ import { Buffer } from 'buffer';
 import { ElMessage } from 'element-plus';
 import { ethers } from "ethers";
 import { onBeforeMount, onMounted, reactive } from "vue";
+import { domain } from "../router/domain";
 import service from "../router/service";
 import { GivingMsg, Links } from "../router/type";
 import { shortenAddr, toXOnly } from "../router/util";
-
-import { domain } from "../router/domain";
 
 const defaultPath = "m/86'/0'/0'/0/0";
 const subSLen = 8;
 
 const menuIcon = domain.domainImgUrl + 'assets/icon_menu@2x.png';
 const closeIcon = domain.domainImgUrl + 'assets/icon_close_nav@2x.png';
-const avatarIcon = domain.domainImgUrl + 'assets/icon_btc@2x.png';
+const avatarIcon = domain.domainImgUrl + 'assets/avater_def@2x.png';
 
 bitcoin.initEccLib(ecc);
 const bip32 = BIP32Factory(ecc);

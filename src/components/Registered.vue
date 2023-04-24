@@ -7,6 +7,10 @@ import service from "../router/service";
 import { Domain, InscriptionItem } from "../router/type";
 import { getTime, shortenInsId } from "../router/util";
 
+const emit = defineEmits({
+    connectParentAction(addr: string) { },
+})
+
 const props = defineProps({
     domainName: String,
     isAvailable: Boolean,
@@ -16,6 +20,7 @@ let state = reactive({
     isPhone: false,
     info: {} as Domain,
     searchItem: [] as InscriptionItem[],
+    loading: true,
 })
 
 const oridDomain = 'https://ordinals.com/inscription/';
@@ -34,6 +39,10 @@ function copyLinkAction() {
     })
 }
 
+function viewAllAction() {
+    emit('connectParentAction', state.info.owner_address)
+}
+
 onBeforeMount(() => {
     state.info.dom_name = props.domainName!
     state.info.is_available = props.isAvailable!
@@ -49,13 +58,14 @@ onMounted(() => {
         state.info.expire_time = getTime(state.info.expire_time, '')
         state.info.create_time = getTime(state.info.create_time, '')
         state.info.update_time = getTime(state.info.update_time, '')
-
         state.info.short_ins_id = shortenInsId(state.info.inscribe_id, 8),
-            state.info.short_owner_addr = shortenInsId(state.info.owner_address, 8),
+        state.info.short_owner_addr = shortenInsId(state.info.owner_address, 8),
 
-            service.queryInsWith(state.info.owner_address).then((val2) => {
-                state.searchItem = val2.data.result
-            })
+        state.loading = true
+        service.queryInsWith(state.info.owner_address).then((val2) => {
+            state.searchItem = val2.data.result
+            state.loading = false
+        })
     })
 })
 </script>
@@ -88,7 +98,8 @@ onMounted(() => {
             <div class="domain-content-view">
                 <div class="row-view owner-view">
                     <div class="list-t-view">Owner</div>
-                    <div class="owner-view owner-addr-view">{{ state.isPhone ? state.info.short_owner_addr : state.info.owner_address }}
+                    <div class="owner-view owner-addr-view">{{ state.isPhone ? state.info.short_owner_addr :
+                        state.info.owner_address }}
                         <img src="../assets/icon_copy@2x.png"
                             style="width: 32px;height: 32px;cursor: pointer;vertical-align: middle;" alt=""
                             @click="copyAction">
@@ -141,16 +152,24 @@ onMounted(() => {
 
         <div class="row-view">
             <div class="ins-title-view">Inscription From This Owner</div>
-            <div class="view-all-view">View All</div>
+            <!-- <div class="view-all-view" @click="viewAllAction">View All</div> -->
         </div>
 
-        <SearchInsView v-if="state.searchItem.length > 0" :itemss="state.searchItem" />
+        <SearchInsView v-if="state.searchItem.length > 0 && !state.loading" :itemss="state.searchItem"></SearchInsView>
+        <div class="loading-view" v-else>
+            <img src="https://dmaster.com/dcommon/img/loading.svg" alt="">
+        </div>
     </div>
 </template>
 
 <style scoped>
 .t-right {
     text-align: right;
+}
+
+.loading-view {
+    text-align: center;
+    min-height: 300px;
 }
 
 .registeried-container {
@@ -227,8 +246,6 @@ onMounted(() => {
 }
 
 @media screen and (max-width: 767px) {
-    .re-content-view {}
-
     .domain-content-view {
         margin-top: 20px;
     }
