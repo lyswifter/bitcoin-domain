@@ -4,8 +4,8 @@ import { onBeforeMount, onMounted, reactive } from 'vue';
 import useClipboard from "vue-clipboard3";
 import SearchInsView from "../components/SearchIns.vue";
 import service from "../router/service";
-import { DomainInfo, InscriptionItem } from "../router/type";
-import { getTime } from "../router/util";
+import { Domain, InscriptionItem } from "../router/type";
+import { getTime, shortenInsId } from "../router/util";
 
 const props = defineProps({
     domainName: String,
@@ -13,7 +13,8 @@ const props = defineProps({
 })
 
 let state = reactive({
-    info: {} as DomainInfo,
+    isPhone: false,
+    info: {} as Domain,
     searchItem: [] as InscriptionItem[],
 })
 
@@ -21,35 +22,40 @@ const oridDomain = 'https://ordinals.com/inscription/';
 
 function copyAction() {
     const toClipboard = useClipboard();
-
-    toClipboard.toClipboard(state.info.owner).then((val) => {
+    toClipboard.toClipboard(state.info.owner_address).then((val) => {
         ElMessage.info("copied")
     })
 }
 
 function copyLinkAction() {
     const toClipboard = useClipboard();
-    toClipboard.toClipboard(state.info.inscriptionId).then((val) => {
+    toClipboard.toClipboard(state.info.inscribe_id).then((val) => {
         ElMessage.info("copied")
     })
 }
 
 onBeforeMount(() => {
-    state.info.name = props.domainName!
-    state.info.isAvailable = props.isAvailable!
+    state.info.dom_name = props.domainName!
+    state.info.is_available = props.isAvailable!
 })
 
 onMounted(() => {
-    service.queryDomain(state.info.name).then((val) => {
-        state.info.expire = getTime(val.data.expire_time, '')
-        state.info.create = getTime(val.data.create_time, '')
-        state.info.registration = getTime(val.data.create_time, '')
-        state.info.inscriptionId = val.data.inscribe_id
-        state.info.owner = val.data.owner_address
+    if (window.innerWidth < 767) {
+        state.isPhone = true
+    }
 
-        service.queryInsWith(state.info.owner).then((val2) => {
-            state.searchItem = val2.data.result
-        })
+    service.queryDomain(state.info.dom_name).then((val) => {
+        state.info = val.data as Domain
+        state.info.expire_time = getTime(state.info.expire_time, '')
+        state.info.create_time = getTime(state.info.create_time, '')
+        state.info.update_time = getTime(state.info.update_time, '')
+
+        state.info.short_ins_id = shortenInsId(state.info.inscribe_id, 8),
+            state.info.short_owner_addr = shortenInsId(state.info.owner_address, 8),
+
+            service.queryInsWith(state.info.owner_address).then((val2) => {
+                state.searchItem = val2.data.result
+            })
     })
 })
 </script>
@@ -63,8 +69,10 @@ onMounted(() => {
             </el-row>
 
             <el-row justify="space-between">
-                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3"><span class="t-name">{{ state.info.name }}</span></el-col>
-                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="t-name">{{ state.info.isAvailable ? 'Available'
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3"><span class="t-name">{{ state.info.dom_name
+                }}</span></el-col>
+                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2"><span class="t-name">{{ state.info.is_available ?
+                    'Available'
                     : 'Unavailable' }}</span></el-col>
             </el-row>
         </div>
@@ -73,80 +81,67 @@ onMounted(() => {
         <br>
 
         <div class="re-content-view">
-            <el-row justify="space-between" style="height: 60px;">
-                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3">
-                    <div class="domain-name-view">{{ state.info.name }}</div>
-                </el-col>
-                <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="3">
-                    <div class="detail-view">
-                        Details
-                    </div>
-                </el-col>
-            </el-row>
+            <div class="domain-pic-view">
+                <img :src="state.info.img_url" alt="">
+            </div>
 
-            <div>
-                <el-row justify="start">
-                    <el-col :xs="6" :sm="4" :md="4" :lg="2" :xl="2">
-                        <span class="list-t-view">Owner</span>
-                    </el-col>
-                    <el-col :xs="18" :sm="20" :md="20" :lg="22" :xl="22">
-                        <span class="owner-view">{{ state.info.owner }}</span>
+            <div class="domain-content-view">
+                <div class="row-view owner-view">
+                    <div class="list-t-view">Owner</div>
+                    <div class="owner-view owner-addr-view">{{ state.isPhone ? state.info.short_owner_addr : state.info.owner_address }}
                         <img src="../assets/icon_copy@2x.png"
                             style="width: 32px;height: 32px;cursor: pointer;vertical-align: middle;" alt=""
                             @click="copyAction">
-                    </el-col>
-                </el-row>
+                    </div>
+                </div>
 
                 <div class="line-view"></div>
 
-                <el-row justify="start">
-                    <el-col :xs="12" :sm="10" :md="8" :lg="6" :xl="4">
-                        <span class="list-t-view">Creatdate</span>
-                    </el-col>
-                    <el-col :xs="12" :sm="14" :md="16" :lg="18" :xl="20" class="t-right">
-                        <span class="owner-view">{{ state.info.create }}</span>
-                    </el-col>
-                </el-row>
-
-                <el-row justify="start">
-                    <el-col :xs="12" :sm="10" :md="8" :lg="6" :xl="4">
-                        <span class="list-t-view">Registration Date</span>
-                    </el-col>
-                    <el-col :xs="12" :sm="14" :md="16" :lg="18" :xl="20" class="t-right">
-                        <span class="owner-view">{{ state.info.registration }}</span>
-                    </el-col>
-                </el-row>
-
-                <el-row justify="start">
-                    <el-col :xs="12" :sm="10" :md="8" :lg="6" :xl="4">
-                        <span class="list-t-view">Expiration Date</span>
-                    </el-col>
-                    <el-col :xs="12" :sm="14" :md="16" :lg="18" :xl="20" class="t-right">
-                        <span class="owner-view">{{ state.info.expire }}</span>
-                    </el-col>
-                </el-row>
-
-                <br>
-                <br>
-                <br>
-
-                <el-row justify="start">
-                    <el-col :xs="12" :sm="10" :md="8" :lg="6" :xl="4">
-                        <span class="list-t-view">Inscription id</span>
-                    </el-col>
-                    <el-col :xs="12" :sm="14" :md="16" :lg="18" :xl="20">
-                        <a :href="oridDomain + state.info.inscriptionId" target="_blank" style="word-break: break-all;">{{
-                            state.info.inscriptionId }}</a>
+                <div class="row-view">
+                    <div class="list-t-view">Inscription id</div>
+                    <div>
+                        <a :href="oridDomain + state.info.inscribe_id" target="_blank" style="word-break: break-all;">{{
+                            state.info.short_ins_id }}</a>
                         <img src="../assets/icon_copy@2x.png"
                             style="width: 32px;height: 32px;cursor: pointer;vertical-align: middle;" alt=""
                             @click="copyLinkAction">
-                    </el-col>
-                </el-row>
+                    </div>
+                </div>
+
+                <div class="row-view">
+                    <div class="list-t-view">Create date</div>
+                    <div class="owner-view">{{ state.info.create_time }}</div>
+                </div>
+
+                <div class="row-view">
+                    <div class="list-t-view">Registration date</div>
+                    <div class="owner-view">{{ state.info.update_time }}</div>
+                </div>
+
+                <div class="row-view">
+                    <div class="list-t-view">Expiration date</div>
+                    <div class="owner-view">{{ state.info.expire_time }}</div>
+                </div>
+
+                <br>
+                <br>
+                <br>
+
+                <div class="row-view">
+                    <div></div>
+                    <div>
+                        <a href="https://baidu.com">View On Bitcoin Mainnet</a>
+                    </div>
+                </div>
 
                 <br>
                 <br>
             </div>
+        </div>
 
+        <div class="row-view">
+            <div class="ins-title-view">Inscription From This Owner</div>
+            <div class="view-all-view">View All</div>
         </div>
 
         <SearchInsView v-if="state.searchItem.length > 0" :itemss="state.searchItem" />
@@ -203,4 +198,60 @@ onMounted(() => {
 .owner-view {
     color: #2E2F3E;
     word-break: break-all;
-}</style>
+}
+
+.domain-pic-view {
+    text-align: center;
+}
+
+.row-view {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ins-title-view {
+    height: 28px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #2E2F3E;
+    line-height: 28px;
+}
+
+.view-all-view {
+    height: 22px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #4540D6;
+    line-height: 22px;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 767px) {
+    .re-content-view {}
+
+    .domain-content-view {
+        margin-top: 20px;
+    }
+
+    .domain-pic-view img {
+        width: 335px;
+        height: 335px;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .re-content-view {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .owner-addr-view {
+        margin-left: 200px;
+    }
+
+    .domain-pic-view img {
+        width: 260px;
+        height: 260px;
+    }
+}
+</style>

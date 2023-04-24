@@ -34,6 +34,10 @@ export function shortenAddr(addr: string, subSLen: number) {
     return addr.substring(0, subSLen) + '...' + addr.substring(addr.length - subSLen, addr.length)
 }
 
+export function shortenInsId(id: string, subSLen: number) {
+    return id.substring(0, subSLen) + '...' + id.substring(id.length - subSLen, id.length)
+}
+
 export const toXOnly = (pubKey: Buffer) =>
     pubKey.length === 32 ? pubKey : pubKey.slice(1, 33);
 

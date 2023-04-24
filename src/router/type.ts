@@ -26,6 +26,26 @@ export interface DomainInfo {
     isAvailable: boolean;
 }
 
+export interface Domain {
+    cost_fee: string;
+    create_time: string;
+    dom_name: string;
+    dom_state: number;
+    dom_type: string;
+    expire_time: string;
+    fee_rate: number;
+    img_url: string;
+    inscribe_id: string;
+    out_wallet: string;
+    owner_address: string;
+    tx_hash: string;
+    update_time: string;
+    wallet_id: string;
+    is_available: boolean;
+    short_ins_id: string;
+    short_owner_addr: string;
+}
+
 export interface DomainHistory {
     date: string;
     records: string[];
