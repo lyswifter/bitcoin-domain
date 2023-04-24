@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import BigNumber from "bignumber.js";
 import { validate } from 'bitcoin-address-validation';
+import domtoimage from 'dom-to-image-more';
 import type { TabsPaneContext } from 'element-plus';
 import { ElMessage } from "element-plus";
 import { onBeforeMount, onMounted, reactive, ref } from 'vue';
@@ -12,17 +13,16 @@ import InscriptionView from "../components/MyInscriptions.vue";
 import openapi from "../crypto/openapi";
 import SDK, { ICollectedUTXOResp, ISendBTCReq } from "../crypto/sdk/sdk";
 import { generateBitcoinAddr } from "../crypto/sign";
+import { domain } from "../router/domain";
 import router from "../router/index";
 import service from "../router/service";
 import { MinSats, PersonInfo, Ratio } from "../router/type";
 import { shortenAddr } from "../router/util";
 import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 
-import { domain } from "../router/domain";
-
 const rate = 100000000;
 const subSLen = 8;
-const defaultAvatar = domain.domainImgUrl + 'assets/icon_btc@2x.png';
+const defaultAvatar = domain.domainImgUrl + 'assets/avater_def@2x.png';
 
 const headerRef = ref();
 const insRef = ref();
@@ -56,6 +56,36 @@ let stat = reactive({
         curIdx: 2,
         amount: 0,
         availBal: '',
+    },
+    bCard: {
+        isVisiable: false,
+        info: {},
+        icons: [{
+            name: 'btc',
+            isHighlight: false,
+            file_sel: '',
+            file_dis: "",
+        }, {
+            name: 'avatar',
+            isHighlight: false,
+            file_sel: '',
+            file_dis: "",
+        }, {
+            name: 'img',
+            isHighlight: false,
+            file_sel: '',
+            file_dis: "",
+        }, {
+            name: 'music',
+            isHighlight: false,
+            file_sel: '',
+            file_dis: "",
+        }, {
+            name: 'txt',
+            isHighlight: false,
+            file_sel: '',
+            file_dis: "",
+        }]
     }
 })
 
@@ -81,6 +111,7 @@ async function sendBtcsAction() {
     stat.sendInsOrBtc.isSendInsOrBtcShow = true
 
     // determine how much btc are available to transfer
+
     let inscriptions = await openapi.getAddressInscriptions(addr);
     console.log(inscriptions)
 
@@ -119,6 +150,7 @@ async function submitBtcTxAction() {
     }
 
     // to address
+
     let tempAddr = ''
     if (!stat.sendInsOrBtc.toAddr) {
         ElMessage.warning("to address must not be empty")
@@ -163,6 +195,7 @@ async function submitBtcTxAction() {
     }
 
     // availBal
+
     let avail = new BigNumber(stat.sendInsOrBtc.availBal)
     if (one.gte(avail)) {
         ElMessage.warning("max value you must transfer is" + stat.sendInsOrBtc.availBal + 'btc')
@@ -211,6 +244,7 @@ async function submitBtcTxAction() {
     console.log('txHex: ' + txHex)
 
     // submit
+
     const subRet = await openapi.pushTx(txHex)
     console.log(subRet)
 
@@ -259,6 +293,25 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
     }
 }
 
+function shareAction() {
+    stat.bCard.isVisiable = true
+}
+
+function settingAction() {
+}
+
+function cardShareAction() {
+    var node = document.getElementById("personal-card-view");
+    domtoimage
+        .toJpeg(node, { quality: 0.95 })
+        .then(function (dataUrl: any) {
+            var link = document.createElement("a");
+            link.download = "card.jpeg";
+            link.href = dataUrl;
+            link.click();
+        });
+}
+
 function disconnectAction() {
     headerRef.value.doDisconnect()
     router.push({ name: 'home' })
@@ -295,6 +348,13 @@ function loadBalance() {
     }
 }
 
+function assembleIcons() {
+    stat.bCard.icons.forEach(element => {
+        element.file_sel = '../../src/' + 'assets/bcard/' + element.name + '_sel@2x.png';
+        element.file_dis = '../../src/' + 'assets/bcard/' + element.name + '_dis@2x.png';
+    });
+}
+
 onBeforeMount(() => {
 })
 
@@ -306,11 +366,11 @@ onMounted(() => {
         stat.dialogueWidth = '50%';
         stat.receiveddiaW = '30%';
     }
-    
+
+    assembleIcons()
     loadavatar()
     loadBalance()
 })
-
 </script>
 
 <template>
@@ -334,7 +394,15 @@ onMounted(() => {
                         </div>
                     </div>
 
-                    <div class="disconnect-view dis-postion web-hidden" @click="disconnectAction">Disconnect</div>
+                    <div class="setting-view">
+                        <div class="disconnect-view" @click="shareAction">
+                            <img src="../assets/icon_share@2x.png" width="24" height="24" alt="">
+                        </div>
+
+                        <div class="disconnect-view" @click="settingAction">
+                            <img src="../assets/icon_setting@2x.png" width="24" height="24" alt="">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="line-view"></div>
@@ -390,8 +458,8 @@ onMounted(() => {
             </div>
         </el-dialog>
 
-        <el-dialog v-model="stat.sendInsOrBtc.isSendInsOrBtcShow" :show-close="true" :align-center="true" :width="stat.dialogueWidth"
-            class="send-dialogue-view">
+        <el-dialog v-model="stat.sendInsOrBtc.isSendInsOrBtcShow" :show-close="true" :align-center="true"
+            :width="stat.dialogueWidth" class="send-dialogue-view">
             <template #header="{ close, titleId, titleClass }">
                 <div class="my-header">
                     <h4 :id="titleId" :class="titleClass">Send BTC</h4>
@@ -416,7 +484,8 @@ onMounted(() => {
                 <br>
                 <div class="fee-tit-view">Select the network fee you want to pay:</div>
                 <div class="fee-summary-view">
-                    <div class="fee-card-view fee-card-dif-view" v-for="(item, idx) in stat.sendInsOrBtc.feeSums.list" :key="idx"
+                    <div class="fee-card-view fee-card-dif-view" v-for="(item, idx) in stat.sendInsOrBtc.feeSums.list"
+                        :key="idx"
                         :class="stat.sendInsOrBtc.curIdx == idx ? 'fee-card-view-selected' : 'fee-card-view-normal'"
                         @click="clickFeeCardAction(idx)">
                         <div class="fee-title-view">{{ item.title }}</div>
@@ -430,6 +499,42 @@ onMounted(() => {
                 </div>
                 <br>
                 <div class="send-btn-view" @click="submitBtcTxAction">Send</div>
+            </div>
+        </el-dialog>
+
+        <el-dialog v-model="stat.bCard.isVisiable" :show-close="true" :align-center="true" :width="380">
+            <template #header="{ close, titleId, titleClass }">
+                <div class="my-header">
+                    <h4 :id="titleId" :class="titleClass">Share Picture</h4>
+                </div>
+            </template>
+
+            <div class="share-card-view">
+                <div class="card-view" id="personal-card-view">
+                    <div class="card-top-view">
+                        <div class="card-avatar-view">
+                            <img src="../assets/avater_def@2x.png" width="80" height="80" alt="">
+                        </div>
+                        <div class="card-content-view">
+                            <div class="card-name-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
+                            <div class="card-icon-view">
+                                <div v-for="(item, idx) in stat.bCard.icons" :key="idx">
+                                    <img :src="item.file_sel" width="20" height="20" alt="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-qr-view">
+                        <vue-qrcode :value="stat.pinfo.address" :options="{ width: 70 }"></vue-qrcode>
+                    </div>
+                </div>
+
+                <div class="share-view">
+                    <div class="share-btn" @click="cardShareAction">
+                        <img src="../assets/icon_save@2x.png" width="24" height="24" alt="">
+                        Save Picture
+                    </div>
+                </div>
             </div>
         </el-dialog>
     </div>
@@ -494,10 +599,15 @@ onMounted(() => {
     background: rgba(69, 64, 214, 0.3);
 }
 
+.setting-view {
+    display: flex;
+}
+
 .disconnect-view {
-    width: 100px;
+    width: 36px;
     height: 36px;
     margin-top: 60px;
+    margin-right: 10px;
     background: rgba(255, 255, 255, 0.3);
     border-radius: 24px;
     font-size: 13px;
@@ -564,12 +674,6 @@ onMounted(() => {
 }
 
 @media screen and (max-width: 767px) {
-    .dis-postion {
-        position: absolute;
-        right: 10px;
-        top: 20px;
-    }
-
     .actions-view {
         display: flex;
         justify-content: center;
@@ -601,10 +705,6 @@ onMounted(() => {
     .receive-one {
         width: 126px;
         margin-left: 19px;
-    }
-
-    .dis-postion {
-        margin-top: 60px;
     }
 
     .topwarp-view {
@@ -717,6 +817,65 @@ onMounted(() => {
     color: #FFFFFF;
     line-height: 50px;
     text-align: center;
+    cursor: pointer;
+}
+</style>
+
+<style scoped>
+.share-card-view {}
+
+.card-view {
+    width: 335px;
+    height: 223px;
+    background-image: url(../../src/assets/bcard/card_bg@2x.png);
+    background-size: contain;
+}
+
+.card-top-view {
+    display: flex;
+}
+
+.card-avatar-view {
+    margin-left: 20px;
+    margin-top: 20px;
+}
+
+.card-content-view {
+    margin-left: 30px;
+    margin-top: 30px;
+    text-align: left;
+}
+
+.card-name-view {
+    color: #FFFFFF;
+    font-size: 20px;
+}
+
+.card-icon-view {
+    display: flex;
+    margin-top: 10px;
+}
+
+.card-qr-view {
+    margin-top: 50px;
+    margin-left: 260px;
+}
+
+.share-view {
+    text-align: center;
+}
+
+.share-btn {
+    width: 275px;
+    height: 50px;
+    margin: 0 auto;
+    margin-top: 40px;
+    background: #2E2F3E;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #FFFFFF;
+    line-height: 50px;
     cursor: pointer;
 }
 </style>
