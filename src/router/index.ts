@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 
 import Home from "../components/Home.vue";
 import MyWallet from "../components/MyWallet.vue";
+import Setting from "../components/Setting.vue";
 
 const routes = [
     {
@@ -14,6 +15,11 @@ const routes = [
         path: '/wallet/:addr',
         name: "wallet",
         component: MyWallet,
+        props: true,
+    },{
+        path: '/setting/:addr',
+        name: 'setting',
+        component: Setting,
         props: true,
     }
 ]

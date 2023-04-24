@@ -41,6 +41,7 @@ function doDisconnect() {
 
 defineExpose({
   doDisconnect,
+  exportPrivateKey,
 })
 
 function reloadPage() {
@@ -111,6 +112,31 @@ async function generateBitcoinAddr() {
   }
 }
 
+async function exportPrivateKey() {
+  if (typeof window.ethereum === 'undefined') {
+    alert("Matamask is not installed!")
+    return
+  }
+
+  let provider = new ethers.BrowserProvider(window.ethereum)
+
+  let signer = await provider.getSigner();
+
+  let sig = await signer.signMessage(GivingMsg);
+
+  const seed = ethers.toUtf8Bytes(
+    ethers.keccak256(ethers.toUtf8Bytes(sig))
+  );
+
+  let root = bip32.fromSeed(Buffer.from(seed.slice(2)));
+
+  const taprootChild = root.derivePath(defaultPath);
+
+  const privKey = taprootChild.privateKey?.toString('hex');
+
+  return privKey
+}
+
 function connectAction() {
   if (state.bitcoinAddr) {
     emit('connectParentAction', state.bitcoinAddr)
@@ -121,7 +147,6 @@ function connectAction() {
 
 function loadavatar(addr: string) {
   service.avatarGet(addr).then(avatarRet => {
-    console.log(avatarRet)
     if (avatarRet.data.length > 0) {
       state.avatar = avatarRet.data[0].content_url
     }

@@ -298,6 +298,7 @@ function shareAction() {
 }
 
 function settingAction() {
+    router.push({ name: 'setting', params: { addr: stat.pinfo.address } })
 }
 
 function cardShareAction() {
@@ -310,11 +311,6 @@ function cardShareAction() {
             link.href = dataUrl;
             link.click();
         });
-}
-
-function disconnectAction() {
-    headerRef.value.doDisconnect()
-    router.push({ name: 'home' })
 }
 
 function loadavatar() {
@@ -519,7 +515,7 @@ onMounted(() => {
                             <div class="card-name-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
                             <div class="card-icon-view">
                                 <div v-for="(item, idx) in stat.bCard.icons" :key="idx">
-                                    <img :src="item.file_sel" width="20" height="20" alt="">
+                                    <img :src="item.isHighlight ? item.file_sel : item.file_dis" width="18" height="18" alt="">
                                 </div>
                             </div>
                         </div>
@@ -853,7 +849,7 @@ onMounted(() => {
 
 .card-icon-view {
     display: flex;
-    margin-top: 10px;
+    margin-top: 12px;
 }
 
 .card-qr-view {
