@@ -580,7 +580,7 @@ onMounted(() => {
                 <div class="card-view" id="personal-card-view">
                     <div class="card-top-view">
                         <div class="card-avatar-view">
-                            <img src="../assets/avater_def@2x.png" width="80" height="80" alt="">
+                            <img :src="stat.pinfo.content_url ? stat.pinfo.content_url : '../assets/avater_def@2x.png'" width="80" height="80" alt="">
                         </div>
                         <div class="card-content-view">
                             <div class="card-name-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
@@ -906,6 +906,11 @@ onMounted(() => {
 .card-avatar-view {
     margin-left: 20px;
     margin-top: 20px;
+}
+
+.card-avatar-view img {
+    border-radius: 40px;
+    border: 2px solid white;
 }
 
 .card-content-view {
