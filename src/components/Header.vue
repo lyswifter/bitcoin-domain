@@ -91,7 +91,7 @@ async function generateBitcoinAddr() {
 
   const taprootChild = root.derivePath(defaultPath);
 
-  const privKey = taprootChild.privateKey?.toString('hex')
+  // const privKey = taprootChild.privateKey?.toString('hex')
   const pubKey = taprootChild.publicKey;
 
   const { address: taprootAddress } = bitcoin.payments.p2tr({
@@ -102,6 +102,7 @@ async function generateBitcoinAddr() {
     state.bitcoinAddr = taprootAddress
     state.shortAddr = shortenAddr(state.bitcoinAddr, subSLen);
 
+    localStorage.setItem('eth_address', state.account)
     localStorage.setItem('bitcoin_address', taprootAddress)
     localStorage.setItem('public_key', pubKey.toString('hex'))
 

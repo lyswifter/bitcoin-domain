@@ -131,6 +131,7 @@ export interface PaymentMethod {
     name: string;
     icon: string;
     desc: string;
+    bal: string;
 }
 
 export interface PayParams {
@@ -176,3 +177,5 @@ export const Links = {
 export const GivingMsg = "Welcome to the secure sites, btcdomains.io and btcwallet.network! Please ensure you are visiting the correct URLs: btcdomains.io and btcwallet.network. Engaging in transactions or signing activities outside of these official sites may expose your private key and put your security at risk.";
 
 export const MinSats = 1000;
+
+export const rate = 100000000;

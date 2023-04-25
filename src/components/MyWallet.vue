@@ -16,11 +16,10 @@ import { generateBitcoinAddr } from "../crypto/sign";
 import { domain } from "../router/domain";
 import router from "../router/index";
 import service from "../router/service";
-import { InsType, InscriptionItem, MinSats, PersonInfo, Ratio } from "../router/type";
+import { InsType, InscriptionItem, MinSats, PersonInfo, Ratio, rate } from "../router/type";
 import { classifiyImageWith, shortenAddr } from "../router/util";
 import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 
-const rate = 100000000;
 const subSLen = 8;
 const defaultAvatar = domain.domainImgUrl + 'assets/avater_def@2x.png';
 
@@ -59,7 +58,7 @@ let stat = reactive({
     },
     bCard: {
         isVisiable: false,
-        info: {},
+        qrlink: '',
         icons: [{
             name: 'btc',
             isHighlight: false,
@@ -112,17 +111,7 @@ async function sendBtcsAction() {
 
     // determine how much btc are available to transfer
 
-    let inscriptions = await openapi.getAddressInscriptions(addr);
-    let totalSatoshi = new BigNumber(0)
-    inscriptions.forEach(element => {
-        if (element.detail) {
-            let tmp = new BigNumber(element.detail.output_value)
-            totalSatoshi = totalSatoshi.plus(tmp)
-        }
-    });
-    let amout_tmp = new BigNumber(stat.winfo.amount);
-    let amount_sat = amout_tmp.multipliedBy(rate);
-    let available_sat = amount_sat.minus(totalSatoshi);
+    let available_sat = await loadBtcBalance()
     let availBtcStr = available_sat.div(rate).toPrecision(8).toString();
     stat.sendInsOrBtc.availBal = availBtcStr;
 
@@ -362,6 +351,9 @@ function loadavatar() {
                 if (stat.pinfo.content_url) {
                     stat.bCard.icons[1].isHighlight = true
                 }
+                if (stat.pinfo.domain) {
+                    stat.bCard.qrlink = "https://btcdomains.io/#/?search=" + stat.pinfo.domain   
+                }
             }
         });
     }
@@ -398,6 +390,28 @@ async function loadBalance() {
             });
         });
     }
+}
+
+async function loadBtcBalance() {
+    let available_ret = new BigNumber(0)
+    let addr = localStorage.getItem('bitcoin_address')
+
+    let balance = await openapi.getAddressBalance(addr!);
+    let inscriptions = await openapi.getAddressInscriptions(addr!);
+
+    let totalSatoshi = new BigNumber(0)
+    inscriptions.forEach(element => {
+        if (element.detail) {
+            let tmp = new BigNumber(element.detail.output_value)
+            totalSatoshi = totalSatoshi.plus(tmp)
+        }
+    });
+    
+    let amout_tmp = new BigNumber(balance.amount);
+    let amount_sat = amout_tmp.multipliedBy(rate);
+    available_ret = amount_sat.minus(totalSatoshi);
+    
+    return available_ret
 }
 
 function assembleIcons() {
@@ -578,8 +592,8 @@ onMounted(() => {
                             </div>
                         </div>
                     </div>
-                    <div class="card-qr-view">
-                        <vue-qrcode :value="stat.pinfo.address" :options="{ width: 70 }"></vue-qrcode>
+                    <div class="card-qr-view" v-if="stat.bCard.qrlink">
+                        <vue-qrcode :value="stat.bCard.qrlink" :options="{ width: 70 }"></vue-qrcode>
                     </div>
                 </div>
 
