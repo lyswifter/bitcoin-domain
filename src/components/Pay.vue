@@ -175,9 +175,6 @@ async function countDown() {
         resetTimer()
         await startRatio()
     }
-
-    console.log(state.payment.timer2)
-
     state.payment.countDown--;
     state.payment.countText = TimeFormat(state.payment.countDown)
 }

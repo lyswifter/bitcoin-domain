@@ -3,7 +3,7 @@ import BigNumber from "bignumber.js";
 import { validate } from 'bitcoin-address-validation';
 import domtoimage from 'dom-to-image-more';
 import type { TabsPaneContext } from 'element-plus';
-import { ElMessage, ElLoading } from "element-plus";
+import { ElMessage } from "element-plus";
 import { onBeforeMount, onMounted, reactive, ref } from 'vue';
 import useClipboard from "vue-clipboard3";
 import FooterView from "../components/Footer.vue";
@@ -16,8 +16,8 @@ import { generateBitcoinAddr } from "../crypto/sign";
 import { domain } from "../router/domain";
 import router from "../router/index";
 import service from "../router/service";
-import { MinSats, PersonInfo, Ratio } from "../router/type";
-import { shortenAddr } from "../router/util";
+import { InsType, InscriptionItem, MinSats, PersonInfo, Ratio } from "../router/type";
+import { classifiyImageWith, shortenAddr } from "../router/util";
 import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 
 const rate = 100000000;
@@ -113,8 +113,6 @@ async function sendBtcsAction() {
     // determine how much btc are available to transfer
 
     let inscriptions = await openapi.getAddressInscriptions(addr);
-    console.log(inscriptions)
-
     let totalSatoshi = new BigNumber(0)
     inscriptions.forEach(element => {
         if (element.detail) {
@@ -313,6 +311,44 @@ function cardShareAction() {
         });
 }
 
+async function loadCategory() {
+    service.queryInsWith(stat.pinfo.address).then((val) => {
+        val.data.result.forEach((element: InscriptionItem) => {
+            element = classifiyImageWith(element)
+
+            switch (element.type) {
+                case InsType.IMAGE:
+                    stat.bCard.icons[2].isHighlight = true
+                    break;
+
+                case InsType.TEXT:
+                    stat.bCard.icons[4].isHighlight = true
+                    break;
+
+                case InsType.AUDIO:
+                    stat.bCard.icons[3].isHighlight = true
+                    break;
+
+                case InsType.DOMAIN:
+                    break;
+
+                case InsType.VIDEO:
+                    break;
+
+                case InsType.GIF:
+                    stat.bCard.icons[2].isHighlight = true
+                    break;
+
+                case InsType.OTHER:
+                    break;
+
+                default:
+                    break;
+            }
+        });
+    })
+}
+
 function loadavatar() {
     let addr = localStorage.getItem('bitcoin_address')
     if (addr) {
@@ -323,22 +359,42 @@ function loadavatar() {
             if (avatarRet.data.length > 0) {
                 stat.pinfo = avatarRet.data[0]
                 stat.pinfo.short_addr = shortenAddr(stat.pinfo.address, subSLen)
+                if (stat.pinfo.content_url) {
+                    stat.bCard.icons[1].isHighlight = true
+                }
             }
         });
     }
 }
 
-function loadBalance() {
+async function loadBalance() {
     let addr = localStorage.getItem('bitcoin_address')
     if (addr) {
         openapi.getAddressBalance(addr).then(balance => {
             stat.winfo = balance
-            service.queryRatio('BTCUSDT').then((ratio: Ratio) => {
-                console.log(ratio)
-                let ratioNum = new BigNumber(ratio.price);
-                let btcNum = new BigNumber(stat.winfo.amount);
-                let usdtNum = ratioNum.multipliedBy(btcNum);
-                stat.winfo.usd_value = usdtNum.toString();
+
+            openapi.getAddressInscriptions(addr!).then((inscriptions) => {
+                let totalSatoshi = new BigNumber(0)
+                inscriptions.forEach(element => {
+                    if (element.detail) {
+                        let tmp = new BigNumber(element.detail.output_value)
+                        totalSatoshi = totalSatoshi.plus(tmp)
+                    }
+                });
+                let amout_tmp = new BigNumber(stat.winfo.amount);
+                let amount_sat = amout_tmp.multipliedBy(rate);
+                let available_sat = amount_sat.minus(totalSatoshi);
+                if (available_sat.gte(0)) {
+                    stat.bCard.icons[0].isHighlight = true
+                }
+                stat.winfo.amount = available_sat.div(rate).toPrecision(8).toString();
+
+                service.queryRatio('BTCUSDT').then((ratio: Ratio) => {
+                    let ratioNum = new BigNumber(ratio.price);
+                    let btcNum = new BigNumber(stat.winfo.amount);
+                    let usdtNum = ratioNum.multipliedBy(btcNum);
+                    stat.winfo.usd_value = usdtNum.toString();
+                });
             });
         });
     }
@@ -366,6 +422,7 @@ onMounted(() => {
     assembleIcons()
     loadavatar()
     loadBalance()
+    loadCategory()
 })
 </script>
 
@@ -515,7 +572,8 @@ onMounted(() => {
                             <div class="card-name-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
                             <div class="card-icon-view">
                                 <div v-for="(item, idx) in stat.bCard.icons" :key="idx">
-                                    <img :src="item.isHighlight ? item.file_sel : item.file_dis" width="18" height="18" alt="">
+                                    <img :src="item.isHighlight ? item.file_sel : item.file_dis" width="18" height="18"
+                                        alt="">
                                 </div>
                             </div>
                         </div>
