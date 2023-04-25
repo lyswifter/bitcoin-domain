@@ -51,7 +51,7 @@ let state = reactive({
         methods: [] as PaymentMethod[],
         curIdx: 0,
         exchangeRet: {} as PayinParams,
-        isEnough: true,
+        isEnough: 0,
         countDown: resetInterval,
         countText: TimeFormat(resetInterval),
         timer2: 0,
@@ -141,7 +141,7 @@ async function sendBtcsAction() {
     }
 
     state.sendInsOrBtc.toAddr = state.info.switchAddr
-    state.sendInsOrBtc.amount = new BigNumber(state.info.total).toNumber() 
+    state.sendInsOrBtc.amount = new BigNumber(state.info.total).toNumber()
 
     state.sendInsOrBtc.target = 'BTC'
     state.sendInsOrBtc.isSendInsOrBtcShow = true
@@ -150,7 +150,7 @@ async function sendBtcsAction() {
 
     let available_sat = await loadBalance();
     let availBtcStr = available_sat.div(rate).toPrecision(8).toString();
-    
+
     state.sendInsOrBtc.availBal = availBtcStr;
 
     openapi.getFeeSummary().then(feeRet => {
@@ -319,6 +319,7 @@ async function tiggerMetamaskAction() {
 
 async function switchPayMethod(idx: number) {
     state.payment.curIdx = idx
+    state.payment.isEnough = 0
 
     if (idx == 0) {
         state.info.switchAddr = state.info.midAddr
@@ -328,11 +329,11 @@ async function switchPayMethod(idx: number) {
         let available_sat = await loadBalance();
         let needpay_big_total = new BigNumber(state.info.total);
         let needpay_sat = needpay_big_total.multipliedBy(rate);
-        
+
         if (available_sat.isGreaterThan(needpay_sat)) {
-            state.payment.isEnough = true
+            state.payment.isEnough = 1
         } else {
-            state.payment.isEnough = false
+            state.payment.isEnough = 2
         }
     } else if (idx == 1) {
         state.info.switchAddr = ''
@@ -358,9 +359,9 @@ async function switchPayMethod(idx: number) {
         state.payment.methods[state.payment.curIdx].bal = w_balance;
 
         if (balance_big.isGreaterThan(needpay_wei_big)) {
-            state.payment.isEnough = true
+            state.payment.isEnough = 1
         } else {
-            state.payment.isEnough = false
+            state.payment.isEnough = 2
         }
 
         state.payment.timer2 = window.setInterval(
@@ -404,7 +405,7 @@ async function loadBalance() {
             totalSatoshi = totalSatoshi.plus(tmp)
         }
     });
-    
+
     let amout_tmp = new BigNumber(balance.amount);
     let amount_sat = amout_tmp.multipliedBy(rate);
     available_ret = amount_sat.minus(totalSatoshi);
@@ -587,16 +588,18 @@ function updateBalance() {
                 </div>
             </div>
 
-            <div class="enough-view" v-if="state.payment.methods.length > 0" style="display: flex;gap: 10px;">
+            <div class="enough-view" v-if="state.payment.methods.length > 0">
                 <div>Wallet Balance: {{ state.payment.methods[state.payment.curIdx].bal }} {{ state.info.switchCurr }}
                 </div>
-                <div v-if="state.payment.isEnough" class="green-color" style="line-height: 24px;">
-                    <img src="../assets/icon_16_success@2x.png" width="16" height="16" style="vertical-align: text-top"
-                        alt="">The balance is sufficient.
-                </div>
-                <div v-else class="red-color" style="line-height: 24px;">
-                    <img src="../assets/icon_16_tips_red@2x.png" width="16" height="16" style="vertical-align: text-top"
-                        alt="">Insufficient balance.
+                <div v-if="state.payment.isEnough > 0">
+                    <div v-if="state.payment.isEnough == 1" class="green-color" style="line-height: 24px;">
+                        <img src="../assets/icon_16_success@2x.png" width="16" height="16" style="vertical-align: text-top"
+                            alt="">The balance is sufficient.
+                    </div>
+                    <div v-else class="red-color" style="line-height: 24px;">
+                        <img src="../assets/icon_16_tips_red@2x.png" width="16" height="16" style="vertical-align: text-top"
+                            alt="">Insufficient balance.
+                    </div>
                 </div>
             </div>
 
@@ -869,9 +872,21 @@ function updateBalance() {
         padding-left: 10px;
         padding-right: 10px;
     }
+
+    .enough-view {
+        margin-top: 20px;
+        padding-left: 20px;
+    }
 }
 
 @media screen and (min-width: 768px) {
+    .enough-view {
+        margin-top: 20px;
+        padding-left: 20px;
+        display: flex;
+        gap: 10px;
+    }
+
     .payway-content-view {
         padding-left: 10px;
         padding-right: 10px;
@@ -883,11 +898,6 @@ function updateBalance() {
         height: 66px;
         margin-left: 10px;
     }
-}
-
-.enough-view {
-    margin-top: 20px;
-    padding-left: 20px;
 }
 
 .green-color {
