@@ -91,10 +91,6 @@ function copyAction() {
 }
 
 function conformAction() {
-    if (state.payment.curIdx != 0 && state.payment.comformSec > 0) {
-        return
-    }
-
     let exchangeId = ''
     if (state.payment.curIdx == 0) {
         exchangeId = ''
@@ -279,6 +275,10 @@ async function submitBtcTxAction() {
 }
 
 function tiggerPaymentAction() {
+    if (state.payment.isEnough != 1) {
+        return    
+    }
+
     if (state.payment.curIdx == 0) {
         tiggerBtcPaymentAction()
     } else {
@@ -406,7 +406,7 @@ async function loadBalance() {
         }
     });
 
-    let amout_tmp = new BigNumber(balance.amount);
+    let amout_tmp = new BigNumber(balance.confirm_amount);
     let amount_sat = amout_tmp.multipliedBy(rate);
     available_ret = amount_sat.minus(totalSatoshi);
     state.payment.methods[0].bal = available_ret.div(rate).toPrecision(8).toString();
@@ -467,8 +467,12 @@ onMounted(() => {
             let b_fee = new Decimal(val1.data.mine.trusted)
             let u_fee = new Decimal(val1.data.mine.untrusted_pending)
             let t_fee = Decimal.add(b_fee, u_fee)
-            state.info.balance = t_fee.toPrecision(Types.precision).toString()
-            state.info.total = Decimal.sub(s_fee, t_fee).toPrecision(Types.precision).toString();
+            state.info.balance = t_fee.toPrecision(Types.precision).toString();
+            state.info.total = s_fee.toPrecision(Types.precision).toString();
+            // state.info.total = Decimal.sub(s_fee, t_fee).toPrecision(Types.precision).toString();
+            if (t_fee.greaterThanOrEqualTo(s_fee)) {
+                conformAction()
+            }
         }
     });
 })
@@ -581,8 +585,8 @@ function updateBalance() {
                     <div v-if="state.payment.curIdx != 0" style="display: flex;margin-top: 10px;">
                         <div class="thin-title-view">The rate will be updated in</div>
                         <div
-                            style="background: #A7A9BE;padding-left: 4px;margin-left: 4px;padding-right: 4px;color: white;border-radius: 2px;">
-                            <img src="../assets/time@2x.png" alt="" width="15" height="15">{{ state.payment.countText }}
+                            style="background: #A7A9BE;padding-left: 4px;margin-left: 4px;padding-right: 4px;color: white;border-radius: 2px;line-height: 24px;">
+                            <img src="../assets/time@2x.png" alt="" width="15" height="15" style="vertical-align: text-top;">{{ state.payment.countText }}
                         </div>
                     </div>
                 </div>
@@ -604,7 +608,7 @@ function updateBalance() {
             </div>
 
             <div class="metamask-view">
-                <div class="metamask-btn" @click="tiggerPaymentAction">
+                <div :class="state.payment.isEnough == 1 ? 'metamask-btn' : 'metamask-btn-disable'" @click="tiggerPaymentAction">
                     Pay
                 </div>
             </div>
@@ -930,7 +934,7 @@ function updateBalance() {
     border-radius: 8px;
     color: #FFFFFF;
     line-height: 44px;
-    cursor: pointer;
+    cursor: not-allowed;
 }
 
 .conform-outer-view {

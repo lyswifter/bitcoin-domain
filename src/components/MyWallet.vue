@@ -62,28 +62,28 @@ let stat = reactive({
         icons: [{
             name: 'btc',
             isHighlight: false,
-            file_sel: '',
-            file_dis: "",
+            file_sel: domain.domainImgUrl + 'assets/bcard/' + 'btc' + '_sel@2x.png',
+            file_dis: domain.domainImgUrl + 'assets/bcard/' + 'btc' + '_dis@2x.png',
         }, {
             name: 'avatar',
             isHighlight: false,
-            file_sel: '',
-            file_dis: "",
+            file_sel: domain.domainImgUrl + 'assets/bcard/' + 'avatar' + '_sel@2x.png',
+            file_dis: domain.domainImgUrl + 'assets/bcard/' + 'avatar' + '_dis@2x.png',
         }, {
             name: 'img',
             isHighlight: false,
-            file_sel: '',
-            file_dis: "",
+            file_sel: domain.domainImgUrl + 'assets/bcard/' + 'img' + '_sel@2x.png',
+            file_dis: domain.domainImgUrl + 'assets/bcard/' + 'img' + '_dis@2x.png',
         }, {
             name: 'music',
             isHighlight: false,
-            file_sel: '',
-            file_dis: "",
+            file_sel: domain.domainImgUrl + 'assets/bcard/' + 'music' + '_sel@2x.png',
+            file_dis: domain.domainImgUrl + 'assets/bcard/' + 'music' + '_dis@2x.png',
         }, {
             name: 'txt',
             isHighlight: false,
-            file_sel: '',
-            file_dis: "",
+            file_sel: domain.domainImgUrl + 'assets/bcard/' + 'txt' + '_sel@2x.png',
+            file_dis: domain.domainImgUrl + 'assets/bcard/' + 'txt' + '_dis@2x.png',
         }]
     }
 })
@@ -363,7 +363,6 @@ async function loadBalance() {
     let addr = localStorage.getItem('bitcoin_address')
     if (addr) {
         openapi.getAddressBalance(addr).then(balance => {
-            stat.winfo = balance
 
             openapi.getAddressInscriptions(addr!).then((inscriptions) => {
                 let totalSatoshi = new BigNumber(0)
@@ -373,12 +372,13 @@ async function loadBalance() {
                         totalSatoshi = totalSatoshi.plus(tmp)
                     }
                 });
-                let amout_tmp = new BigNumber(stat.winfo.amount);
+                let amout_tmp = new BigNumber(balance.confirm_amount);
                 let amount_sat = amout_tmp.multipliedBy(rate);
                 let available_sat = amount_sat.minus(totalSatoshi);
                 if (available_sat.gte(0)) {
                     stat.bCard.icons[0].isHighlight = true
                 }
+                stat.winfo = balance
                 stat.winfo.amount = available_sat.div(rate).toPrecision(8).toString();
 
                 service.queryRatio('BTCUSDT').then((ratio: Ratio) => {
@@ -407,7 +407,7 @@ async function loadBtcBalance() {
         }
     });
     
-    let amout_tmp = new BigNumber(balance.amount);
+    let amout_tmp = new BigNumber(balance.confirm_amount);
     let amount_sat = amout_tmp.multipliedBy(rate);
     available_ret = amount_sat.minus(totalSatoshi);
     
@@ -416,12 +416,13 @@ async function loadBtcBalance() {
 
 function assembleIcons() {
     stat.bCard.icons.forEach(element => {
-        element.file_sel = '../../src/' + 'assets/bcard/' + element.name + '_sel@2x.png';
-        element.file_dis = '../../src/' + 'assets/bcard/' + element.name + '_dis@2x.png';
+        element.file_sel = domain.domainImgUrl + 'assets/bcard/' + element.name + '_sel@2x.png'; //domain.domainImgUrl
+        element.file_dis = domain.domainImgUrl + 'assets/bcard/' + element.name + '_dis@2x.png'; // '../../src/'
     });
 }
 
 onBeforeMount(() => {
+    // assembleIcons()
 })
 
 onMounted(() => {
@@ -433,7 +434,6 @@ onMounted(() => {
         stat.receiveddiaW = '30%';
     }
 
-    assembleIcons()
     loadavatar()
     loadBalance()
     loadCategory()
@@ -714,7 +714,6 @@ onMounted(() => {
 }
 
 .btc-view {
-    height: 48px;
     font-size: 34px;
     font-weight: 600;
     color: #FFFFFF;
@@ -918,6 +917,7 @@ onMounted(() => {
 .card-name-view {
     color: #FFFFFF;
     font-size: 20px;
+    min-height: 30px;
 }
 
 .card-icon-view {
