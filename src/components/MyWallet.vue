@@ -185,7 +185,7 @@ async function submitBtcTxAction() {
 
     let avail = new BigNumber(stat.sendInsOrBtc.availBal)
     if (one.gte(avail)) {
-        ElMessage.warning("max value you must transfer is" + stat.sendInsOrBtc.availBal + 'btc')
+        ElMessage.warning("max value you must transfer is " + stat.sendInsOrBtc.availBal + 'btc')
         return
     }
 
