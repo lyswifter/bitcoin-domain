@@ -272,7 +272,7 @@ async function submitBtcTxAction() {
 
 function tiggerPaymentAction() {
     if (state.payment.isEnough != 1) {
-        return    
+        return
     }
 
     if (state.payment.curIdx == 0) {
@@ -338,6 +338,10 @@ async function switchPayMethod(idx: number) {
 
         // request ratio
         await startRatio();
+
+        if (state.payment.curIdx == 0) {
+            return
+        }
 
         // exchange rate
         let needpay_wei = state.payment.exchangeRet.fromAmount.toString();
@@ -422,10 +426,11 @@ async function startRatio() {
     } as PayParams;
 
     let retData = await service.exchangeWith(params)
-    state.payment.exchangeRet = JSON.parse(retData.data)
-    state.info.switchAddr = state.payment.exchangeRet.payinAddress;
-    state.info.switchCurr = state.payment.exchangeRet.fromCurrency.toUpperCase();
-    console.log(state.payment.exchangeRet)
+    if (state.payment.curIdx == 1) {
+        state.payment.exchangeRet = JSON.parse(retData.data)
+        state.info.switchAddr = state.payment.exchangeRet.payinAddress;
+        state.info.switchCurr = state.payment.exchangeRet.fromCurrency.toUpperCase();
+    }
 }
 
 onBeforeMount(() => {
@@ -581,7 +586,8 @@ function updateBalance() {
                         <div class="thin-title-view">The rate will be updated in</div>
                         <div
                             style="background: #A7A9BE;padding-left: 4px;margin-left: 4px;padding-right: 4px;color: white;border-radius: 2px;line-height: 24px;">
-                            <img src="../assets/time@2x.png" alt="" width="15" height="15" style="vertical-align: text-top;">{{ state.payment.countText }}
+                            <img src="../assets/time@2x.png" alt="" width="15" height="15"
+                                style="vertical-align: text-top;">{{ state.payment.countText }}
                         </div>
                     </div>
                 </div>
@@ -603,7 +609,8 @@ function updateBalance() {
             </div>
 
             <div class="metamask-view">
-                <div :class="state.payment.isEnough == 1 ? 'metamask-btn' : 'metamask-btn-disable'" @click="tiggerPaymentAction">
+                <div :class="state.payment.isEnough == 1 ? 'metamask-btn' : 'metamask-btn-disable'"
+                    @click="tiggerPaymentAction">
                     Pay
                 </div>
             </div>

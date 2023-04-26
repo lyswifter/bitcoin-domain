@@ -20,6 +20,7 @@ import { InsType, InscriptionItem, MinSats, PersonInfo, Ratio, rate } from "../r
 import { classifiyImageWith, shortenAddr } from "../router/util";
 import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 
+const givenOgInsId = 100000
 const subSLen = 8;
 const defaultAvatar = domain.domainImgUrl + 'assets/avater_def@2x.png';
 
@@ -59,31 +60,33 @@ let stat = reactive({
     bCard: {
         isVisiable: false,
         qrlink: '',
+        isOg: false,
+        ogLink: '',
         icons: [{
             name: 'btc',
             isHighlight: false,
-            file_sel: domain.domainImgUrl + 'assets/bcard/' + 'btc' + '_sel@2x.png',
-            file_dis: domain.domainImgUrl + 'assets/bcard/' + 'btc' + '_dis@2x.png',
+            file_sel: '',
+            file_dis: '',
         }, {
             name: 'avatar',
             isHighlight: false,
-            file_sel: domain.domainImgUrl + 'assets/bcard/' + 'avatar' + '_sel@2x.png',
-            file_dis: domain.domainImgUrl + 'assets/bcard/' + 'avatar' + '_dis@2x.png',
+            file_sel: '',
+            file_dis: '',
         }, {
             name: 'img',
             isHighlight: false,
-            file_sel: domain.domainImgUrl + 'assets/bcard/' + 'img' + '_sel@2x.png',
-            file_dis: domain.domainImgUrl + 'assets/bcard/' + 'img' + '_dis@2x.png',
+            file_sel: '',
+            file_dis: '',
         }, {
             name: 'music',
             isHighlight: false,
-            file_sel: domain.domainImgUrl + 'assets/bcard/' + 'music' + '_sel@2x.png',
-            file_dis: domain.domainImgUrl + 'assets/bcard/' + 'music' + '_dis@2x.png',
+            file_sel: '',
+            file_dis: '',
         }, {
             name: 'txt',
             isHighlight: false,
-            file_sel: domain.domainImgUrl + 'assets/bcard/' + 'txt' + '_sel@2x.png',
-            file_dis: domain.domainImgUrl + 'assets/bcard/' + 'txt' + '_dis@2x.png',
+            file_sel: '',
+            file_dis: '',
         }]
     }
 })
@@ -305,6 +308,10 @@ async function loadCategory() {
         val.data.result.forEach((element: InscriptionItem) => {
             element = classifiyImageWith(element)
 
+            if (element.number > givenOgInsId) {
+                stat.bCard.isOg = true
+            }
+
             switch (element.type) {
                 case InsType.IMAGE:
                     stat.bCard.icons[2].isHighlight = true
@@ -416,16 +423,13 @@ async function loadBtcBalance() {
 
 function assembleIcons() {
     stat.bCard.icons.forEach(element => {
-        element.file_sel = domain.domainImgUrl + 'assets/bcard/' + element.name + '_sel@2x.png'; //domain.domainImgUrl
-        element.file_dis = domain.domainImgUrl + 'assets/bcard/' + element.name + '_dis@2x.png'; // '../../src/'
+        element.file_sel = domain.domainImgUrl + 'assets/bcard/' + element.name + '_sel@2x.png';
+        element.file_dis = domain.domainImgUrl + 'assets/bcard/' + element.name + '_dis@2x.png';
     });
+    stat.bCard.ogLink = domain.domainImgUrl + 'assets/bcard/' + 'og@2x.png';
 }
 
-onBeforeMount(() => {
-    // assembleIcons()
-})
-
-onMounted(() => {
+function calculateWidth() {
     if (window.innerWidth < 767) {
         stat.dialogueWidth = '96%';
         stat.receiveddiaW = '96%';
@@ -433,7 +437,14 @@ onMounted(() => {
         stat.dialogueWidth = '50%';
         stat.receiveddiaW = '30%';
     }
+}
 
+onBeforeMount(() => {
+    assembleIcons()
+})
+
+onMounted(() => {
+    calculateWidth()
     loadavatar()
     loadBalance()
     loadCategory()
@@ -580,7 +591,8 @@ onMounted(() => {
                 <div class="card-view" id="personal-card-view">
                     <div class="card-top-view">
                         <div class="card-avatar-view">
-                            <img referrerpolicy="no-referrer" :src="stat.pinfo.content_url ? stat.pinfo.content_url : '../assets/avater_def@2x.png'" width="80" height="80" alt="">
+                            <img class="card-avatar-img" referrerpolicy="no-referrer" :src="stat.pinfo.content_url ? stat.pinfo.content_url : '../assets/avater_def@2x.png'" width="80" height="80" alt="">
+                            <img class="card-avatar-og" referrerpolicy="no-referrer" :src="stat.bCard.ogLink" width="30" height="30" alt="">
                         </div>
                         <div class="card-content-view">
                             <div class="card-name-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
@@ -906,11 +918,18 @@ onMounted(() => {
 .card-avatar-view {
     margin-left: 20px;
     margin-top: 20px;
+    position: relative;
 }
 
-.card-avatar-view img {
+.card-avatar-img {
     border-radius: 40px;
     border: 2px solid white;
+}
+
+.card-avatar-og {
+    position: absolute;
+    right: -10px;
+    top: 0;
 }
 
 .card-content-view {
