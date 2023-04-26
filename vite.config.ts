@@ -10,6 +10,7 @@ export default defineConfig({
     port: 5174,
   },
   build: {
+    // outDir: 'test',
     chunkSizeWarningLimit: 300,
   }
 })

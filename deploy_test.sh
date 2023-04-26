@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm dist.tar.gz
+rm test.tar.gz
 
 echo "remove old tar file ok."
 
@@ -10,8 +10,8 @@ npm run build
 
 echo "build ok."
 
-tar -czvf dist.tar.gz dist
+tar -czvf test.tar.gz test
 
-scp -i ~/.ssh/bitcoin.pem dist.tar.gz ubuntu@54.234.246.200:/home/ubuntu/v1
+scp -i ~/.ssh/bitcoin.pem test.tar.gz ubuntu@54.234.246.200:/home/ubuntu/
 
 echo "upload test finished!"
