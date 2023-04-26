@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { validate } from 'bitcoin-address-validation';
 import { ElMessage } from "element-plus";
 import { reactive, ref } from 'vue';
 import FooterView from "../components/Footer.vue";
@@ -39,7 +38,7 @@ async function signDomainLink() {
         return
     }
 
-    if (!validate(stat.domainName)) {
+    if (!stat.domainName.endsWith('.btc')) {
         ElMessage.warning("domain name is not valid")
         return
     }
@@ -89,10 +88,13 @@ function downloadAction() {
                 <div style="line-height: 32px;">Get your .btc website</div>
             </div>
 
+            <br>
+
             <div class="tip-view">
                 <img src="../assets/icon_16_tips@2x.png" width="16" height="16" alt="">Currently, this feature is only
                 available for internal testing users.
             </div>
+            <br>
 
             <div class="step-view">
                 <div class="ver-line-view"></div>
@@ -113,6 +115,8 @@ function downloadAction() {
                 <img src="../assets/icon_arrow_purple@2x.png" width="24" height="24" alt="">
             </div>
 
+            <br>
+
             <div class="domain-input-view">
                 <div class="titl-prompt">Your Domain Name</div>
                 <el-input v-model="stat.domainName" placeholder="Your Domain Name" style="height: 48px;" />
@@ -126,6 +130,7 @@ function downloadAction() {
                 <div class="titl-tips">* The Inscription ID of your website HTML code inscription.</div>
             </div>
 
+            <br>
             <br>
 
             <div class="gen-view" @click="signDomainLink">Generate</div>
