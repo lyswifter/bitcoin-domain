@@ -162,6 +162,14 @@ export interface PayinParams {
     validUntil: string;
 }
 
+export interface DomainLink {
+    type: string;
+    domain: string;
+    obj_ins_id: string;
+    public_key: string;
+    sig: string;
+}
+
 export const Links = {
     doc: "https://docs.btcdomains.io",
     openOrdex: "https://btcdomains.click/openordex-open-2f8217",

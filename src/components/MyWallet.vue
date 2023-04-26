@@ -12,11 +12,11 @@ import HistoryView from "../components/MyHistory.vue";
 import InscriptionView from "../components/MyInscriptions.vue";
 import openapi from "../crypto/openapi";
 import SDK, { ICollectedUTXOResp, ISendBTCReq } from "../crypto/sdk/sdk";
-import { generateBitcoinAddr } from "../crypto/sign";
+import { generateBitcoinAddr, signAsync } from "../crypto/sign";
 import { domain } from "../router/domain";
 import router from "../router/index";
 import service from "../router/service";
-import { InsType, InscriptionItem, MinSats, PersonInfo, Ratio, rate } from "../router/type";
+import { DomainLink, InsType, InscriptionItem, MinSats, PersonInfo, Ratio, rate } from "../router/type";
 import { classifiyImageWith, shortenAddr } from "../router/util";
 import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 
@@ -96,6 +96,21 @@ function copyAction() {
     toClipboard.toClipboard(stat.pinfo.address).then((val) => {
         ElMessage.info("copied")
     })
+}
+
+async function signDomainLink() {
+    let linkfile = {
+        type: 'btcdomain_link',
+        domain: 'helloworld.btc',
+        obj_ins_id: 'c0ff5c133d424706ca76c4f39f98a0f876b8e04fdf0fde5b5a0934252342da68i0',
+        public_key: localStorage.getItem('public_key'),
+    } as DomainLink;
+
+    let linefile_json = JSON.stringify(linkfile)
+    let signRet = await signAsync(linefile_json)
+    linkfile.sig = signRet
+
+    console.log(JSON.stringify(linkfile))
 }
 
 async function sendBtcsAction() {
@@ -460,7 +475,7 @@ onMounted(() => {
                 <div class="info-view">
                     <div class="topwarp-view">
                         <img class="avatar-view" :src="stat.pinfo.content_url ? stat.pinfo.content_url : defaultAvatar"
-                            alt="">
+                            alt="" @click="signDomainLink">
                         <div class="nick-addr-view">
                             <div class="nickname-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
                             <div class="addrname-view">{{ stat.pinfo.short_addr }}<img
