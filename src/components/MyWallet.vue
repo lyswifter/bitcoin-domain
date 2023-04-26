@@ -4,6 +4,7 @@ import { validate } from 'bitcoin-address-validation';
 import domtoimage from 'dom-to-image-more';
 import type { TabsPaneContext } from 'element-plus';
 import { ElMessage } from "element-plus";
+import { MaxUint256 } from "ethers";
 import { onBeforeMount, onMounted, reactive, ref } from 'vue';
 import useClipboard from "vue-clipboard3";
 import FooterView from "../components/Footer.vue";
@@ -20,7 +21,7 @@ import { DomainLink, InsType, InscriptionItem, MinSats, PersonInfo, Ratio, rate 
 import { classifiyImageWith, shortenAddr } from "../router/util";
 import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 
-const givenOgInsId = 100000
+const givenOgInsId = MaxUint256
 const subSLen = 8;
 const defaultAvatar = domain.domainImgUrl + 'assets/avater_def@2x.png';
 
@@ -323,7 +324,7 @@ async function loadCategory() {
         val.data.result.forEach((element: InscriptionItem) => {
             element = classifiyImageWith(element)
 
-            if (element.number > givenOgInsId) {
+            if (element.number < givenOgInsId) {
                 stat.bCard.isOg = true
             }
 
