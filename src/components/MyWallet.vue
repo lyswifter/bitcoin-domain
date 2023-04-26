@@ -24,12 +24,15 @@ import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 const givenOgInsId = MaxUint256
 const subSLen = 8;
 const defaultAvatar = domain.domainImgUrl + 'assets/avater_def@2x.png';
+const webLink = domain.domainImgUrl + 'assets/banner_getwebsite@2x.png';
+const mobileLink = domain.domainImgUrl + 'assets/banner_getwebsite_mobile@2x.png';
 
 const headerRef = ref();
 const insRef = ref();
 const historyRef = ref();
 
 let stat = reactive({
+    isMobile: false,
     dialogueWidth: '50%',
     receiveddiaW: '20%',
     pinfo: {
@@ -431,9 +434,11 @@ function assembleIcons() {
 
 function calculateWidth() {
     if (window.innerWidth < 767) {
+        stat.isMobile = true
         stat.dialogueWidth = '96%';
         stat.receiveddiaW = '96%';
     } else {
+        stat.isMobile = false
         stat.dialogueWidth = '50%';
         stat.receiveddiaW = '30%';
     }
@@ -512,10 +517,9 @@ onMounted(() => {
         <div class="mid-content-view">
             <br>
             <div class="getsite-entry-view" @click="goToBtcSite">
-                <img src="../assets/banner_getwebsite@2x.png" alt="">
+                <img :src="stat.isMobile ? mobileLink : webLink" alt="">
             </div>
             <br>
-
             <el-tabs v-model="stat.activeName" class="mywallet-tabs" @tab-click="handleClick">
                 <el-tab-pane label="Inscription" name="inscription">
                     <InscriptionView ref="insRef" :address="stat.pinfo.address" @reload-avatar="loadavatar" />
