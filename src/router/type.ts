@@ -110,6 +110,7 @@ export enum InsType {
     AUDIO,
     VIDEO,
     DOMAIN,
+    HTML,
     OTHER,
 }
 

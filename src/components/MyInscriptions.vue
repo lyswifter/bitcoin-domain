@@ -281,6 +281,8 @@ onMounted(() => {
                         loading="lazy">
                     <img class="pic-view" v-else-if="item.type == InsType.TEXT" src="../assets/pic_txt@2x.png" alt=""
                         loading="lazy">
+                    <img class="pic-view" v-else-if="item.type == InsType.HTML" src="../assets/pic_html@2x.png" alt=""
+                        loading="lazy">
                     <img class="pic-view" v-else-if="item.type == InsType.AUDIO" src="../assets/pic_mp3@2x.png" alt=""
                         loading="lazy">
                     <img class="pic-view" v-else-if="item.type == InsType.VIDEO" src="../assets/pic_mp4@2x.png" alt=""
