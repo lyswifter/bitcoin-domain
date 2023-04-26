@@ -141,7 +141,7 @@ onMounted(() => {
                 <div class="row-view">
                     <div></div>
                     <div>
-                        <a href="https://baidu.com">View On Bitcoin Mainnet</a>
+                        <a href="https://mempool.space">View On Bitcoin Mainnet</a>
                     </div>
                 </div>
 
