@@ -13,11 +13,11 @@ import HistoryView from "../components/MyHistory.vue";
 import InscriptionView from "../components/MyInscriptions.vue";
 import openapi from "../crypto/openapi";
 import SDK, { ICollectedUTXOResp, ISendBTCReq } from "../crypto/sdk/sdk";
-import { generateBitcoinAddr, signAsync } from "../crypto/sign";
+import { generateBitcoinAddr } from "../crypto/sign";
 import { domain } from "../router/domain";
 import router from "../router/index";
 import service from "../router/service";
-import { DomainLink, InsType, InscriptionItem, MinSats, PersonInfo, Ratio, rate } from "../router/type";
+import { InsType, InscriptionItem, MinSats, PersonInfo, Ratio, rate } from "../router/type";
 import { classifiyImageWith, shortenAddr } from "../router/util";
 import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 
@@ -97,21 +97,6 @@ function copyAction() {
     toClipboard.toClipboard(stat.pinfo.address).then((val) => {
         ElMessage.info("copied")
     })
-}
-
-async function signDomainLink() {
-    let linkfile = {
-        type: 'btcdomain_link',
-        domain: 'helloworld.btc',
-        obj_ins_id: 'c0ff5c133d424706ca76c4f39f98a0f876b8e04fdf0fde5b5a0934252342da68i0',
-        public_key: localStorage.getItem('public_key'),
-    } as DomainLink;
-
-    let linefile_json = JSON.stringify(linkfile)
-    let signRet = await signAsync(linefile_json)
-    linkfile.sig = signRet
-
-    console.log(JSON.stringify(linkfile))
 }
 
 async function sendBtcsAction() {
@@ -454,6 +439,10 @@ function calculateWidth() {
     }
 }
 
+function goToBtcSite() {
+    router.push({ name: 'bsite' })
+}
+
 onBeforeMount(() => {
     assembleIcons()
 })
@@ -521,6 +510,12 @@ onMounted(() => {
         </div>
 
         <div class="mid-content-view">
+            <br>
+            <div class="getsite-entry-view" @click="goToBtcSite">
+                <img src="../assets/banner_getwebsite@2x.png" alt="">
+            </div>
+            <br>
+
             <el-tabs v-model="stat.activeName" class="mywallet-tabs" @tab-click="handleClick">
                 <el-tab-pane label="Inscription" name="inscription">
                     <InscriptionView ref="insRef" :address="stat.pinfo.address" @reload-avatar="loadavatar" />
@@ -816,7 +811,16 @@ onMounted(() => {
 .mid-content-view {
     max-width: 1200px;
     margin: 0 auto;
-    margin-top: 20px;
+}
+
+.getsite-entry-view {
+    margin: 0 auto;
+    width: 96%;
+    cursor: pointer;
+}
+
+.getsite-entry-view img {
+    width: 100%;
 }
 </style>
 

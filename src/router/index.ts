@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
+import Bsite from "../components/Bsite.vue";
 import Home from "../components/Home.vue";
 import MyWallet from "../components/MyWallet.vue";
 import Setting from "../components/Setting.vue";
@@ -20,6 +21,11 @@ const routes = [
         path: '/setting/:addr',
         name: 'setting',
         component: Setting,
+        props: true,
+    },{
+        path: '/bsite',
+        name: 'bsite',
+        component: Bsite,
         props: true,
     }
 ]
