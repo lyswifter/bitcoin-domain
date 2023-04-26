@@ -580,13 +580,13 @@ onMounted(() => {
                 <div class="card-view" id="personal-card-view">
                     <div class="card-top-view">
                         <div class="card-avatar-view">
-                            <img :src="stat.pinfo.content_url ? stat.pinfo.content_url : '../assets/avater_def@2x.png'" width="80" height="80" alt="">
+                            <img referrerpolicy="no-referrer" :src="stat.pinfo.content_url ? stat.pinfo.content_url : '../assets/avater_def@2x.png'" width="80" height="80" alt="">
                         </div>
                         <div class="card-content-view">
                             <div class="card-name-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
                             <div class="card-icon-view">
                                 <div v-for="(item, idx) in stat.bCard.icons" :key="idx">
-                                    <img :src="item.isHighlight ? item.file_sel : item.file_dis" width="18" height="18"
+                                    <img referrerpolicy="origin-when-cross-origin" :src="item.isHighlight ? item.file_sel : item.file_dis" width="18" height="18"
                                         alt="">
                                 </div>
                             </div>

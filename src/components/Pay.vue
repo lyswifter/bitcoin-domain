@@ -46,7 +46,6 @@ let state = reactive({
         switchAddr: '',
         switchCurr: '',
     } as GasInfo,
-    isPaymentVisiable: false,
     payment: {
         methods: [] as PaymentMethod[],
         curIdx: 0,
@@ -103,15 +102,10 @@ function conformAction() {
             event('payment', { method: 'Google' })
             emit('toProcessing', state.info)
         } else if (val.code == 314) {
-            state.isPaymentVisiable = true
         } else if (val.code == 315) {
             emit('toProcessing', state.info)
         }
     })
-}
-
-function dismissAction() {
-    state.isPaymentVisiable = false
 }
 
 async function addressChange() {
@@ -270,6 +264,8 @@ async function submitBtcTxAction() {
     console.log(subRet)
 
     ElMessage.info("Send BTC tx: " + subRet + " has been publiced")
+
+    state.sendInsOrBtc.isSendInsOrBtcShow = false
 
     conformAction() // tigger conform
 }
@@ -468,8 +464,7 @@ onMounted(() => {
             let u_fee = new Decimal(val1.data.mine.untrusted_pending)
             let t_fee = Decimal.add(b_fee, u_fee)
             state.info.balance = t_fee.toPrecision(Types.precision).toString();
-            state.info.total = s_fee.toPrecision(Types.precision).toString();
-            // state.info.total = Decimal.sub(s_fee, t_fee).toPrecision(Types.precision).toString();
+            state.info.total = Decimal.sub(s_fee, t_fee).toPrecision(Types.precision).toString();
             if (t_fee.greaterThanOrEqualTo(s_fee)) {
                 conformAction()
             }
@@ -677,20 +672,6 @@ function updateBalance() {
             </div>
             <br>
             <div class="send-btn-view" @click="submitBtcTxAction">Send</div>
-        </div>
-    </el-dialog>
-
-    <el-dialog v-model="state.isPaymentVisiable" :show-close="true" align-center="true" :width="440">
-        <div style="text-align: center;">
-            <img src="../assets/icon_oops@2x.png" style="width: 220px;height: 220px;" alt="">
-            <div style="font-size: 18px;font-weight: 600;color: #A7A9BE;line-height: 25px;text-align: center;">No
-                payment
-                has been detected. When paying with ETH, kindly allow 5-10 minutes for the conversion of your ETH to
-                BTC.
-            </div>
-            <br>
-            <div style="width: 400px;height: 50px;background: #2E2F3E;border-radius: 8px;font-size: 16px;font-weight: 600;color: white;line-height: 50px;text-align: center;cursor: pointer;"
-                @click="dismissAction">OK</div>
         </div>
     </el-dialog>
 </template>
