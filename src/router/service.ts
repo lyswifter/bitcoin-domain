@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ElMessage } from "element-plus";
 import { PayParams } from "../router/type";
-import { Apis, ExtApi } from "./domain";
+import { Apis, ExtApi, ExtKeys } from "./domain";
 
 export interface IReqSubmitTxs {
     [key: string]: string;
@@ -199,8 +199,24 @@ export default {
     },
 
     async queryRatio(symbol: string) {
-        //binanceApi
+        // binanceApi
         let ret = await axios.get(ExtApi.binanceApi + symbol)
+
+        if (ret.status == 200) {
+            return ret.data
+        } else {
+            ElMessage.error("Bad request[code=" + ret.status + "]")
+            return
+        }
+    },
+
+    async queryCoinRatio() {
+        // coinApi
+        let ret = await axios.get(ExtApi.coinApi, {
+            headers: {
+                'X-CoinAPI-Key': ExtKeys.coinapiKey
+            }
+        })
 
         if (ret.status == 200) {
             return ret.data

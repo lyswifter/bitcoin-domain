@@ -391,8 +391,8 @@ async function loadBalance() {
                 stat.winfo = balance
                 stat.winfo.amount = available_sat.div(rate).toPrecision(8).toString();
 
-                service.queryRatio('BTCUSDT').then((ratio: Ratio) => {
-                    let ratioNum = new BigNumber(ratio.price);
+                service.queryCoinRatio().then((ratio: Ratio) => {
+                    let ratioNum = new BigNumber(ratio.rate);
                     let btcNum = new BigNumber(stat.winfo.amount);
                     let usdtNum = ratioNum.multipliedBy(btcNum);
                     stat.winfo.usd_value = usdtNum.toString();

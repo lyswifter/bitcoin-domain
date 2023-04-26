@@ -114,8 +114,10 @@ export enum InsType {
 }
 
 export interface Ratio {
-    price: string;
-    symbol: string;
+    time: string;
+    asset_id_base: string;
+    asset_id_quote: string;
+    rate: number;
 }
 
 export interface History {

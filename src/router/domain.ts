@@ -25,5 +25,10 @@ export const ExtApi = {
     walletInfo: domain.extUrl + '/api/wallet/wallet-info?address=',
     submitTx: domain.extUrl + '/wallet/submit-tx',
     binanceApi: 'https://api.binance.com/api/v3/ticker/price?symbol=',
+    coinApi: 'https://rest.coinapi.io/v1/exchangerate/BTC/USD',
     ordinalIns: 'https://ordinals.com/inscription/',
+}
+
+export const ExtKeys = {
+    coinapiKey: '6097ECCC-363E-4CE6-9F5C-308C1BC69174'
 }
