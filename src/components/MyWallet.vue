@@ -324,10 +324,6 @@ async function loadCategory() {
         val.data.result.forEach((element: InscriptionItem) => {
             element = classifiyImageWith(element)
 
-            if (element.number < givenOgInsId) {
-                stat.bCard.isOg = true
-            }
-
             switch (element.type) {
                 case InsType.IMAGE:
                     stat.bCard.icons[2].isHighlight = true
@@ -342,6 +338,9 @@ async function loadCategory() {
                     break;
 
                 case InsType.DOMAIN:
+                    if (element.number < givenOgInsId) {
+                        stat.bCard.isOg = true
+                    }
                     break;
 
                 case InsType.VIDEO:
@@ -375,7 +374,7 @@ function loadavatar() {
                     stat.bCard.icons[1].isHighlight = true
                 }
                 if (stat.pinfo.domain) {
-                    stat.bCard.qrlink = "https://btcdomains.io/#/?search=" + stat.pinfo.domain   
+                    stat.bCard.qrlink = "https://btcdomains.io/#/?search=" + stat.pinfo.domain
                 }
             }
         });
@@ -386,7 +385,6 @@ async function loadBalance() {
     let addr = localStorage.getItem('bitcoin_address')
     if (addr) {
         openapi.getAddressBalance(addr).then(balance => {
-
             openapi.getAddressInscriptions(addr!).then((inscriptions) => {
                 let totalSatoshi = new BigNumber(0)
                 inscriptions.forEach(element => {
@@ -395,10 +393,11 @@ async function loadBalance() {
                         totalSatoshi = totalSatoshi.plus(tmp)
                     }
                 });
+
                 let amout_tmp = new BigNumber(balance.confirm_amount);
                 let amount_sat = amout_tmp.multipliedBy(rate);
                 let available_sat = amount_sat.minus(totalSatoshi);
-                if (available_sat.gte(0)) {
+                if (available_sat.gt(0)) {
                     stat.bCard.icons[0].isHighlight = true
                 }
                 stat.winfo = balance
@@ -429,11 +428,11 @@ async function loadBtcBalance() {
             totalSatoshi = totalSatoshi.plus(tmp)
         }
     });
-    
+
     let amout_tmp = new BigNumber(balance.confirm_amount);
     let amount_sat = amout_tmp.multipliedBy(rate);
     available_ret = amount_sat.minus(totalSatoshi);
-    
+
     return available_ret
 }
 
@@ -476,7 +475,7 @@ onMounted(() => {
                 <div class="info-view">
                     <div class="topwarp-view">
                         <img class="avatar-view" :src="stat.pinfo.content_url ? stat.pinfo.content_url : defaultAvatar"
-                            alt="" @click="signDomainLink">
+                            alt="">
                         <div class="nick-addr-view">
                             <div class="nickname-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
                             <div class="addrname-view">{{ stat.pinfo.short_addr }}<img
@@ -607,14 +606,18 @@ onMounted(() => {
                 <div class="card-view" id="personal-card-view">
                     <div class="card-top-view">
                         <div class="card-avatar-view">
-                            <img class="card-avatar-img" referrerpolicy="no-referrer" :src="stat.pinfo.content_url ? stat.pinfo.content_url : '../assets/avater_def@2x.png'" width="80" height="80" alt="">
-                            <img class="card-avatar-og" referrerpolicy="no-referrer" :src="stat.bCard.ogLink" width="30" height="30" alt="">
+                            <img class="card-avatar-img" referrerpolicy="no-referrer"
+                                :src="stat.pinfo.content_url ? stat.pinfo.content_url : defaultAvatar"
+                                width="80" height="80" alt="">
+                            <img class="card-avatar-og" referrerpolicy="no-referrer" :src="stat.bCard.ogLink" width="30"
+                                height="30" alt="">
                         </div>
                         <div class="card-content-view">
                             <div class="card-name-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
                             <div class="card-icon-view">
                                 <div v-for="(item, idx) in stat.bCard.icons" :key="idx">
-                                    <img referrerpolicy="origin-when-cross-origin" :src="item.isHighlight ? item.file_sel : item.file_dis" width="18" height="18"
+                                    <img referrerpolicy="origin-when-cross-origin"
+                                        :src="item.isHighlight ? item.file_sel : item.file_dis" width="18" height="18"
                                         alt="">
                                 </div>
                             </div>
