@@ -622,7 +622,7 @@ onMounted(() => {
                             <div class="card-name-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
                             <div class="card-icon-view">
                                 <div v-for="(item, idx) in stat.bCard.icons" :key="idx">
-                                    <img referrerpolicy="origin-when-cross-origin"
+                                    <img referrerpolicy="no-referrer"
                                         :src="item.isHighlight ? item.file_sel : item.file_dis" width="18" height="18"
                                         alt="">
                                 </div>

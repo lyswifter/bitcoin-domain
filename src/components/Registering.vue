@@ -67,6 +67,7 @@ onMounted(() => {
                 if (i == 0) {
                     continue
                 }
+                
                 var element = state.rowInfo[i];
                 if (i < state.current - 1) {
                     element.link = certainUrl

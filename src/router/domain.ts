@@ -2,8 +2,8 @@ export const domain = {
     // domainUrl: "http://172.16.10.26:80",
     // domainUrl: "http://137.184.180.14:80",
     domainUrl: "https://btcdomains.io",
-    domainImageUrl: "https://btcdomains.io/images/static-files/",
-    domainImgUrl: "https://btcdomains.io/images/",
+    domainImageUrl: "https://app.btcdomains.io/images/static-files/",
+    domainImgUrl: "https://app.btcdomains.io/images/",
     extUrl: 'https://devnet.generative.xyz/generative',
 }
 
