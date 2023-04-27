@@ -378,32 +378,29 @@ async function switchPayMethod(idx: number) {
         )
 
         let ethAddr = localStorage.getItem('eth_address')
-        if (!ethAddr) {
-            ElMessage.error("eth address is not exist")
-            return
+        if (ethAddr) {
+            // provider
+            let provider = new ethers.BrowserProvider(window.ethereum)
+
+            // ethers
+            provider.getBalance(ethAddr)
+                .then(balance => {
+                    let w_balance = ethers.formatEther(balance);
+                    let balance_big = new BigNumber(w_balance);
+
+                    // set balance
+                    state.payment.methods[state.payment.curIdx].bal = w_balance;
+
+                    if (balance_big.isGreaterThan(needpay_wei_big)) {
+                        state.payment.isEnough = 1
+                    } else {
+                        state.payment.isEnough = 2
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                });
         }
-
-        // provider
-        let provider = new ethers.BrowserProvider(window.ethereum)
-
-        // ethers
-        provider.getBalance(ethAddr)
-            .then(balance => {
-                let w_balance = ethers.formatEther(balance);
-                let balance_big = new BigNumber(w_balance);
-
-                // set balance
-                state.payment.methods[state.payment.curIdx].bal = w_balance;
-
-                if (balance_big.isGreaterThan(needpay_wei_big)) {
-                    state.payment.isEnough = 1
-                } else {
-                    state.payment.isEnough = 2
-                }
-            })
-            .catch(err => {
-                console.log(err)
-            });
     }
 }
 
