@@ -177,7 +177,6 @@ export const Links = {
     doc: "https://docs.btcdomains.io",
     openOrdex: "https://btcdomains.click/openordex-open-2f8217",
     magicEden: "https://magiceden.io/ordinals/marketplace/btcdomain",
-
     twitter: "http://twitter.com/btcdomain_btc",
     trees: "https://linktr.ee/btcdomain",
     github: "https://github.com/btcdomain",
@@ -186,7 +185,5 @@ export const Links = {
 }
 
 export const GivingMsg = "Welcome to the secure sites, btcdomains.io and btcwallet.network! Please ensure you are visiting the correct URLs: btcdomains.io and btcwallet.network. Engaging in transactions or signing activities outside of these official sites may expose your private key and put your security at risk.";
-
 export const MinSats = 1000;
-
 export const rate = 100000000;

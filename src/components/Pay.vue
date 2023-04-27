@@ -2,7 +2,7 @@
 import BigNumber from "bignumber.js";
 import { validate } from 'bitcoin-address-validation';
 import Decimal from 'decimal.js';
-import { ElMessage } from "element-plus";
+import { ElLoading, ElMessage } from "element-plus";
 import { ethers } from "ethers";
 import { onBeforeMount, onBeforeUnmount, onMounted, onUnmounted, reactive } from 'vue';
 import useClipboard from "vue-clipboard3";
@@ -56,6 +56,7 @@ let state = reactive({
         timer2: 0,
         comformSec: confirmInterval,
         conformTimer: 1,
+        loadingInstance1: {} as any,
     },
     sendInsOrBtc: {
         dialogueWidth: '50%',
@@ -100,12 +101,14 @@ function conformAction() {
     service.queryConfirm(state.info.name, state.info.addr, state.info.years, state.info.walletId, exchangeId).then((val) => {
         if (val.code == 0) {
             event('payment', { method: 'Google' })
+            state.payment.loadingInstance1.close()
             emit('toProcessing', state.info)
         } else if (val.code == 314) {
         } else if (val.code == 315) {
+            state.payment.loadingInstance1.close()
             emit('toProcessing', state.info)
         } else {
-            emit('toProcessing', state.info)
+            // emit('toProcessing', state.info)
         }
     })
 }
@@ -289,30 +292,36 @@ async function tiggerBtcPaymentAction() {
 }
 
 async function tiggerMetamaskAction() {
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    let value = state.payment.exchangeRet.fromAmount.toString();
-    let weivalue = ethers.parseUnits(value, "ether");
-    let weiStr = weivalue.toString(16);
+    // const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    // let value = state.payment.exchangeRet.fromAmount.toString();
+    // let weivalue = ethers.parseUnits(value, "ether");
+    // let weiStr = weivalue.toString(16);
 
-    let txHash = await window.ethereum
-        .request({
-            method: 'eth_sendTransaction',
-            params: [
-                {
-                    from: accounts[0],
-                    to: state.payment.exchangeRet.payinAddress,
-                    value: weiStr,
-                    gasPrice: '',
-                    gas: '',
-                },
-            ],
-        })
+    // let txHash = await window.ethereum
+    //     .request({
+    //         method: 'eth_sendTransaction',
+    //         params: [
+    //             {
+    //                 from: accounts[0],
+    //                 to: state.payment.exchangeRet.payinAddress,
+    //                 value: weiStr,
+    //                 gasPrice: '',
+    //                 gas: '',
+    //             },
+    //         ],
+    //     })
 
-    ElMessage.info("Send ETH tx: " + txHash + " has been publiced")
+    // ElMessage.info("Send ETH tx: " + txHash + " has been publiced")
 
-    clearTimer()
+    // clearTimer()
 
-    conformAction() // tigger conform
+    // conformAction() // tigger conform
+
+    state.payment.loadingInstance1 = ElLoading.service({
+        fullscreen: true,
+        text: "Do not close this window until confirmation is complete! Payment has been made and is currently being confirmed. It may take 20 minutes to wait.",
+        background: "rgba(122, 122, 122, 0.8)",
+    })
 }
 
 async function switchPayMethod(idx: number) {
@@ -694,6 +703,15 @@ function updateBalance() {
             <div class="send-btn-view" @click="submitBtcTxAction">Send</div>
         </div>
     </el-dialog>
+
+    <!-- <div class="eth-load-view">
+        <div>
+            <img src="https://dmaster.com/dcommon/img/loading.svg" alt="">
+        </div>
+
+        <div class="text-blue">Do not close this window until confirmation is complete !</div>
+        <div class="text-block">Payment has been made and is currently being confirmed. It may take 20 minutes to wait</div>
+    </div> -->
 </template>
 
 <style scoped>
@@ -1047,3 +1065,11 @@ function updateBalance() {
     cursor: pointer;
 }
 </style>
+
+<!-- <style scoped>
+.eth-load-view {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+</style> -->
