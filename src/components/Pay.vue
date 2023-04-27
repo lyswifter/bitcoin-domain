@@ -358,12 +358,6 @@ async function switchPayMethod(idx: number) {
         state.info.switchCurr = ''
         state.payment.comformSec = confirmInterval
 
-        let ethAddr = localStorage.getItem('eth_address')
-        if (!ethAddr) {
-            ElMessage.error("eth address is not exist")
-            return
-        }
-
         // request ratio
         let retData = await startRatio()
 
@@ -378,6 +372,12 @@ async function switchPayMethod(idx: number) {
         // exchange rate
         let needpay_wei = state.payment.exchangeRet.fromAmount.toString();
         let needpay_wei_big = new BigNumber(needpay_wei)
+
+        let ethAddr = localStorage.getItem('eth_address')
+        if (!ethAddr) {
+            ElMessage.error("eth address is not exist")
+            return
+        }
 
         // provider
         let provider = new ethers.BrowserProvider(window.ethereum)
