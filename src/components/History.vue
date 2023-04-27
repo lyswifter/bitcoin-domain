@@ -11,13 +11,12 @@ function clickHistory(name: string) {
     if (name.indexOf('.btc') != -1) {
         name = name.substring(0, name.length-4)    
     }
-
     emit('clickHistory', name)
 }
 
 onMounted(() => {
     let localString = localStorage.getItem('domain_history')
-    if (localString != null) {
+    if (localString) {
         let localItems = localString.split(',');
         if (localItems.length > 0) {
             state.records = localItems

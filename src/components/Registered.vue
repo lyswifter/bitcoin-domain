@@ -3,6 +3,7 @@ import { ElMessage } from "element-plus";
 import { onBeforeMount, onMounted, reactive } from 'vue';
 import useClipboard from "vue-clipboard3";
 import SearchInsView from "../components/SearchIns.vue";
+import { LoadingSvg } from "../router/domain";
 import service from "../router/service";
 import { Domain, InscriptionItem } from "../router/type";
 import { getTime, shortenInsId } from "../router/util";
@@ -21,6 +22,7 @@ let state = reactive({
     info: {} as Domain,
     searchItem: [] as InscriptionItem[],
     loading: true,
+    blockchainLink: 'https://www.blockchain.com/explorer/transactions/btc/'
 })
 
 const oridDomain = 'https://ordinals.com/inscription/';
@@ -60,6 +62,7 @@ onMounted(() => {
         state.info.update_time = getTime(state.info.update_time, '')
         state.info.short_ins_id = shortenInsId(state.info.inscribe_id, 8),
         state.info.short_owner_addr = shortenInsId(state.info.owner_address, 8),
+        state.blockchainLink = state.blockchainLink + state.info.inscribe_id.substring(0, state.info.inscribe_id.length -2)
 
         state.loading = true
         service.queryInsWith(state.info.owner_address).then((val2) => {
@@ -141,7 +144,7 @@ onMounted(() => {
                 <div class="row-view">
                     <div></div>
                     <div>
-                        <a href="https://mempool.space">View On Bitcoin Mainnet</a>
+                        <a :href="state.blockchainLink" target="_blank">View On Bitcoin Mainnet</a>
                     </div>
                 </div>
 
@@ -157,7 +160,7 @@ onMounted(() => {
 
         <SearchInsView v-if="state.searchItem.length > 0 && !state.loading" :itemss="state.searchItem"></SearchInsView>
         <div class="loading-view" v-else>
-            <img src="https://dmaster.com/dcommon/img/loading.svg" alt="">
+            <img :src="LoadingSvg" width="40" height="40" alt="">
         </div>
     </div>
 </template>

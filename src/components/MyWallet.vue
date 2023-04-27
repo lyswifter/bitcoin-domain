@@ -119,17 +119,19 @@ async function sendBtcsAction() {
     // determine how much btc are available to transfer
 
     let available_sat = await loadBtcBalance()
-    let availBtcStr = available_sat.div(rate).toPrecision(8).toString();
-    stat.sendInsOrBtc.availBal = availBtcStr;
+    if (available_sat) {
+        let availBtcStr = available_sat.div(rate).toPrecision(8).toString();
+        stat.sendInsOrBtc.availBal = availBtcStr;
 
-    openapi.getFeeSummary().then(feeRet => {
-        stat.sendInsOrBtc.feeSums = feeRet
-        stat.sendInsOrBtc.feeSums.list.push({
-            title: 'Customize Sats',
-            desc: '',
-            feeRate: 0,
+        openapi.getFeeSummary().then(feeRet => {
+            stat.sendInsOrBtc.feeSums = feeRet
+            stat.sendInsOrBtc.feeSums.list.push({
+                title: 'Customize Sats',
+                desc: '',
+                feeRate: 0,
+            })
         })
-    })
+    }
 }
 
 function clickFeeCardAction(idx: any) {
@@ -403,25 +405,25 @@ async function loadBalance() {
 }
 
 async function loadBtcBalance() {
-    let available_ret = new BigNumber(0)
     let addr = localStorage.getItem('bitcoin_address')
+    if (addr) {
+        let available_ret = new BigNumber(0)
+        let balance = await openapi.getAddressBalance(addr!);
+        let inscriptions = await openapi.getAddressInscriptions(addr!);
 
-    let balance = await openapi.getAddressBalance(addr!);
-    let inscriptions = await openapi.getAddressInscriptions(addr!);
+        let totalSatoshi = new BigNumber(0)
+        inscriptions.forEach(element => {
+            if (element.detail) {
+                let tmp = new BigNumber(element.detail.output_value)
+                totalSatoshi = totalSatoshi.plus(tmp)
+            }
+        });
 
-    let totalSatoshi = new BigNumber(0)
-    inscriptions.forEach(element => {
-        if (element.detail) {
-            let tmp = new BigNumber(element.detail.output_value)
-            totalSatoshi = totalSatoshi.plus(tmp)
-        }
-    });
-
-    let amout_tmp = new BigNumber(balance.confirm_amount);
-    let amount_sat = amout_tmp.multipliedBy(rate);
-    available_ret = amount_sat.minus(totalSatoshi);
-
-    return available_ret
+        let amout_tmp = new BigNumber(balance.confirm_amount);
+        let amount_sat = amout_tmp.multipliedBy(rate);
+        available_ret = amount_sat.minus(totalSatoshi);
+        return available_ret
+    }
 }
 
 function assembleIcons() {
@@ -445,7 +447,12 @@ function calculateWidth() {
 }
 
 function goToBtcSite() {
-    router.push({ name: 'bsite' })
+    if (localStorage.getItem('public_key')) {
+        router.push({ name: 'bsite' })   
+    } else {
+        ElMessage.warning('you should login firstly')
+        return
+    }
 }
 
 onBeforeMount(() => {
@@ -473,13 +480,13 @@ onMounted(() => {
                         <div class="nick-addr-view">
                             <div class="nickname-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
                             <div class="addrname-view">{{ stat.pinfo.short_addr }}
-                                <img
-                                    src="../assets/icon_copy_white@2x.png"
+                                <img src="../assets/icon_copy_white@2x.png"
                                     style="width: 20px;height: 20px;cursor: pointer;margin-left: 5px;" alt=""
                                     @click="copyAction">
                                 <img src="../assets/icon_qrcode@2x.png"
                                     style="width: 20px;height: 20px;cursor: pointer;;margin-left: 5px;" alt=""
-                                    @click="showQrCodeAction"></div>
+                                    @click="showQrCodeAction">
+                            </div>
                         </div>
                     </div>
 
@@ -521,6 +528,7 @@ onMounted(() => {
             <div class="getsite-entry-view" @click="goToBtcSite">
                 <img :src="stat.isMobile ? mobileLink : webLink" alt="">
             </div>
+            
             <br>
             <el-tabs v-model="stat.activeName" class="mywallet-tabs" @tab-click="handleClick">
                 <el-tab-pane label="Inscription" name="inscription">
@@ -608,10 +616,10 @@ onMounted(() => {
                     <div class="card-top-view">
                         <div class="card-avatar-view">
                             <img class="card-avatar-img" referrerpolicy="no-referrer"
-                                :src="stat.pinfo.content_url ? stat.pinfo.content_url : defaultAvatar"
-                                width="80" height="80" alt="">
-                            <img class="card-avatar-og" v-if="stat.pinfo.domain" referrerpolicy="no-referrer" :src="stat.bCard.ogLink" width="30"
-                                height="30" alt="">
+                                :src="stat.pinfo.content_url ? stat.pinfo.content_url : defaultAvatar" width="80"
+                                height="80" alt="">
+                            <img class="card-avatar-og" v-if="stat.pinfo.domain" referrerpolicy="no-referrer"
+                                :src="stat.bCard.ogLink" width="30" height="30" alt="">
                         </div>
                         <div class="card-content-view">
                             <div class="card-name-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>

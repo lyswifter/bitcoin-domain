@@ -41,18 +41,4 @@ router.afterEach((to, from, next) => {
     document.documentElement.scrollTop = 0
 })
 
-// router.beforeEach((to, from, next) => {
-//     let token = localStorage.getItem("WalletAcount");
-//     let isAuthenticated = true;
-//     if (token == undefined || token == null) {
-//       isAuthenticated = false;
-//     }
-  
-//     if (to.name !== 'home' && !isAuthenticated) {
-//       next({ name: 'home' })
-//     } else {
-//       next()
-//     }
-//   })
-
 export default router

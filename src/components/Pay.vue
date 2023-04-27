@@ -320,7 +320,7 @@ async function tiggerMetamaskAction() {
 
     clearTimer()
 
-    let textHtml = '<div style="position: fixed;top: 0;left: 0;right: 0;bottom: 0;height: 100vh;width: 100vw;background: rgba(255, 255, 255, 0.7);text-align: center;"><div style="margin-top: 340px;"><img src="https://dmaster.com/dcommon/img/loading.svg" width="40" height="40" alt=""></div><br><div class="text-blue" style="font-size: 24px;font-weight: 600;color: #4540D6;line-height: 33px;">Do not close this window until confirmation is complete !</div><br><div class="text-block" style="font-size: 24px;font-weight: 600;color: #202842;line-height: 33px;">Payment has been made and is currently being confirmed. It may take 20 minutes to wait</div></div>'
+    let textHtml = '<div style="position: fixed;top: 0;left: 0;right: 0;bottom: 0;height: 100vh;width: 100vw;background: rgba(255, 255, 255, 0.7);text-align: center;"><div style="margin-top: 340px;"><img src="https://btcdomains.io/images/loading.svg" width="40" height="40" alt=""></div><br><div class="text-blue" style="font-size: 24px;font-weight: 600;color: #4540D6;line-height: 33px;">Do not close this window until confirmation is complete !</div><br><div class="text-block" style="font-size: 24px;font-weight: 600;color: #202842;line-height: 33px;">Payment has been made and is currently being confirmed. It may take 20 minutes to wait</div></div>'
     let inner = document.createElement('div')
     inner.innerHTML = textHtml
     inner.className = 'eth-pay-loading-view'
@@ -355,6 +355,12 @@ async function switchPayMethod(idx: number) {
         state.info.switchCurr = ''
         state.payment.comformSec = confirmInterval
 
+        let ethAddr = localStorage.getItem('eth_address')
+        if (!ethAddr) {
+            ElMessage.error("eth address is not exist")
+            return
+        }
+
         // request ratio
         let retData = await startRatio()
 
@@ -374,7 +380,7 @@ async function switchPayMethod(idx: number) {
         let provider = new ethers.BrowserProvider(window.ethereum)
 
         // ethers
-        provider.getBalance(localStorage.getItem('eth_address')!)
+        provider.getBalance(ethAddr)
             .then(balance => {
                 let w_balance = ethers.formatEther(balance);
                 let balance_big = new BigNumber(w_balance);
@@ -439,7 +445,6 @@ async function loadBalance() {
     let amount_sat = amout_tmp.multipliedBy(rate);
     available_ret = amount_sat.minus(totalSatoshi);
     state.payment.methods[0].bal = available_ret.div(rate).toPrecision(8).toString();
-
     return available_ret
 }
 
@@ -1057,31 +1062,5 @@ function updateBalance() {
     line-height: 50px;
     text-align: center;
     cursor: pointer;
-}
-</style>
-
-<style scoped>
-.eth-load-view {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.7);
-    text-align: center;
-}
-
-.text-blue {
-    font-size: 24px;
-    font-weight: 600;
-    color: #4540D6;
-    line-height: 33px;
-}
-
-.text-block {
-    font-size: 24px;
-    font-weight: 600;
-    color: #202842;
-    line-height: 33px;
 }
 </style>

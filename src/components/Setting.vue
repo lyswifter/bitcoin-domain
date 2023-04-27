@@ -65,7 +65,7 @@ onBeforeMount(() => {
 onMounted(() => {
     let addr = localStorage.getItem('bitcoin_address')
     if (addr) {
-        stat.addr = addr!
+        stat.addr = addr
     }
 
     if (window.innerWidth < 767) {

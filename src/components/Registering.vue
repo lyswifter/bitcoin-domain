@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue';
-import { domain } from "../router/domain";
+import { LoadingSvg, domain } from "../router/domain";
 import service from "../router/service";
 import { DomainInfo, GasInfo } from "../router/type";
 
@@ -26,7 +26,6 @@ let state = reactive({
 
 const waitingUrl = domain.domainImageUrl + 'icon_processing_waiting@2x.png';
 const certainUrl = domain.domainImageUrl + 'icon_processing_ok@2x.png';
-const loadingUrl = 'https://dmaster.com/dcommon/img/loading.svg';
 
 onMounted(() => {
     state.info.name = props.domainName!
@@ -72,7 +71,7 @@ onMounted(() => {
                 if (i < state.current - 1) {
                     element.link = certainUrl
                 } else if (i == state.current - 1) {
-                    element.link = loadingUrl
+                    element.link = LoadingSvg
                 } else if (i > state.current - 1) {
                     element.link = waitingUrl
                 }

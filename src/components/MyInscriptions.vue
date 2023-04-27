@@ -6,7 +6,7 @@ import { onBeforeMount, onMounted, reactive } from "vue";
 import openapi from "../crypto/openapi";
 import SDK, { ICollectedUTXOResp } from "../crypto/sdk/sdk";
 import { generateBitcoinAddr, signAsync } from "../crypto/sign";
-import { ExtApi } from "../router/domain";
+import { ExtApi, LoadingSvg } from "../router/domain";
 import service from "../router/service";
 import { InsType, InscriptionItem, SettingItem } from "../router/type";
 import { classifiyImageWith } from "../router/util";
@@ -265,7 +265,6 @@ onMounted(() => {
     let localAddr = localStorage.getItem('bitcoin_address');
     if (localAddr) {
         stat.addr = localAddr
-
         loadavatar(localAddr)
         load()
     }
@@ -319,7 +318,7 @@ onMounted(() => {
         </ul>
 
         <div class="loading-view" v-else>
-            <img src="https://dmaster.com/dcommon/img/loading.svg" alt="">
+            <img :src="LoadingSvg" width="40" height="40" alt="">
         </div>
 
         <!-- <div class="loadmore-view" @click="loadmoreAction">load more</div> -->
