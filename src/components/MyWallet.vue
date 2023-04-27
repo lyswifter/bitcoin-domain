@@ -361,7 +361,7 @@ function loadavatar() {
                     stat.bCard.icons[1].isHighlight = true
                 }
                 if (stat.pinfo.domain) {
-                    stat.bCard.qrlink = "https://btcdomains.io/#/?search=" + stat.pinfo.domain
+                    stat.bCard.qrlink = "https://app.btcdomains.io/#/?search=" + stat.pinfo.domain
                 }
             }
         });
