@@ -323,6 +323,11 @@ async function switchPayMethod(idx: number) {
         clearTimer()
 
         let available_sat = await loadBalance();
+
+        if (state.payment.curIdx == 1) {
+            return
+        }
+
         let needpay_big_total = new BigNumber(state.info.total);
         let needpay_sat = needpay_big_total.multipliedBy(rate);
 
@@ -337,11 +342,15 @@ async function switchPayMethod(idx: number) {
         state.payment.comformSec = confirmInterval
 
         // request ratio
-        await startRatio();
-
+        let retData = await startRatio()
+        
         if (state.payment.curIdx == 0) {
             return
         }
+
+        state.payment.exchangeRet = JSON.parse(retData.data)
+        state.info.switchAddr = state.payment.exchangeRet.payinAddress;
+        state.info.switchCurr = state.payment.exchangeRet.fromCurrency.toUpperCase();
 
         // exchange rate
         let needpay_wei = state.payment.exchangeRet.fromAmount.toString();
@@ -351,22 +360,27 @@ async function switchPayMethod(idx: number) {
         let provider = new ethers.BrowserProvider(window.ethereum)
 
         // ethers
-        let balance = await provider.getBalance(localStorage.getItem('eth_address')!);
-        let w_balance = ethers.formatEther(balance);
-        let balance_big = new BigNumber(w_balance);
+        provider.getBalance(localStorage.getItem('eth_address')!)
+        .then(balance => {
+            let w_balance = ethers.formatEther(balance);
+            let balance_big = new BigNumber(w_balance);
 
-        // set balance
-        state.payment.methods[state.payment.curIdx].bal = w_balance;
+            // set balance
+            state.payment.methods[state.payment.curIdx].bal = w_balance;
 
-        if (balance_big.isGreaterThan(needpay_wei_big)) {
-            state.payment.isEnough = 1
-        } else {
-            state.payment.isEnough = 2
-        }
+            if (balance_big.isGreaterThan(needpay_wei_big)) {
+                state.payment.isEnough = 1
+            } else {
+                state.payment.isEnough = 2
+            }
 
-        state.payment.timer2 = window.setInterval(
-            countDown, Types.countDownInterval
-        )
+            state.payment.timer2 = window.setInterval(
+                countDown, Types.countDownInterval
+            )
+        })
+        .catch(err => {
+            console.log(err)
+        });
     }
 }
 
@@ -387,6 +401,7 @@ async function countDown() {
         resetTimer()
         await startRatio()
     }
+
     state.payment.countDown--;
     state.payment.countText = TimeFormat(state.payment.countDown)
 }
@@ -424,13 +439,9 @@ async function startRatio() {
         toNetwork: 'btc',
         receive_address: state.info.midAddr,
     } as PayParams;
-
+    
     let retData = await service.exchangeWith(params)
-    if (state.payment.curIdx == 1) {
-        state.payment.exchangeRet = JSON.parse(retData.data)
-        state.info.switchAddr = state.payment.exchangeRet.payinAddress;
-        state.info.switchCurr = state.payment.exchangeRet.fromCurrency.toUpperCase();
-    }
+    return retData
 }
 
 onBeforeMount(() => {
