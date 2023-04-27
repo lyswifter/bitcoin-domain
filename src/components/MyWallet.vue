@@ -236,13 +236,10 @@ async function submitBtcTxAction() {
     } as ISendBTCReq
 
     const { txID, txHex } = await SDK.sendBTCTransaction(sBtcResq)
-    console.log('txID: ' + txID)
-    console.log('txHex: ' + txHex)
 
     // submit
 
     const subRet = await openapi.pushTx(txHex)
-    console.log(subRet)
 
     ElMessage.info("tx: " + subRet + " has been publiced")
 }
@@ -328,7 +325,7 @@ async function loadCategory() {
                     break;
 
                 case InsType.DOMAIN:
-                    if (element.number < givenOgInsId) {
+                    if (element.number <= givenOgInsId && !stat.bCard.isOg) {
                         stat.bCard.isOg = true
                     }
                     break;
@@ -618,7 +615,7 @@ onMounted(() => {
                             <img class="card-avatar-img" referrerpolicy="no-referrer"
                                 :src="stat.pinfo.content_url ? stat.pinfo.content_url : defaultAvatar" width="80"
                                 height="80" alt="">
-                            <img class="card-avatar-og" v-if="stat.pinfo.domain" referrerpolicy="no-referrer"
+                            <img class="card-avatar-og" v-if="stat.bCard.isOg" referrerpolicy="no-referrer"
                                 :src="stat.bCard.ogLink" width="30" height="30" alt="">
                         </div>
                         <div class="card-content-view">
