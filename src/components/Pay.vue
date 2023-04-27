@@ -2,7 +2,7 @@
 import BigNumber from "bignumber.js";
 import { validate } from 'bitcoin-address-validation';
 import Decimal from 'decimal.js';
-import { ElLoading, ElMessage } from "element-plus";
+import { ElMessage } from "element-plus";
 import { ethers } from "ethers";
 import { onBeforeMount, onBeforeUnmount, onMounted, onUnmounted, reactive } from 'vue';
 import useClipboard from "vue-clipboard3";
@@ -57,6 +57,7 @@ let state = reactive({
         comformSec: confirmInterval,
         conformTimer: 1,
         loadingInstance1: {} as any,
+        isEthLoadingShow: false,
     },
     sendInsOrBtc: {
         dialogueWidth: '50%',
@@ -101,11 +102,11 @@ function conformAction() {
     service.queryConfirm(state.info.name, state.info.addr, state.info.years, state.info.walletId, exchangeId).then((val) => {
         if (val.code == 0) {
             event('payment', { method: 'Google' })
-            state.payment.loadingInstance1.close()
+            document.body.removeChild(document.getElementsByClassName('eth-pay-loading-view')[0])
             emit('toProcessing', state.info)
         } else if (val.code == 314) {
         } else if (val.code == 315) {
-            state.payment.loadingInstance1.close()
+            document.body.removeChild(document.getElementsByClassName('eth-pay-loading-view')[0])
             emit('toProcessing', state.info)
         } else {
             // emit('toProcessing', state.info)
@@ -315,13 +316,11 @@ async function tiggerMetamaskAction() {
 
     clearTimer()
 
-    // conformAction() // tigger conform
-
-    state.payment.loadingInstance1 = ElLoading.service({
-        fullscreen: true,
-        text: "Do not close this window until confirmation is complete! Payment has been made and is currently being confirmed. It may take 20 minutes to wait.",
-        background: "rgba(122, 122, 122, 0.8)",
-    })
+    let textHtml = '<div style="position: fixed;top: 0;left: 0;right: 0;bottom: 0;height: 100vh;width: 100vw;background: rgba(255, 255, 255, 0.7);text-align: center;"><div style="margin-top: 340px;"><img src="https://dmaster.com/dcommon/img/loading.svg" width="40" height="40" alt=""></div><br><div class="text-blue" style="font-size: 24px;font-weight: 600;color: #4540D6;line-height: 33px;">Do not close this window until confirmation is complete !</div><br><div class="text-block" style="font-size: 24px;font-weight: 600;color: #202842;line-height: 33px;">Payment has been made and is currently being confirmed. It may take 20 minutes to wait</div></div>'
+    let inner = document.createElement('div')
+    inner.innerHTML = textHtml
+    inner.className = 'eth-pay-loading-view'
+    document.body.appendChild(inner)
 }
 
 async function switchPayMethod(idx: number) {
@@ -354,7 +353,7 @@ async function switchPayMethod(idx: number) {
 
         // request ratio
         let retData = await startRatio()
-        
+
         if (state.payment.curIdx == 0) {
             return
         }
@@ -372,26 +371,26 @@ async function switchPayMethod(idx: number) {
 
         // ethers
         provider.getBalance(localStorage.getItem('eth_address')!)
-        .then(balance => {
-            let w_balance = ethers.formatEther(balance);
-            let balance_big = new BigNumber(w_balance);
+            .then(balance => {
+                let w_balance = ethers.formatEther(balance);
+                let balance_big = new BigNumber(w_balance);
 
-            // set balance
-            state.payment.methods[state.payment.curIdx].bal = w_balance;
+                // set balance
+                state.payment.methods[state.payment.curIdx].bal = w_balance;
 
-            if (balance_big.isGreaterThan(needpay_wei_big)) {
-                state.payment.isEnough = 1
-            } else {
-                state.payment.isEnough = 2
-            }
+                if (balance_big.isGreaterThan(needpay_wei_big)) {
+                    state.payment.isEnough = 1
+                } else {
+                    state.payment.isEnough = 2
+                }
 
-            state.payment.timer2 = window.setInterval(
-                countDown, Types.countDownInterval
-            )
-        })
-        .catch(err => {
-            console.log(err)
-        });
+                state.payment.timer2 = window.setInterval(
+                    countDown, Types.countDownInterval
+                )
+            })
+            .catch(err => {
+                console.log(err)
+            });
     }
 }
 
@@ -450,7 +449,7 @@ async function startRatio() {
         toNetwork: 'btc',
         receive_address: state.info.midAddr,
     } as PayParams;
-    
+
     let retData = await service.exchangeWith(params)
     return retData
 }
@@ -703,15 +702,6 @@ function updateBalance() {
             <div class="send-btn-view" @click="submitBtcTxAction">Send</div>
         </div>
     </el-dialog>
-
-    <!-- <div class="eth-load-view">
-        <div>
-            <img src="https://dmaster.com/dcommon/img/loading.svg" alt="">
-        </div>
-
-        <div class="text-blue">Do not close this window until confirmation is complete !</div>
-        <div class="text-block">Payment has been made and is currently being confirmed. It may take 20 minutes to wait</div>
-    </div> -->
 </template>
 
 <style scoped>
@@ -1066,10 +1056,28 @@ function updateBalance() {
 }
 </style>
 
-<!-- <style scoped>
+<style scoped>
 .eth-load-view {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    text-align: center;
 }
-</style> -->
+
+.text-blue {
+    font-size: 24px;
+    font-weight: 600;
+    color: #4540D6;
+    line-height: 33px;
+}
+
+.text-block {
+    font-size: 24px;
+    font-weight: 600;
+    color: #202842;
+    line-height: 33px;
+}
+</style>

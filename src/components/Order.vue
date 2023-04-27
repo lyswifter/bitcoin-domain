@@ -417,7 +417,7 @@ onMounted(() => {
 }
 
 .continue-view {
-    width: 380px;
+    width: 360px;
     height: 50px;
     background: #4540D6;
     border-radius: 8px;
