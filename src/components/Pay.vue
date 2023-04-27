@@ -292,28 +292,28 @@ async function tiggerBtcPaymentAction() {
 }
 
 async function tiggerMetamaskAction() {
-    // const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    // let value = state.payment.exchangeRet.fromAmount.toString();
-    // let weivalue = ethers.parseUnits(value, "ether");
-    // let weiStr = weivalue.toString(16);
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    let value = state.payment.exchangeRet.fromAmount.toString();
+    let weivalue = ethers.parseUnits(value, "ether");
+    let weiStr = weivalue.toString(16);
 
-    // let txHash = await window.ethereum
-    //     .request({
-    //         method: 'eth_sendTransaction',
-    //         params: [
-    //             {
-    //                 from: accounts[0],
-    //                 to: state.payment.exchangeRet.payinAddress,
-    //                 value: weiStr,
-    //                 gasPrice: '',
-    //                 gas: '',
-    //             },
-    //         ],
-    //     })
+    let txHash = await window.ethereum
+        .request({
+            method: 'eth_sendTransaction',
+            params: [
+                {
+                    from: accounts[0],
+                    to: state.payment.exchangeRet.payinAddress,
+                    value: weiStr,
+                    gasPrice: '',
+                    gas: '',
+                },
+            ],
+        })
 
-    // ElMessage.info("Send ETH tx: " + txHash + " has been publiced")
+    ElMessage.info("Send ETH tx: " + txHash + " has been publiced")
 
-    // clearTimer()
+    clearTimer()
 
     // conformAction() // tigger conform
 

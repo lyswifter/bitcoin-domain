@@ -65,7 +65,7 @@ export interface PersonInfo {
 
 export const Types = {
     precision: 6,
-    queryBalInterval: 10000,
+    queryBalInterval: 3000,
     resetRatioInterval: 10000, //1200000
     countDownInterval: 1000,
 };
