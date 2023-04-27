@@ -103,13 +103,13 @@ function conformAction() {
         if (val.code == 0) {
             event('payment', { method: 'Google' })
             if (state.payment.curIdx == 1) {
-                document.body.removeChild(document.getElementsByClassName('eth-pay-loading-view')[0])   
+                document.body.removeChild(document.getElementsByClassName('eth-pay-loading-view')[0])
             }
             emit('toProcessing', state.info)
         } else if (val.code == 314) {
         } else if (val.code == 315) {
             if (state.payment.curIdx == 1) {
-                document.body.removeChild(document.getElementsByClassName('eth-pay-loading-view')[0])   
+                document.body.removeChild(document.getElementsByClassName('eth-pay-loading-view')[0])
             }
             emit('toProcessing', state.info)
         } else {
@@ -330,7 +330,7 @@ async function switchPayMethod(idx: number) {
     if (idx == state.payment.curIdx) {
         return
     }
-    
+
     state.payment.curIdx = idx
     state.payment.isEnough = 0
 
@@ -373,6 +373,10 @@ async function switchPayMethod(idx: number) {
         let needpay_wei = state.payment.exchangeRet.fromAmount.toString();
         let needpay_wei_big = new BigNumber(needpay_wei)
 
+        state.payment.timer2 = window.setInterval(
+            countDown, Types.countDownInterval
+        )
+
         let ethAddr = localStorage.getItem('eth_address')
         if (!ethAddr) {
             ElMessage.error("eth address is not exist")
@@ -396,10 +400,6 @@ async function switchPayMethod(idx: number) {
                 } else {
                     state.payment.isEnough = 2
                 }
-
-                state.payment.timer2 = window.setInterval(
-                    countDown, Types.countDownInterval
-                )
             })
             .catch(err => {
                 console.log(err)
