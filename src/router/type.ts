@@ -182,6 +182,7 @@ export const Links = {
     github: "https://github.com/btcdomain",
     discord: 'https://www.discord.gg/btcdomain',
     medium: "http://medium.com/@btcdomain",
+    telgram: "https://t.me/btcdomain_btc",
 }
 
 export const GivingMsg = "Welcome to the secure sites, btcdomains.io and btcwallet.network! Please ensure you are visiting the correct URLs: btcdomains.io and btcwallet.network. Engaging in transactions or signing activities outside of these official sites may expose your private key and put your security at risk.";

@@ -37,6 +37,10 @@ import { Links } from "../router/type";
                 <a :href="Links.discord" target="_blank">
                     <img class="link-icon" src="../assets/discord@2x.png" alt="">
                 </a>
+
+                <a :href="Links.telgram" target="_blank">
+                    <img class="link-icon" src="../assets/telgram@2x.png" alt="">
+                </a>
             </div>
 
             <div class="footer-email-view ele-show">
@@ -65,7 +69,6 @@ import { Links } from "../router/type";
     }
 
     .footer-links-view {
-        /* width: 100%; */
         min-width: 40%;
         margin-left: 10px;
     }
