@@ -38,6 +38,8 @@ onMounted(() => {
                 <div class="card-item">
                     <img class="pic-view" v-if="item.type == InsType.IMAGE" :src="item.detail.content" alt=""
                         loading="lazy">
+                    <img class="pic-view" v-else-if="item.type == InsType.GIF" :src="item.detail.content" alt=""
+                        loading="lazy">
                     <img class="pic-view" v-else-if="item.type == InsType.TEXT" src="../assets/pic_txt@2x.png" alt=""
                         loading="lazy">
                     <img class="pic-view" v-else-if="item.type == InsType.HTML" src="../assets/pic_html@2x.png" alt=""
