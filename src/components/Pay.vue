@@ -48,7 +48,7 @@ let state = reactive({
     } as GasInfo,
     payment: {
         methods: [] as PaymentMethod[],
-        curIdx: 0,
+        curIdx: -1,
         exchangeRet: {} as PayinParams,
         isEnough: 0,
         countDown: resetInterval,
@@ -271,7 +271,6 @@ async function submitBtcTxAction() {
     // submit
 
     const subRet = await openapi.pushTx(txHex)
-    console.log(subRet)
 
     ElMessage.info("Send BTC tx: " + subRet + " has been publiced")
 
@@ -328,6 +327,10 @@ async function tiggerMetamaskAction() {
 }
 
 async function switchPayMethod(idx: number) {
+    if (idx == state.payment.curIdx) {
+        return
+    }
+    
     state.payment.curIdx = idx
     state.payment.isEnough = 0
 
