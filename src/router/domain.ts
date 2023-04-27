@@ -30,7 +30,7 @@ export const ExtApi = {
 }
 
 export const ExtKeys = {
-    coinapiKey: '6097ECCC-363E-4CE6-9F5C-308C1BC69174'
+    coinapiKey:  '0CCF7D74-25C9-451C-AD63-CB1EC1AB14F6' //'6097ECCC-363E-4CE6-9F5C-308C1BC69174' 
 }
 
 export const LoadingSvg = domain.domainImgUrl + 'loading.svg'
