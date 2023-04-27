@@ -78,6 +78,10 @@ export function classifiyImageWith(element: InscriptionItem) {
                 element.type = InsType.HTML;
                 break;
 
+            case 'text/html;charset=utf-8':
+                element.type = InsType.HTML;
+            break;
+
             case 'application/json':
                 element.type = InsType.TEXT;
                 break;

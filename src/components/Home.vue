@@ -34,10 +34,12 @@ function searchAction() {
 }
 
 function searchAddr() {
+  let loadingInstance = ElLoading.service({ fullscreen: true });
   state.stage = ''
   service.queryInsWith(state.input).then((val) => {
     state.searchItem = val.data.result
     state.stage = 'searchIns'
+    loadingInstance.close()
   })
 }
 

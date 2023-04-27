@@ -22,7 +22,7 @@ import { classifiyImageWith, shortenAddr } from "../router/util";
 import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 
 const givenOgInsId = MaxUint256
-const subSLen = 8;
+const subSLen = 5;
 const defaultAvatar = domain.domainImgUrl + 'assets/avater_def@2x.png';
 const webLink = domain.domainImgUrl + 'assets/banner_getwebsite@2x.png';
 const mobileLink = domain.domainImgUrl + 'assets/banner_getwebsite_mobile@2x.png';
@@ -395,7 +395,7 @@ async function loadBalance() {
                     let ratioNum = new BigNumber(ratio.rate);
                     let btcNum = new BigNumber(stat.winfo.amount);
                     let usdtNum = ratioNum.multipliedBy(btcNum);
-                    stat.winfo.usd_value = usdtNum.toString();
+                    stat.winfo.usd_value = usdtNum.toPrecision(8).toString();
                 });
             });
         });
@@ -472,18 +472,20 @@ onMounted(() => {
                             alt="">
                         <div class="nick-addr-view">
                             <div class="nickname-view">{{ stat.pinfo.domain ? stat.pinfo.domain : '' }}</div>
-                            <div class="addrname-view">{{ stat.pinfo.short_addr }}<img
+                            <div class="addrname-view">{{ stat.pinfo.short_addr }}
+                                <img
                                     src="../assets/icon_copy_white@2x.png"
-                                    style="width: 24px;height: 24px;cursor: pointer;margin-left: 10px;" alt=""
-                                    @click="copyAction"><img src="../assets/icon_qrcode@2x.png"
-                                    style="width: 24px;height: 24px;cursor: pointer;;margin-left: 10px;" alt=""
+                                    style="width: 20px;height: 20px;cursor: pointer;margin-left: 5px;" alt=""
+                                    @click="copyAction">
+                                <img src="../assets/icon_qrcode@2x.png"
+                                    style="width: 20px;height: 20px;cursor: pointer;;margin-left: 5px;" alt=""
                                     @click="showQrCodeAction"></div>
                         </div>
                     </div>
 
                     <div class="setting-view">
-                        <div class="disconnect-view" @click="shareAction">
-                            <img src="../assets/icon_share@2x.png" width="24" height="24" alt="">
+                        <div class="disconnect-view pad-l-r-10" @click="shareAction">
+                            <img src="../assets/icon_share@2x.png" width="24" height="24" alt="">Share
                         </div>
 
                         <div class="disconnect-view" @click="settingAction">
@@ -608,7 +610,7 @@ onMounted(() => {
                             <img class="card-avatar-img" referrerpolicy="no-referrer"
                                 :src="stat.pinfo.content_url ? stat.pinfo.content_url : defaultAvatar"
                                 width="80" height="80" alt="">
-                            <img class="card-avatar-og" referrerpolicy="no-referrer" :src="stat.bCard.ogLink" width="30"
+                            <img class="card-avatar-og" v-if="stat.pinfo.domain" referrerpolicy="no-referrer" :src="stat.bCard.ogLink" width="30"
                                 height="30" alt="">
                         </div>
                         <div class="card-content-view">
@@ -703,7 +705,7 @@ onMounted(() => {
 }
 
 .disconnect-view {
-    width: 36px;
+    min-width: 36px;
     height: 36px;
     margin-top: 60px;
     margin-right: 10px;
@@ -715,6 +717,11 @@ onMounted(() => {
     line-height: 36px;
     text-align: center;
     cursor: pointer;
+}
+
+.pad-l-r-10 {
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .line-view {

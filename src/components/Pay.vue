@@ -104,6 +104,8 @@ function conformAction() {
         } else if (val.code == 314) {
         } else if (val.code == 315) {
             emit('toProcessing', state.info)
+        } else {
+            emit('toProcessing', state.info)
         }
     })
 }
