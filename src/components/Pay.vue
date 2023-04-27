@@ -102,11 +102,15 @@ function conformAction() {
     service.queryConfirm(state.info.name, state.info.addr, state.info.years, state.info.walletId, exchangeId).then((val) => {
         if (val.code == 0) {
             event('payment', { method: 'Google' })
-            document.body.removeChild(document.getElementsByClassName('eth-pay-loading-view')[0])
+            if (state.payment.curIdx == 1) {
+                document.body.removeChild(document.getElementsByClassName('eth-pay-loading-view')[0])   
+            }
             emit('toProcessing', state.info)
         } else if (val.code == 314) {
         } else if (val.code == 315) {
-            document.body.removeChild(document.getElementsByClassName('eth-pay-loading-view')[0])
+            if (state.payment.curIdx == 1) {
+                document.body.removeChild(document.getElementsByClassName('eth-pay-loading-view')[0])   
+            }
             emit('toProcessing', state.info)
         } else {
             // emit('toProcessing', state.info)
