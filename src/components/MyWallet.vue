@@ -21,7 +21,7 @@ import { InsType, InscriptionItem, MinSats, PersonInfo, Ratio, rate } from "../r
 import { classifiyImageWith, shortenAddr } from "../router/util";
 import { Account, BitcoinBalance, FeeSummary } from "../shared/types";
 
-const givenOgInsId = 2248354
+const givenOgInsId = 2497668 //2248354
 const subSLen = 5;
 const defaultAvatar = domain.domainImgUrl + 'assets/avater_def@2x.png';
 const webLink = domain.domainImgUrl + 'assets/banner_getwebsite@2x.png';
