@@ -29,10 +29,12 @@ export interface DomainInfo {
 export interface Domain {
     cost_fee: string;
     create_time: string;
+    create_date: string;
     dom_name: string;
     dom_state: number;
     dom_type: string;
     expire_time: string;
+    register_date: string;
     fee_rate: number;
     img_url: string;
     inscribe_id: string;

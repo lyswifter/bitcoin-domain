@@ -58,8 +58,8 @@ onMounted(() => {
     service.queryDomain(state.info.dom_name).then((val) => {
         state.info = val.data as Domain
         state.info.expire_time = getTime(state.info.expire_time, '')
-        state.info.create_time = getTime(state.info.create_time, '')
-        state.info.update_time = getTime(state.info.update_time, '')
+        state.info.create_date = getTime(state.info.create_date, '')
+        state.info.register_date = getTime(state.info.register_date, '')
         state.info.short_ins_id = shortenInsId(state.info.inscribe_id, 8),
         state.info.short_owner_addr = shortenInsId(state.info.owner_address, 8),
         state.blockchainLink = state.blockchainLink + state.info.inscribe_id.substring(0, state.info.inscribe_id.length -2)
@@ -124,12 +124,12 @@ onMounted(() => {
 
                 <div class="row-view">
                     <div class="list-t-view">Create date</div>
-                    <div class="owner-view">{{ state.info.create_time }}</div>
+                    <div class="owner-view">{{ state.info.create_date }}</div>
                 </div>
 
                 <div class="row-view">
                     <div class="list-t-view">Registration date</div>
-                    <div class="owner-view">{{ state.info.update_time }}</div>
+                    <div class="owner-view">{{ state.info.register_date }}</div>
                 </div>
 
                 <div class="row-view">
